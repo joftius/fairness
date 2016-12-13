@@ -1,0 +1,116 @@
+---
+title: "Fairness/causation: Adult dataset"
+output: github_document
+bibliography: bibliography.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(ggplot2)
+library(reshape2)
+```
+
+## Data
+
+From the [UCI databases](https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.names) @Lichman:2013. 
+
+```{r, cache=TRUE}
+url <- "http://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.data"
+adult <- read.csv(url, strip.white = TRUE, header = FALSE)
+names(adult) <- c("age", "workclass", "fnlwgt", "education", "education-num",
+                  "marital-status", "occupation", "relationship", "race", "sex",
+                  "capital-gain", "capital-loss", "hours-per-week",
+                  "native-country", "income")
+adult$fnlwght <- NULL # Survey weights -- for generalization
+data <- adult[,c("workclass", "occupation", "education", "education-num",
+                 "native-country", "race", "sex", "age")]
+data$hours <- adult$`hours-per-week`
+output <- data
+t(head(data))[,1:3]
+```
+
+## Imbalances in the data
+
+Average outcomes by sex/race.
+
+```{r}
+data %>% group_by(sex) %>% summarise(count = n(), hours = mean(hours))
+data %>% group_by(race) %>% summarise(count = n(), hours = mean(hours))
+```
+
+Distribution plot.
+
+```{r}
+ggplot(data, aes(hours, linetype = sex)) + geom_density() + theme_bw()
+```
+
+### Linear regression
+
+Predicted averages coincide with data averages.
+
+```{r, cache=TRUE}
+model.lm <- lm(hours ~ ., data)
+output$predlm <- predict(model.lm)
+```
+
+### Blinded to unfair covariates
+
+Outcomes are only slightly less biased.
+
+```{r, cache=TRUE}
+model.blind <- lm(hours ~ .-race-sex, data)
+output$predblind <- predict(model.blind)
+```
+
+### Two-stage procedure
+
+Is this weird?
+
+```{r, cache=TRUE}
+model.s1 <- lm(hours ~ race + sex - 1, data)
+data$preds1 <- resid(model.s1)
+model.stage2 <- lm(preds1 ~ .-race-sex-hours, data)
+output$pred2s <- predict(model.stage2) + mean(data$hours)
+```
+
+### Comparing imbalance
+
+```{r}
+output %>% group_by(sex) %>%
+  summarise(actual = mean(hours),
+            lm = mean(predlm),
+            blinded = mean(predblind),
+            twostage = mean(pred2s))
+
+output %>% group_by(race) %>%
+  summarise(actual = mean(hours),
+            lm = mean(predlm),
+            blinded = mean(predblind),
+            twostage = mean(pred2s))
+```
+
+### Comparing prediction error
+
+```{r}
+output %>%
+  summarise(average = mean((hours-mean(hours))^2),
+            lm = mean((hours-predlm)^2),
+            blinded = mean((hours-predblind)^2),
+            twostage = mean((hours-pred2s)^2))
+```
+
+Distribution plots by sex.
+
+```{r}
+pd <- melt(output[,c("sex", "race", "hours", "predlm", "predblind", "pred2s")])
+ggplot(pd, aes(value, fill = sex)) + geom_density(alpha = .3) +
+  facet_wrap(~variable) + xlim(25, 55) + theme_bw()
+```
+
+Distribution plots by race.
+
+```{r}
+ggplot(pd, aes(value, fill = race)) + geom_density(alpha = .3) +
+  facet_wrap(~variable) + xlim(25, 55) + theme_bw()
+```
