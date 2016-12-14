@@ -9,28 +9,30 @@ From the [UCI databases](https://archive.ics.uci.edu/ml/machine-learning-databas
 ``` r
 url <- "http://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.data"
 adult <- read.csv(url, strip.white = TRUE, header = FALSE)
-names(adult) <- c("age", "workclass", "fnlwgt", "education", "education-num",
-                  "marital-status", "occupation", "relationship", "race", "sex",
-                  "capital-gain", "capital-loss", "hours-per-week",
-                  "native-country", "income")
+names(adult) <- c("age", "workclass", "fnlwgt", "education", "educationnum",
+                  "maritalstatus", "occupation", "relationship", "race", "sex",
+                  "capitalgain", "capitalloss", "hoursperweek",
+                  "nativecountry", "income")
 adult$fnlwght <- NULL # Survey weights -- for generalization
-data <- adult[,c("workclass", "occupation", "education", "education-num",
-                 "native-country", "race", "sex", "age")]
-data$hours <- adult$`hours-per-week`
-output <- data
+data <- adult[,c("workclass", "occupation", "education", "educationnum",
+                 "nativecountry", "race", "sex", "age")]
+data$hours <- adult$hoursperweek - mean(adult$hoursperweek)
+res <- "hours"
+prot <- c("sex", "race")
+output <- data[,c(prot, res)]
 t(head(data))[,1:3]
 ```
 
-    ##                1               2                  3                  
-    ## workclass      "State-gov"     "Self-emp-not-inc" "Private"          
-    ## occupation     "Adm-clerical"  "Exec-managerial"  "Handlers-cleaners"
-    ## education      "Bachelors"     "Bachelors"        "HS-grad"          
-    ## education-num  "13"            "13"               " 9"               
-    ## native-country "United-States" "United-States"    "United-States"    
-    ## race           "White"         "White"            "White"            
-    ## sex            "Male"          "Male"             "Male"             
-    ## age            "39"            "50"               "38"               
-    ## hours          "40"            "13"               "40"
+    ##               1               2                  3                  
+    ## workclass     "State-gov"     "Self-emp-not-inc" "Private"          
+    ## occupation    "Adm-clerical"  "Exec-managerial"  "Handlers-cleaners"
+    ## education     "Bachelors"     "Bachelors"        "HS-grad"          
+    ## educationnum  "13"            "13"               " 9"               
+    ## nativecountry "United-States" "United-States"    "United-States"    
+    ## race          "White"         "White"            "White"            
+    ## sex           "Male"          "Male"             "Male"             
+    ## age           "39"            "50"               "38"               
+    ## hours         " -0.4374559"   "-27.4374559"      " -0.4374559"
 
 Imbalances in the data
 ----------------------
@@ -42,23 +44,23 @@ data %>% group_by(sex) %>% summarise(count = n(), hours = mean(hours))
 ```
 
     ## # A tibble: 2 × 3
-    ##      sex count    hours
-    ##   <fctr> <int>    <dbl>
-    ## 1 Female 10771 36.41036
-    ## 2   Male 21790 42.42809
+    ##      sex count     hours
+    ##   <fctr> <int>     <dbl>
+    ## 1 Female 10771 -4.027095
+    ## 2   Male 21790  1.990630
 
 ``` r
 data %>% group_by(race) %>% summarise(count = n(), hours = mean(hours))
 ```
 
     ## # A tibble: 5 × 3
-    ##                 race count    hours
-    ##               <fctr> <int>    <dbl>
-    ## 1 Amer-Indian-Eskimo   311 40.04823
-    ## 2 Asian-Pac-Islander  1039 40.12705
-    ## 3              Black  3124 38.42286
-    ## 4              Other   271 39.46863
-    ## 5              White 27816 40.68910
+    ##                 race count      hours
+    ##               <fctr> <int>      <dbl>
+    ## 1 Amer-Indian-Eskimo   311 -0.3892243
+    ## 2 Asian-Pac-Islander  1039 -0.3104106
+    ## 3              Black  3124 -2.0146005
+    ## 4              Other   271 -0.9688212
+    ## 5              White 27816  0.2516439
 
 Distribution plot.
 
@@ -74,7 +76,10 @@ Predicted averages coincide with data averages.
 
 ``` r
 model.lm <- lm(hours ~ ., data)
-output$predlm <- predict(model.lm)
+output$lm <- predict(model.lm)
+
+model.svm <- svm(hours ~ ., data)
+output$svm <- predict(model.svm)
 ```
 
 ### Blinded to unfair covariates
@@ -82,171 +87,112 @@ output$predlm <- predict(model.lm)
 Outcomes are only slightly less biased.
 
 ``` r
-model.blind <- lm(hours ~ .-race-sex, data)
-output$predblind <- predict(model.blind)
+lm.blind <- fairpred_blind(data, res, prot, method = "lm")
+output$lmblind <- predict(lm.blind)
+
+svm.blind <- fairpred_blind(data, res, prot, method = "svm")
+output$svmblind <- predict(svm.blind)
 ```
 
 ### Two-stage procedure
 
-Is this weird?
+Greedily enforces fairness first, then builds predictions.
 
 ``` r
-model.s1 <- lm(hours ~ race + sex - 1, data)
-data$preds1 <- resid(model.s1)
-model.stage2 <- lm(preds1 ~ .-race-sex-hours, data)
-output$pred2s <- predict(model.stage2) + mean(data$hours)
+lm.lm <- fairpred_2s(data, res, prot, method1 = "lm", method2 = "lm")
+output$lm_lm <- predict(lm.lm)
+
+lm.svm <- fairpred_2s(data, res, prot, method1 = "lm", method2 = "svm")
+output$lm_svm <- predict(lm.svm)
+
+svm.svm <- fairpred_2s(data, res, prot, method1 = "svm", method2 = "svm")
+output$svm_svm <- predict(svm.svm)
+```
+
+### Penalizing unprotected coefficients
+
+``` r
+glmn <- fairpred_pen(data, res, prot)
+output$glmnet <- predict(glmn$model, newx=glmn$x, s = "lambda.1se")[,1]
 ```
 
 ### Comparing imbalance
 
+Subgroup means.
+
 ``` r
 output %>% group_by(sex) %>%
-  summarise(actual = mean(hours),
-            lm = mean(predlm),
-            blinded = mean(predblind),
-            twostage = mean(pred2s))
+  summarise_if(.predicate = function(v) is.numeric(v), .funs = funs("mean"))
 ```
 
-    ## # A tibble: 2 × 5
-    ##      sex   actual       lm  blinded twostage
-    ##   <fctr>    <dbl>    <dbl>    <dbl>    <dbl>
-    ## 1 Female 36.41036 36.41036 38.54483 39.38567
-    ## 2   Male 42.42809 42.42809 41.37300 40.95736
+    ## # A tibble: 2 × 10
+    ##      sex     hours        lm        svm    lmblind   svmblind     lm_lm
+    ##   <fctr>     <dbl>     <dbl>      <dbl>      <dbl>      <dbl>     <dbl>
+    ## 1 Female -4.027095 -4.027095 -2.4677566 -1.8926245 -1.3309116 -1.051789
+    ## 2   Male  1.990630  1.990630  0.8956853  0.9355419  0.3334879  0.519909
+    ##       lm_svm    svm_svm    glmnet
+    ##        <dbl>      <dbl>     <dbl>
+    ## 1 -0.6505907 -0.8938784 -4.026980
+    ## 2 -0.1176753  0.7332874  1.990574
 
 ``` r
 output %>% group_by(race) %>%
-  summarise(actual = mean(hours),
-            lm = mean(predlm),
-            blinded = mean(predblind),
-            twostage = mean(pred2s))
+  summarise_if(.predicate = function(v) is.numeric(v), .funs = funs("mean"))
 ```
 
-    ## # A tibble: 5 × 5
-    ##                 race   actual       lm  blinded twostage
-    ##               <fctr>    <dbl>    <dbl>    <dbl>    <dbl>
-    ## 1 Amer-Indian-Eskimo 40.04823 40.04823 39.71544 39.69122
-    ## 2 Asian-Pac-Islander 40.12705 40.12705 40.41519 40.57280
-    ## 3              Black 38.42286 38.42286 38.77550 39.20871
-    ## 4              Other 39.46863 39.46863 39.52478 39.70708
-    ## 5              White 40.68910 40.68910 40.64191 40.58586
+    ## # A tibble: 5 × 10
+    ##                 race      hours         lm        svm     lmblind
+    ##               <fctr>      <dbl>      <dbl>      <dbl>       <dbl>
+    ## 1 Amer-Indian-Eskimo -0.3892243 -0.3892243 -0.7839648 -0.72201882
+    ## 2 Asian-Pac-Islander -0.3104106 -0.3104106 -0.4641845 -0.02226774
+    ## 3              Black -2.0146005 -2.0146005 -1.4239083 -1.66195280
+    ## 4              Other -0.9688212 -0.9688212 -1.0280113 -0.91267360
+    ## 5              White  0.2516439  0.2516439 -0.0578891  0.20444921
+    ##     svmblind      lm_lm     lm_svm    svm_svm     glmnet
+    ##        <dbl>      <dbl>      <dbl>      <dbl>      <dbl>
+    ## 1 -0.5915895 -0.7462379 -0.7713912 -0.1803027 -0.4188067
+    ## 2 -0.1473600  0.1353432 -0.1970486  0.2762852 -0.3084972
+    ## 3 -0.9815879 -1.2287411 -0.8127852 -0.5535697 -2.0122413
+    ## 4 -1.0182687 -0.7303799 -1.1332688 -0.6016333 -0.9662739
+    ## 5 -0.1218372  0.1484030 -0.2257968  0.2880276  0.2516134
 
-### Comparing prediction error
-
-``` r
-output %>%
-  summarise(average = mean((hours-mean(hours))^2),
-            lm = mean((hours-predlm)^2),
-            blinded = mean((hours-predblind)^2),
-            twostage = mean((hours-pred2s)^2))
-```
-
-    ##    average       lm  blinded twostage
-    ## 1 152.4543 129.6325 132.4799 134.1809
-
-Distribution plots by sex.
+Distribution plots.
 
 ``` r
-pd <- melt(output[,c("sex", "race", "hours", "predlm", "predblind", "pred2s")])
+pd <- melt(output)
 ```
 
     ## Using sex, race as id variables
 
 ``` r
 ggplot(pd, aes(value, fill = sex)) + geom_density(alpha = .3) +
-  facet_wrap(~variable) + xlim(25, 55) + theme_bw()
+  facet_wrap(~variable) + xlim(-15, 15) + theme_bw()
 ```
 
-    ## Warning: Removed 6036 rows containing non-finite values (stat_density).
+    ## Warning: Removed 6939 rows containing non-finite values (stat_density).
 
 ![](adult_files/figure-markdown_github/unnamed-chunk-9-1.png)
 
-Distribution plots by race.
-
 ``` r
 ggplot(pd, aes(value, fill = race)) + geom_density(alpha = .3) +
-  facet_wrap(~variable) + xlim(25, 55) + theme_bw()
+  facet_wrap(~variable) + xlim(-15, 15) + theme_bw()
 ```
 
-    ## Warning: Removed 6036 rows containing non-finite values (stat_density).
+    ## Warning: Removed 6939 rows containing non-finite values (stat_density).
 
-![](adult_files/figure-markdown_github/unnamed-chunk-10-1.png)
+![](adult_files/figure-markdown_github/unnamed-chunk-9-2.png)
+
+### Comparing (in-sample) mean-squared prediction error
 
 ``` r
-library(e1071)
-model.svm <- svm(preds1 ~ .-race-sex-hours, data)
-predicted_res <- predict(model.svm, data)
-output$pred_svm<-predicted_res+ mean(data$hours)
+outputMSE <- data.frame((output$hours - output[,4:ncol(output)])^2)
+outputMSE$const <- output$hours^2
+outputMSE %>% summarise_all("mean")
 ```
 
-Visualise svm vs. other results
-
-``` r
-pd <- melt(output[,c("sex", "race", "hours", "pred2s", "predblind", "pred_svm")])
-```
-
-    ## Using sex, race as id variables
-
-``` r
-ggplot(pd, aes(value, fill = sex)) + geom_density(alpha = .3) +
-  facet_wrap(~variable) + xlim(25, 55) + theme_bw()
-```
-
-    ## Warning: Removed 6080 rows containing non-finite values (stat_density).
-
-![](adult_files/figure-markdown_github/unnamed-chunk-12-1.png)
-
-``` r
-ggplot(pd, aes(value, fill = race)) + geom_density(alpha = .3) +
-  facet_wrap(~variable) + xlim(25, 55) + theme_bw()
-```
-
-    ## Warning: Removed 6080 rows containing non-finite values (stat_density).
-
-![](adult_files/figure-markdown_github/unnamed-chunk-12-2.png)
-
-``` r
-output %>%
-  summarise(average = mean((hours-mean(hours))^2),
-            lm = mean((hours-predlm)^2),
-            blinded = mean((hours-predblind)^2),
-            twostage = mean((hours-pred2s)^2),
-            twostage_svm= mean((hours-pred_svm)^2))
-```
-
-    ##    average       lm  blinded twostage twostage_svm
-    ## 1 152.4543 129.6325 132.4799 134.1809      127.735
-
-``` r
-output %>% group_by(sex) %>%
-  summarise(actual = mean(hours),
-            lm = mean(predlm),
-            blinded = mean(predblind),
-            twostage = mean(pred2s),
-            twostage_svm= mean((pred_svm)))
-```
-
-    ## # A tibble: 2 × 6
-    ##      sex   actual       lm  blinded twostage twostage_svm
-    ##   <fctr>    <dbl>    <dbl>    <dbl>    <dbl>        <dbl>
-    ## 1 Female 36.41036 36.41036 38.54483 39.38567     39.80094
-    ## 2   Male 42.42809 42.42809 41.37300 40.95736     40.30702
-
-``` r
-output %>% group_by(race) %>%
-  summarise(actual = mean(hours),
-            lm = mean(predlm),
-            blinded = mean(predblind),
-            twostage = mean(pred2s),
-            twostage_svm= mean((pred_svm)))
-```
-
-    ## # A tibble: 5 × 6
-    ##                 race   actual       lm  blinded twostage twostage_svm
-    ##               <fctr>    <dbl>    <dbl>    <dbl>    <dbl>        <dbl>
-    ## 1 Amer-Indian-Eskimo 40.04823 40.04823 39.71544 39.69122     39.66589
-    ## 2 Asian-Pac-Islander 40.12705 40.12705 40.41519 40.57280     40.26540
-    ## 3              Black 38.42286 38.42286 38.77550 39.20871     39.60916
-    ## 4              Other 39.46863 39.46863 39.52478 39.70708     39.29336
-    ## 5              White 40.68910 40.68910 40.64191 40.58586     40.20803
+    ##         lm      svm  lmblind svmblind    lm_lm   lm_svm  svm_svm   glmnet
+    ## 1 129.6325 121.8658 132.4799  124.644 134.1809 127.4479 124.7834 131.7256
+    ##      const
+    ## 1 152.4543
 
 Lichman, M. 2013. “UCI Machine Learning Repository.” University of California, Irvine, School of Information; Computer Sciences. <http://archive.ics.uci.edu/ml>.
