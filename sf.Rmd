@@ -1,0 +1,56 @@
+---
+title: "Fairness/causation: Stop and Frisk dataset"
+output: github_document
+bibliography: bibliography.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(ggplot2)
+library(reshape2)
+```
+
+## Data
+
+From the [UCI databases](https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.names) @Lichman:2013. 
+
+```{r, cache=TRUE}
+data <- read.csv("2014_stop_and_frisk.csv", strip.white = TRUE, header = TRUE)
+output <- data
+t(head(data))[,1:3]
+```
+
+## Imbalances in the data
+
+Average outcomes by race.
+
+```{r}
+data %>% group_by(race) %>% summarise(count = n(), arstmade = mean(arstmade))
+#data %>% group_by(race) %>% summarise(count = n(), arstmade = mean(arstmade))
+```
+
+Race variables:
+1 - black
+2 - black Hispanic
+3 - white Hispanic
+4 - white
+5 - Asian/Pacific Islander
+6 - Am. Indian/Native
+
+
+Distribution plot.
+
+```{r}
+ggplot(data, aes(arstmade, linetype = factor(race))) + geom_density() + theme_bw()
+```
+Race 
+
+### Linear regression
+
+Predicted averages coincide with data averages.
+
+```{r, cache=TRUE}
+#model.lm <- lm(arstmade ~ ., data)
+#output$predlm <- predict(model.lm)
+```
