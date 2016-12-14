@@ -114,3 +114,42 @@ Distribution plots by race.
 ggplot(pd, aes(value, fill = race)) + geom_density(alpha = .3) +
   facet_wrap(~variable) + xlim(25, 55) + theme_bw()
 ```
+```{r}
+library(e1071)
+model.svm <- svm(preds1 ~ .-race-sex-hours, data)
+predicted_res <- predict(model.svm, data)
+output$pred_svm<-predicted_res+ mean(data$hours)
+```
+Visualise svm vs. other results 
+```{r}
+pd <- melt(output[,c("sex", "race", "hours", "pred2s", "predblind", "pred_svm")])
+ggplot(pd, aes(value, fill = sex)) + geom_density(alpha = .3) +
+  facet_wrap(~variable) + xlim(25, 55) + theme_bw()
+
+ggplot(pd, aes(value, fill = race)) + geom_density(alpha = .3) +
+  facet_wrap(~variable) + xlim(25, 55) + theme_bw()
+```
+```{r}
+output %>%
+  summarise(average = mean((hours-mean(hours))^2),
+            lm = mean((hours-predlm)^2),
+            blinded = mean((hours-predblind)^2),
+            twostage = mean((hours-pred2s)^2),
+            twostage_svm= mean((hours-pred_svm)^2))
+```
+
+```{r}
+output %>% group_by(sex) %>%
+  summarise(actual = mean(hours),
+            lm = mean(predlm),
+            blinded = mean(predblind),
+            twostage = mean(pred2s),
+            twostage_svm= mean((pred_svm)))
+
+output %>% group_by(race) %>%
+  summarise(actual = mean(hours),
+            lm = mean(predlm),
+            blinded = mean(predblind),
+            twostage = mean(pred2s),
+            twostage_svm= mean((pred_svm)))
+```

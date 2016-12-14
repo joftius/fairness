@@ -171,4 +171,82 @@ ggplot(pd, aes(value, fill = race)) + geom_density(alpha = .3) +
 
 ![](adult_files/figure-markdown_github/unnamed-chunk-10-1.png)
 
+``` r
+library(e1071)
+model.svm <- svm(preds1 ~ .-race-sex-hours, data)
+predicted_res <- predict(model.svm, data)
+output$pred_svm<-predicted_res+ mean(data$hours)
+```
+
+Visualise svm vs. other results
+
+``` r
+pd <- melt(output[,c("sex", "race", "hours", "pred2s", "predblind", "pred_svm")])
+```
+
+    ## Using sex, race as id variables
+
+``` r
+ggplot(pd, aes(value, fill = sex)) + geom_density(alpha = .3) +
+  facet_wrap(~variable) + xlim(25, 55) + theme_bw()
+```
+
+    ## Warning: Removed 6080 rows containing non-finite values (stat_density).
+
+![](adult_files/figure-markdown_github/unnamed-chunk-12-1.png)
+
+``` r
+ggplot(pd, aes(value, fill = race)) + geom_density(alpha = .3) +
+  facet_wrap(~variable) + xlim(25, 55) + theme_bw()
+```
+
+    ## Warning: Removed 6080 rows containing non-finite values (stat_density).
+
+![](adult_files/figure-markdown_github/unnamed-chunk-12-2.png)
+
+``` r
+output %>%
+  summarise(average = mean((hours-mean(hours))^2),
+            lm = mean((hours-predlm)^2),
+            blinded = mean((hours-predblind)^2),
+            twostage = mean((hours-pred2s)^2),
+            twostage_svm= mean((hours-pred_svm)^2))
+```
+
+    ##    average       lm  blinded twostage twostage_svm
+    ## 1 152.4543 129.6325 132.4799 134.1809      127.735
+
+``` r
+output %>% group_by(sex) %>%
+  summarise(actual = mean(hours),
+            lm = mean(predlm),
+            blinded = mean(predblind),
+            twostage = mean(pred2s),
+            twostage_svm= mean((pred_svm)))
+```
+
+    ## # A tibble: 2 × 6
+    ##      sex   actual       lm  blinded twostage twostage_svm
+    ##   <fctr>    <dbl>    <dbl>    <dbl>    <dbl>        <dbl>
+    ## 1 Female 36.41036 36.41036 38.54483 39.38567     39.80094
+    ## 2   Male 42.42809 42.42809 41.37300 40.95736     40.30702
+
+``` r
+output %>% group_by(race) %>%
+  summarise(actual = mean(hours),
+            lm = mean(predlm),
+            blinded = mean(predblind),
+            twostage = mean(pred2s),
+            twostage_svm= mean((pred_svm)))
+```
+
+    ## # A tibble: 5 × 6
+    ##                 race   actual       lm  blinded twostage twostage_svm
+    ##               <fctr>    <dbl>    <dbl>    <dbl>    <dbl>        <dbl>
+    ## 1 Amer-Indian-Eskimo 40.04823 40.04823 39.71544 39.69122     39.66589
+    ## 2 Asian-Pac-Islander 40.12705 40.12705 40.41519 40.57280     40.26540
+    ## 3              Black 38.42286 38.42286 38.77550 39.20871     39.60916
+    ## 4              Other 39.46863 39.46863 39.52478 39.70708     39.29336
+    ## 5              White 40.68910 40.68910 40.64191 40.58586     40.20803
+
 Lichman, M. 2013. “UCI Machine Learning Repository.” University of California, Irvine, School of Information; Computer Sciences. <http://archive.ics.uci.edu/ml>.
