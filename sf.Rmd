@@ -13,6 +13,7 @@ library(reshape2)
 library(e1071)
 library(glmnet)
 source("functions.R")
+options(dplyr.width = Inf)
 ```
 
 ## Data
@@ -20,28 +21,14 @@ source("functions.R")
 From the [NYC Stop and Frisk dataset](http://www.nyclu.org/content/stop-and-frisk-data) @stop:2014. 
 
 ```{r}
-data <- read.csv("2014_stop_and_frisk.csv", strip.white = TRUE, header = TRUE)
-# only use part of the data because of NAs, then remove NAs
-data <- data[,which(apply(data, 2, function(col) mean(is.na(col))) < .1)]
-data$year <- NULL
-data$linecm <- NULL
-data$dob <- NULL
-data$datestop <- NULL
-data$repcmd <- NULL
-data$revcmd <- NULL
-faccols <- which(apply(data, 2, function(col) length(unique(col))) < 10)
-for (col in faccols) data[,col] <- factor(data[,col])
-stringcols <- which(sapply(data[1,], function(v) is.factor(v) & nlevels(v) > 10))
-data <- data[,-stringcols]
-data <- data[complete.cases(data),]
-data$pct <- factor(data$pct)
-data$race <- fct_recode(factor(data$race),
-                        Black = "1", BlaskHisp = "2", Hispanic = "3",
-                        White = "4", AsianPacI = "5", NativeAm = "6")
-data$arstmade <- as.numeric(data$arstmade)
+source("load_stopandfrisk.R")
+data <- stopandfrisk
+data$arstmade <- as.numeric(data$arstmade) -1
 meanarst <- mean(data$arstmade)
 data$arstmade <- data$arstmade - meanarst
 output <- data[,c("race", "sex", "arstmade")]
+res <- "arstmade"
+prot <- c("race", "sex")
 t(head(data))[,1:3]
 ```
 
@@ -50,7 +37,7 @@ t(head(data))[,1:3]
 Average outcomes by race.
 
 ```{r}
-data %>% group_by(race) %>% summarise(count = n(), arstmade = mean(arstmade))
+data %>% group_by(race) %>% summarise(count = n(), arstmade = meanarst + mean(arstmade))
 ```
 
 ### Linear regression
@@ -67,7 +54,7 @@ output$predlm <- predict(model.lm)
 Outcomes are only slightly less biased.
 
 ```{r}
-lm.blind <- fairpred_blind(data, "arstmade", "race", method = "lm")
+lm.blind <- fairpred_blind(data, res, prot, method = "lm")
 output$lmblind <- predict(lm.blind)
 ```
 
@@ -76,8 +63,18 @@ output$lmblind <- predict(lm.blind)
 Greedily enforces fairness first, then builds predictions.
 
 ```{r}
-lm.lm <- fairpred_2s(data, "arstmade", "race", method1 = "lm", method2 = "lm")
+lm.lm <- fairpred_2s(data, res, prot, method1 = "lm", method2 = "lm")
 output$lm_lm <- predict(lm.lm)
+```
+
+### Penalizing unprotected coefficients
+
+```{r}
+ridge <- fairpred_pen(data, res, prot, alpha = 0)
+output$ridge <- ridge$predictions
+
+enet <- fairpred_pen(data, res, prot, alpha = .5)
+output$enet <- enet$predictions
 ```
 
 ### Comparing imbalance
@@ -85,8 +82,8 @@ output$lm_lm <- predict(lm.lm)
 Subgroup means.
 
 ```{r}
-output[,c("race","predlm","lmblind","lm_lm")] %>% group_by(race) %>%
-  summarise_if(.predicate = function(v) is.numeric(v), .funs = funs("mean"))
+output <- output %>% mutate_if(is.numeric, funs(. + meanarst))
+output %>% group_by(race) %>% summarise_if(is.numeric, .funs = funs("mean"))
 ```
 
 Distribution plots.

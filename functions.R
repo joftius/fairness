@@ -64,5 +64,5 @@ fairpred_pen <- function(data, res, prot, alpha = 0) {
                                        rep(1, ncol(unprotx))))
   coefs <- coef(model, newx=x, s = "lambda.min")[-1,1]
   predictions <- unprotx %*% coefs[-(1:ncol(protx))] + sum(colMeans(protx) * coefs[1:ncol(protx)])
-  return(list(model = model, predictions = predictions, coefs = coefs, x=x))
+  return(list(model = model, predictions = predictions[,1], coefs = coefs, x=x))
 }

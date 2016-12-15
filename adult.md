@@ -16,7 +16,8 @@ names(adult) <- c("age", "workclass", "fnlwgt", "education", "educationnum",
 adult$fnlwght <- NULL # Survey weights -- for generalization
 data <- adult[,c("workclass", "occupation", "education", "educationnum",
                  "nativecountry", "race", "sex", "age")]
-data$hours <- adult$hoursperweek - mean(adult$hoursperweek)
+meanhours <- mean(adult$hoursperweek)
+data$hours <- adult$hoursperweek
 res <- "hours"
 prot <- c("sex", "race")
 output <- data[,c(prot, res)]
@@ -32,7 +33,7 @@ t(head(data))[,1:3]
     ## race          "White"         "White"            "White"            
     ## sex           "Male"          "Male"             "Male"             
     ## age           "39"            "50"               "38"               
-    ## hours         " -0.4374559"   "-27.4374559"      " -0.4374559"
+    ## hours         "40"            "13"               "40"
 
 Imbalances in the data
 ----------------------
@@ -44,23 +45,23 @@ data %>% group_by(sex) %>% summarise(count = n(), hours = mean(hours))
 ```
 
     ## # A tibble: 2 × 3
-    ##      sex count     hours
-    ##   <fctr> <int>     <dbl>
-    ## 1 Female 10771 -4.027095
-    ## 2   Male 21790  1.990630
+    ##      sex count    hours
+    ##   <fctr> <int>    <dbl>
+    ## 1 Female 10771 36.41036
+    ## 2   Male 21790 42.42809
 
 ``` r
 data %>% group_by(race) %>% summarise(count = n(), hours = mean(hours))
 ```
 
     ## # A tibble: 5 × 3
-    ##                 race count      hours
-    ##               <fctr> <int>      <dbl>
-    ## 1 Amer-Indian-Eskimo   311 -0.3892243
-    ## 2 Asian-Pac-Islander  1039 -0.3104106
-    ## 3              Black  3124 -2.0146005
-    ## 4              Other   271 -0.9688212
-    ## 5              White 27816  0.2516439
+    ##                 race count    hours
+    ##               <fctr> <int>    <dbl>
+    ## 1 Amer-Indian-Eskimo   311 40.04823
+    ## 2 Asian-Pac-Islander  1039 40.12705
+    ## 3              Black  3124 38.42286
+    ## 4              Other   271 39.46863
+    ## 5              White 27816 40.68910
 
 Distribution plot.
 
@@ -69,6 +70,10 @@ ggplot(data, aes(hours, linetype = sex)) + geom_density() + theme_bw()
 ```
 
 ![](adult_files/figure-markdown_github/unnamed-chunk-3-1.png)
+
+``` r
+data$hours <- adult$hoursperweek - meanhours
+```
 
 ### Linear regression
 
@@ -105,6 +110,9 @@ output$lm_lm <- predict(lm.lm)
 lm.svm <- fairpred_2s(data, res, prot, method1 = "lm", method2 = "svm")
 output$lm_svm <- predict(lm.svm)
 
+svm.lm <- fairpred_2s(data, res, prot, method1 = "svm", method2 = "lm")
+output$svm_lm <- predict(svm.lm)
+
 svm.svm <- fairpred_2s(data, res, prot, method1 = "svm", method2 = "svm")
 output$svm_svm <- predict(svm.svm)
 ```
@@ -124,40 +132,42 @@ output$enet <- enet$predictions
 Subgroup means.
 
 ``` r
+output <- output %>% mutate_if(is.numeric, funs(. + meanhours))
+
 output %>% group_by(sex) %>%
   summarise_if(.predicate = function(v) is.numeric(v), .funs = funs("mean"))
 ```
 
-    ## # A tibble: 2 × 11
-    ##      sex     hours        lm        svm    lmblind   svmblind     lm_lm
-    ##   <fctr>     <dbl>     <dbl>      <dbl>      <dbl>      <dbl>     <dbl>
-    ## 1 Female -4.027095 -4.027095 -2.4677566 -1.8926245 -1.3309116 -1.051789
-    ## 2   Male  1.990630  1.990630  0.8956853  0.9355419  0.3334879  0.519909
-    ##       lm_svm    svm_svm      ridge       enet
-    ##        <dbl>      <dbl>      <dbl>      <dbl>
-    ## 1 -0.6505907 -0.8938784 -1.3009829 -1.2661855
-    ## 2 -0.1176753  0.7332874  0.6493479  0.6309354
+    ## # A tibble: 2 × 12
+    ##      sex    hours       lm      svm  lmblind svmblind    lm_lm   lm_svm
+    ##   <fctr>    <dbl>    <dbl>    <dbl>    <dbl>    <dbl>    <dbl>    <dbl>
+    ## 1 Female 36.41036 36.41036 37.96970 38.54483 39.10654 39.38567 39.78687
+    ## 2   Male 42.42809 42.42809 41.33314 41.37300 40.77094 40.95736 40.31978
+    ##     svm_lm  svm_svm    ridge     enet
+    ##      <dbl>    <dbl>    <dbl>    <dbl>
+    ## 1 38.98489 39.54358 39.15736 39.17757
+    ## 2 41.77291 41.17074 41.07569 41.06574
 
 ``` r
 output %>% group_by(race) %>%
   summarise_if(.predicate = function(v) is.numeric(v), .funs = funs("mean"))
 ```
 
-    ## # A tibble: 5 × 11
-    ##                 race      hours         lm        svm     lmblind
-    ##               <fctr>      <dbl>      <dbl>      <dbl>       <dbl>
-    ## 1 Amer-Indian-Eskimo -0.3892243 -0.3892243 -0.7839648 -0.72201882
-    ## 2 Asian-Pac-Islander -0.3104106 -0.3104106 -0.4641845 -0.02226774
-    ## 3              Black -2.0146005 -2.0146005 -1.4239083 -1.66195280
-    ## 4              Other -0.9688212 -0.9688212 -1.0280113 -0.91267360
-    ## 5              White  0.2516439  0.2516439 -0.0578891  0.20444921
-    ##     svmblind      lm_lm     lm_svm    svm_svm      ridge       enet
-    ##        <dbl>      <dbl>      <dbl>      <dbl>      <dbl>      <dbl>
-    ## 1 -0.5915895 -0.7462379 -0.7713912 -0.1803027 -0.7315935 -0.7261415
-    ## 2 -0.1473600  0.1353432 -0.1970486  0.2762852  0.3391198  0.2872531
-    ## 3 -0.9815879 -1.2287411 -0.8127852 -0.5535697 -1.3936080 -1.3706516
-    ## 4 -1.0182687 -0.7303799 -1.1332688 -0.6016333 -0.7959558 -0.7857669
-    ## 5 -0.1218372  0.1484030 -0.2257968  0.2880276  0.1646865  0.1629361
+    ## # A tibble: 5 × 12
+    ##                 race    hours       lm      svm  lmblind svmblind    lm_lm
+    ##               <fctr>    <dbl>    <dbl>    <dbl>    <dbl>    <dbl>    <dbl>
+    ## 1 Amer-Indian-Eskimo 40.04823 40.04823 39.65349 39.71544 39.84587 39.69122
+    ## 2 Asian-Pac-Islander 40.12705 40.12705 39.97327 40.41519 40.29010 40.57280
+    ## 3              Black 38.42286 38.42286 39.01355 38.77550 39.45587 39.20871
+    ## 4              Other 39.46863 39.46863 39.40944 39.52478 39.41919 39.70708
+    ## 5              White 40.68910 40.68910 40.37957 40.64191 40.31562 40.58586
+    ##     lm_svm   svm_lm  svm_svm    ridge     enet
+    ##      <dbl>    <dbl>    <dbl>    <dbl>    <dbl>
+    ## 1 39.66606 40.12912 40.25715 39.71402 39.71136
+    ## 2 40.24041 40.82300 40.71374 40.77430 40.72481
+    ## 3 39.62467 39.20687 39.88389 39.06084 39.07105
+    ## 4 39.30419 39.94273 39.83582 39.63989 39.65129
+    ## 5 40.21166 41.05321 40.72548 40.59963 40.60028
 
 Distribution plots.
 
@@ -167,24 +177,21 @@ pd <- melt(output)
 
     ## Using sex, race as id variables
 
-    ## Warning: attributes are not identical across measure variables; they will
-    ## be dropped
-
 ``` r
 ggplot(pd, aes(value, fill = sex)) + geom_density(alpha = .3) +
-  facet_wrap(~variable) + xlim(-15, 15) + theme_bw()
+  facet_wrap(~variable) + xlim(25, 55) + theme_bw()
 ```
 
-    ## Warning: Removed 6944 rows containing non-finite values (stat_density).
+    ## Warning: Removed 6204 rows containing non-finite values (stat_density).
 
 ![](adult_files/figure-markdown_github/unnamed-chunk-9-1.png)
 
 ``` r
 ggplot(pd, aes(value, fill = race)) + geom_density(alpha = .3) +
-  facet_wrap(~variable) + xlim(-15, 15) + theme_bw()
+  facet_wrap(~variable) + xlim(25, 55) + theme_bw()
 ```
 
-    ## Warning: Removed 6944 rows containing non-finite values (stat_density).
+    ## Warning: Removed 6204 rows containing non-finite values (stat_density).
 
 ![](adult_files/figure-markdown_github/unnamed-chunk-9-2.png)
 
@@ -192,13 +199,13 @@ ggplot(pd, aes(value, fill = race)) + geom_density(alpha = .3) +
 
 ``` r
 outputMSE <- data.frame((output$hours - output[,4:ncol(output)])^2)
-outputMSE$const <- output$hours^2
+outputMSE$const <- (output$hours-meanhours)^2
 outputMSE %>% summarise_all("mean")
 ```
 
-    ##         lm      svm  lmblind svmblind    lm_lm   lm_svm  svm_svm    ridge
-    ## 1 129.6325 121.8658 132.4799  124.644 134.1809 127.4479 124.7834 133.3288
-    ##       enet    const
-    ## 1 133.4789 152.4543
+    ##         lm      svm  lmblind svmblind    lm_lm   lm_svm   svm_lm  svm_svm
+    ## 1 129.6325 121.8658 132.4799  124.644 134.1809 127.4479 132.6524 124.7834
+    ##      ridge    enet    const
+    ## 1 133.4019 133.505 152.4543
 
 Lichman, M. 2013. “UCI Machine Learning Repository.” University of California, Irvine, School of Information; Computer Sciences. <http://archive.ics.uci.edu/ml>.

@@ -29,7 +29,8 @@ names(adult) <- c("age", "workclass", "fnlwgt", "education", "educationnum",
 adult$fnlwght <- NULL # Survey weights -- for generalization
 data <- adult[,c("workclass", "occupation", "education", "educationnum",
                  "nativecountry", "race", "sex", "age")]
-data$hours <- adult$hoursperweek - mean(adult$hoursperweek)
+meanhours <- mean(adult$hoursperweek)
+data$hours <- adult$hoursperweek
 res <- "hours"
 prot <- c("sex", "race")
 output <- data[,c(prot, res)]
@@ -49,6 +50,7 @@ Distribution plot.
 
 ```{r}
 ggplot(data, aes(hours, linetype = sex)) + geom_density() + theme_bw()
+data$hours <- adult$hoursperweek - meanhours
 ```
 
 ### Linear regression
@@ -86,6 +88,9 @@ output$lm_lm <- predict(lm.lm)
 lm.svm <- fairpred_2s(data, res, prot, method1 = "lm", method2 = "svm")
 output$lm_svm <- predict(lm.svm)
 
+svm.lm <- fairpred_2s(data, res, prot, method1 = "svm", method2 = "lm")
+output$svm_lm <- predict(svm.lm)
+
 svm.svm <- fairpred_2s(data, res, prot, method1 = "svm", method2 = "svm")
 output$svm_svm <- predict(svm.svm)
 ```
@@ -105,6 +110,8 @@ output$enet <- enet$predictions
 Subgroup means.
 
 ```{r}
+output <- output %>% mutate_if(is.numeric, funs(. + meanhours))
+
 output %>% group_by(sex) %>%
   summarise_if(.predicate = function(v) is.numeric(v), .funs = funs("mean"))
 
@@ -117,16 +124,16 @@ Distribution plots.
 ```{r}
 pd <- melt(output)
 ggplot(pd, aes(value, fill = sex)) + geom_density(alpha = .3) +
-  facet_wrap(~variable) + xlim(-15, 15) + theme_bw()
+  facet_wrap(~variable) + xlim(25, 55) + theme_bw()
 
 ggplot(pd, aes(value, fill = race)) + geom_density(alpha = .3) +
-  facet_wrap(~variable) + xlim(-15, 15) + theme_bw()
+  facet_wrap(~variable) + xlim(25, 55) + theme_bw()
 ```
 
 ### Comparing (in-sample) mean-squared prediction error
 
 ```{r}
 outputMSE <- data.frame((output$hours - output[,4:ncol(output)])^2)
-outputMSE$const <- output$hours^2
+outputMSE$const <- (output$hours-meanhours)^2
 outputMSE %>% summarise_all("mean")
 ```
