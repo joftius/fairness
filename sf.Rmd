@@ -6,7 +6,8 @@ bibliography: bibliography.bib
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library(dplyr)
+library(tidyverse)
+library(forcats)
 library(ggplot2)
 library(reshape2)
 library(e1071)
@@ -18,13 +19,29 @@ source("functions.R")
 
 From the [NYC Stop and Frisk dataset](http://www.nyclu.org/content/stop-and-frisk-data) @stop:2014. 
 
-```{r, cache=TRUE}
+```{r}
 data <- read.csv("2014_stop_and_frisk.csv", strip.white = TRUE, header = TRUE)
 # only use part of the data because of NAs, then remove NAs
-data = data[,c("year","frisked","age","race","timestop","build","eyecolor","haircolr","arstmade")]
-#data = data.frame(data$year,data$frisked,data$age,data$race,data$timestop,data$build,data$eyecolor,data$haircolr)
-data = data[complete.cases(data),]
-output <- data
+data <- data[,which(apply(data, 2, function(col) mean(is.na(col))) < .1)]
+data$year <- NULL
+data$linecm <- NULL
+data$dob <- NULL
+data$datestop <- NULL
+data$repcmd <- NULL
+data$revcmd <- NULL
+faccols <- which(apply(data, 2, function(col) length(unique(col))) < 10)
+for (col in faccols) data[,col] <- factor(data[,col])
+stringcols <- which(sapply(data[1,], function(v) is.factor(v) & nlevels(v) > 10))
+data <- data[,-stringcols]
+data <- data[complete.cases(data),]
+data$pct <- factor(data$pct)
+data$race <- fct_recode(factor(data$race),
+                        Black = "1", BlaskHisp = "2", Hispanic = "3",
+                        White = "4", AsianPacI = "5", NativeAm = "6")
+data$arstmade <- as.numeric(data$arstmade)
+meanarst <- mean(data$arstmade)
+data$arstmade <- data$arstmade - meanarst
+output <- data[,c("race", "sex", "arstmade")]
 t(head(data))[,1:3]
 ```
 
@@ -36,33 +53,12 @@ Average outcomes by race.
 data %>% group_by(race) %>% summarise(count = n(), arstmade = mean(arstmade))
 ```
 
-Race variables:
-
-1 - black
-
-2 - black Hispanic
-
-3 - white Hispanic
-
-4 - white
-
-5 - Asian/Pacific Islander
-
-6 - Am. Indian/Native
-
-
-Distribution plot.
-
-```{r}
-ggplot(data, aes(arstmade, linetype = factor(race))) + geom_density() + theme_bw()
-```
-
 ### Linear regression
 
 Predicted averages coincide with data averages.
 
-```{r, cache=TRUE}
-model.lm <- lm(arstmade ~ year+frisked+race+timestop+build+eyecolor+haircolr, data)
+```{r}
+model.lm <- lm(arstmade ~ .-1, data)
 output$predlm <- predict(model.lm)
 ```
 
@@ -70,7 +66,7 @@ output$predlm <- predict(model.lm)
 
 Outcomes are only slightly less biased.
 
-```{r, cache=TRUE}
+```{r}
 lm.blind <- fairpred_blind(data, "arstmade", "race", method = "lm")
 output$lmblind <- predict(lm.blind)
 ```
@@ -79,7 +75,7 @@ output$lmblind <- predict(lm.blind)
 
 Greedily enforces fairness first, then builds predictions.
 
-```{r, cache=TRUE}
+```{r}
 lm.lm <- fairpred_2s(data, "arstmade", "race", method1 = "lm", method2 = "lm")
 output$lm_lm <- predict(lm.lm)
 ```
@@ -94,7 +90,15 @@ output[,c("race","predlm","lmblind","lm_lm")] %>% group_by(race) %>%
 ```
 
 Distribution plots.
-# Error
+
+```{r}
+pd <- melt(output)
+ggplot(pd, aes(value, fill = sex)) + geom_density(alpha = .3) +
+  facet_wrap(~variable) + xlim(-.5, 1) + theme_bw()
+
+ggplot(pd, aes(value, fill = race)) + geom_density(alpha = .3) +
+  facet_wrap(~variable) + xlim(-.5, 1) + theme_bw()
+```
 
 ### Comparing (in-sample) mean-squared prediction error
 
