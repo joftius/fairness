@@ -100,21 +100,19 @@ output$lm_lm <- predict(lm.lm)
 Subgroup means.
 
 ``` r
-output %>% group_by(race) %>%
+output[,c("race","predlm","lmblind","lm_lm")] %>% group_by(race) %>%
   summarise_if(.predicate = function(v) is.numeric(v), .funs = funs("mean"))
 ```
 
-    ## # A tibble: 6 × 12
-    ##    race  year   frisked      age timestop    build eyecolor haircolr
-    ##   <int> <dbl>     <dbl>    <dbl>    <dbl>    <dbl>    <dbl>    <dbl>
-    ## 1     1  2014 0.7000127 27.70532 1420.882 3.182250 1.951700 1.306269
-    ## 2     2  2014 0.6861801 27.26084 1382.889 3.162282 1.953316 1.372360
-    ## 3     3  2014 0.6429787 28.44883 1359.254 3.154468 2.008085 1.539681
-    ## 4     4  2014 0.5628528 30.29959 1341.227 3.140384 2.316334 2.087317
-    ## 5     5  2014 0.5890715 26.88005 1348.677 3.256775 1.914705 1.319858
-    ## 6     6  2014 0.6304348 26.91848 1294.853 3.211957 1.961957 1.255435
-    ## # ... with 4 more variables: arstmade <dbl>, predlm <dbl>, lmblind <dbl>,
-    ## #   lm_lm <dbl>
+    ## # A tibble: 6 × 4
+    ##    race    predlm   lmblind      lm_lm
+    ##   <int>     <dbl>     <dbl>      <dbl>
+    ## 1     1 0.1524285 0.1498379 0.04582093
+    ## 2     2 0.1501435 0.1488467 0.04399466
+    ## 3     3 0.1490408 0.1514491 0.04378405
+    ## 4     4 0.1566882 0.1617486 0.04345829
+    ## 5     5 0.1359320 0.1418686 0.03667406
+    ## 6     6 0.1347187 0.1436578 0.03845366
 
 Distribution plots. \# Error
 

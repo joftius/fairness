@@ -89,7 +89,7 @@ output$lm_lm <- predict(lm.lm)
 Subgroup means.
 
 ```{r}
-output %>% group_by(race) %>%
+output[,c("race","predlm","lmblind","lm_lm")] %>% group_by(race) %>%
   summarise_if(.predicate = function(v) is.numeric(v), .funs = funs("mean"))
 ```
 
