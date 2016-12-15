@@ -4,7 +4,7 @@ Fairness/causation: Stop and Frisk dataset
 Data
 ----
 
-From the [UCI databases](https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.names) Lichman (2013).
+From the [NYC Stop and Frisk dataset](http://www.nyclu.org/content/stop-and-frisk-data) (“NYC Stop and Frisk Data” 2014).
 
 ``` r
 data <- read.csv("2014_stop_and_frisk.csv", strip.white = TRUE, header = TRUE)
@@ -46,11 +46,19 @@ data %>% group_by(race) %>% summarise(count = n(), arstmade = mean(arstmade))
     ## 5     5  2251 0.09862283
     ## 6     6   184 0.08695652
 
-``` r
-#data %>% group_by(race) %>% summarise(count = n(), arstmade = mean(arstmade))
-```
+Race variables:
 
-Race variables: 1 - black 2 - black Hispanic 3 - white Hispanic 4 - white 5 - Asian/Pacific Islander 6 - Am. Indian/Native
+1 - black
+
+2 - black Hispanic
+
+3 - white Hispanic
+
+4 - white
+
+5 - Asian/Pacific Islander
+
+6 - Am. Indian/Native
 
 Distribution plot.
 
@@ -58,7 +66,7 @@ Distribution plot.
 ggplot(data, aes(arstmade, linetype = factor(race))) + geom_density() + theme_bw()
 ```
 
-![](sf_files/figure-markdown_github/unnamed-chunk-3-1.png) Race
+![](sf_files/figure-markdown_github/unnamed-chunk-3-1.png)
 
 ### Linear regression
 
@@ -123,4 +131,4 @@ outputMSE %>% summarise_all("mean")
     ##     lmblind     lm_lm     const
     ## 1 0.1267243 0.1383199 0.1511438
 
-Lichman, M. 2013. “UCI Machine Learning Repository.” University of California, Irvine, School of Information; Computer Sciences. <http://archive.ics.uci.edu/ml>.
+“NYC Stop and Frisk Data.” 2014. NYCLU. <http://www.nyclu.org/content/stop-and-frisk-data>.

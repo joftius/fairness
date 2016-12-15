@@ -16,7 +16,7 @@ source("functions.R")
 
 ## Data
 
-From the [UCI databases](https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.names) @Lichman:2013. 
+From the [NYC Stop and Frisk dataset](http://www.nyclu.org/content/stop-and-frisk-data) @stop:2014. 
 
 ```{r, cache=TRUE}
 data <- read.csv("2014_stop_and_frisk.csv", strip.white = TRUE, header = TRUE)
@@ -34,15 +34,20 @@ Average outcomes by race.
 
 ```{r}
 data %>% group_by(race) %>% summarise(count = n(), arstmade = mean(arstmade))
-#data %>% group_by(race) %>% summarise(count = n(), arstmade = mean(arstmade))
 ```
 
 Race variables:
+
 1 - black
+
 2 - black Hispanic
+
 3 - white Hispanic
+
 4 - white
+
 5 - Asian/Pacific Islander
+
 6 - Am. Indian/Native
 
 
@@ -51,7 +56,6 @@ Distribution plot.
 ```{r}
 ggplot(data, aes(arstmade, linetype = factor(race))) + geom_density() + theme_bw()
 ```
-Race 
 
 ### Linear regression
 
