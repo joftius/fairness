@@ -154,7 +154,7 @@ ggplot(data, aes(arstmade, linetype = factor(race))) + geom_density() + theme_bw
 Predicted averages coincide with data averages.
 
 ``` r
-#model.lm <- lm(arstmade ~ ., data)
+model.lm <- lm(arstmade ~ ., data)
 #output$predlm <- predict(model.lm)
 ```
 

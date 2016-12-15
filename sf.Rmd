@@ -51,6 +51,6 @@ Race
 Predicted averages coincide with data averages.
 
 ```{r, cache=TRUE}
-#model.lm <- lm(arstmade ~ ., data)
+model.lm <- lm(arstmade ~ frisked+age+dob+race+timestop+build+eyecolor+haircolr, data)
 #output$predlm <- predict(model.lm)
 ```
