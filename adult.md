@@ -112,8 +112,11 @@ output$svm_svm <- predict(svm.svm)
 ### Penalizing unprotected coefficients
 
 ``` r
-glmn <- fairpred_pen(data, res, prot)
-output$glmnet <- predict(glmn$model, newx=glmn$x, s = "lambda.1se")[,1]
+ridge <- fairpred_pen(data, res, prot, alpha = 0)
+output$ridge <- ridge$predictions
+
+enet <- fairpred_pen(data, res, prot, alpha = .5)
+output$enet <- enet$predictions
 ```
 
 ### Comparing imbalance
@@ -125,22 +128,22 @@ output %>% group_by(sex) %>%
   summarise_if(.predicate = function(v) is.numeric(v), .funs = funs("mean"))
 ```
 
-    ## # A tibble: 2 × 10
+    ## # A tibble: 2 × 11
     ##      sex     hours        lm        svm    lmblind   svmblind     lm_lm
     ##   <fctr>     <dbl>     <dbl>      <dbl>      <dbl>      <dbl>     <dbl>
     ## 1 Female -4.027095 -4.027095 -2.4677566 -1.8926245 -1.3309116 -1.051789
     ## 2   Male  1.990630  1.990630  0.8956853  0.9355419  0.3334879  0.519909
-    ##       lm_svm    svm_svm    glmnet
-    ##        <dbl>      <dbl>     <dbl>
-    ## 1 -0.6505907 -0.8938784 -4.026980
-    ## 2 -0.1176753  0.7332874  1.990574
+    ##       lm_svm    svm_svm      ridge       enet
+    ##        <dbl>      <dbl>      <dbl>      <dbl>
+    ## 1 -0.6505907 -0.8938784 -1.3009829 -1.2661855
+    ## 2 -0.1176753  0.7332874  0.6493479  0.6309354
 
 ``` r
 output %>% group_by(race) %>%
   summarise_if(.predicate = function(v) is.numeric(v), .funs = funs("mean"))
 ```
 
-    ## # A tibble: 5 × 10
+    ## # A tibble: 5 × 11
     ##                 race      hours         lm        svm     lmblind
     ##               <fctr>      <dbl>      <dbl>      <dbl>       <dbl>
     ## 1 Amer-Indian-Eskimo -0.3892243 -0.3892243 -0.7839648 -0.72201882
@@ -148,13 +151,13 @@ output %>% group_by(race) %>%
     ## 3              Black -2.0146005 -2.0146005 -1.4239083 -1.66195280
     ## 4              Other -0.9688212 -0.9688212 -1.0280113 -0.91267360
     ## 5              White  0.2516439  0.2516439 -0.0578891  0.20444921
-    ##     svmblind      lm_lm     lm_svm    svm_svm     glmnet
-    ##        <dbl>      <dbl>      <dbl>      <dbl>      <dbl>
-    ## 1 -0.5915895 -0.7462379 -0.7713912 -0.1803027 -0.4188067
-    ## 2 -0.1473600  0.1353432 -0.1970486  0.2762852 -0.3084972
-    ## 3 -0.9815879 -1.2287411 -0.8127852 -0.5535697 -2.0122413
-    ## 4 -1.0182687 -0.7303799 -1.1332688 -0.6016333 -0.9662739
-    ## 5 -0.1218372  0.1484030 -0.2257968  0.2880276  0.2516134
+    ##     svmblind      lm_lm     lm_svm    svm_svm      ridge       enet
+    ##        <dbl>      <dbl>      <dbl>      <dbl>      <dbl>      <dbl>
+    ## 1 -0.5915895 -0.7462379 -0.7713912 -0.1803027 -0.7315935 -0.7261415
+    ## 2 -0.1473600  0.1353432 -0.1970486  0.2762852  0.3391198  0.2872531
+    ## 3 -0.9815879 -1.2287411 -0.8127852 -0.5535697 -1.3936080 -1.3706516
+    ## 4 -1.0182687 -0.7303799 -1.1332688 -0.6016333 -0.7959558 -0.7857669
+    ## 5 -0.1218372  0.1484030 -0.2257968  0.2880276  0.1646865  0.1629361
 
 Distribution plots.
 
@@ -164,12 +167,15 @@ pd <- melt(output)
 
     ## Using sex, race as id variables
 
+    ## Warning: attributes are not identical across measure variables; they will
+    ## be dropped
+
 ``` r
 ggplot(pd, aes(value, fill = sex)) + geom_density(alpha = .3) +
   facet_wrap(~variable) + xlim(-15, 15) + theme_bw()
 ```
 
-    ## Warning: Removed 6939 rows containing non-finite values (stat_density).
+    ## Warning: Removed 6944 rows containing non-finite values (stat_density).
 
 ![](adult_files/figure-markdown_github/unnamed-chunk-9-1.png)
 
@@ -178,7 +184,7 @@ ggplot(pd, aes(value, fill = race)) + geom_density(alpha = .3) +
   facet_wrap(~variable) + xlim(-15, 15) + theme_bw()
 ```
 
-    ## Warning: Removed 6939 rows containing non-finite values (stat_density).
+    ## Warning: Removed 6944 rows containing non-finite values (stat_density).
 
 ![](adult_files/figure-markdown_github/unnamed-chunk-9-2.png)
 
@@ -190,9 +196,9 @@ outputMSE$const <- output$hours^2
 outputMSE %>% summarise_all("mean")
 ```
 
-    ##         lm      svm  lmblind svmblind    lm_lm   lm_svm  svm_svm   glmnet
-    ## 1 129.6325 121.8658 132.4799  124.644 134.1809 127.4479 124.7834 131.7256
-    ##      const
-    ## 1 152.4543
+    ##         lm      svm  lmblind svmblind    lm_lm   lm_svm  svm_svm    ridge
+    ## 1 129.6325 121.8658 132.4799  124.644 134.1809 127.4479 124.7834 133.3288
+    ##       enet    const
+    ## 1 133.4789 152.4543
 
 Lichman, M. 2013. “UCI Machine Learning Repository.” University of California, Irvine, School of Information; Computer Sciences. <http://archive.ics.uci.edu/ml>.

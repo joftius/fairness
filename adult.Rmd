@@ -92,9 +92,12 @@ output$svm_svm <- predict(svm.svm)
 
 ### Penalizing unprotected coefficients
 
-```{r, cache=TRUE}
-glmn <- fairpred_pen(data, res, prot)
-output$glmnet <- predict(glmn$model, newx=glmn$x, s = "lambda.1se")[,1]
+```{r}
+ridge <- fairpred_pen(data, res, prot, alpha = 0)
+output$ridge <- ridge$predictions
+
+enet <- fairpred_pen(data, res, prot, alpha = .5)
+output$enet <- enet$predictions
 ```
 
 ### Comparing imbalance

@@ -34,9 +34,9 @@ fairpred_blind <- function(data, res, prot, method, ...) {
 #' @export
 fairpred_2s <- function(data, res, prot, method1, method2, ...) {
   form1 <- formula(paste(res, "~ -1 +", paste(prot, collapse = "+")))
-  lm1 <- eval(call(method1, form1, data = data))
+  m1 <- eval(call(method1, form1, data = data))
   data2 <- data
-  data2[,res] <- resid(lm1)
+  data2[,res] <- resid(m1)
   form2 <- formula(paste(res, "~ . -1 -", paste(prot, collapse = "-")))
   return(eval(call(method2, form2, data = data2)))
 }
@@ -54,13 +54,15 @@ fairpred_2s <- function(data, res, prot, method1, method2, ...) {
 #' @return List containing model object from cv.glmnet and design matrix.
 #'
 #' @export
-fairpred_pen <- function(data, res, prot) {
+fairpred_pen <- function(data, res, prot, alpha = 0) {
   protx <- model.matrix(formula(paste("~-1+", paste(prot, collapse = "+"))), data)
   unprotx <- model.matrix(formula(paste(res, "~ . -1 -", paste(prot, collapse = "-"))), data)
   x <- cbind(protx, unprotx)
   y <- data[,res]
-  return(list(model = cv.glmnet(x, y,
-                          penalty.factor = c(rep(0, ncol(protx)),
-                                             rep(1, ncol(unprotx)))),
-              x=x))
+  model <- cv.glmnet(x, y, alpha = alpha, intercept = FALSE,
+                    penalty.factor = c(rep(0, ncol(protx)),
+                                       rep(1, ncol(unprotx))))
+  coefs <- coef(model, newx=x, s = "lambda.min")[-1,1]
+  predictions <- unprotx %*% coefs[-(1:ncol(protx))] + sum(colMeans(protx) * coefs[1:ncol(protx)])
+  return(list(model = model, predictions = predictions, coefs = coefs, x=x))
 }
