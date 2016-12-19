@@ -30,6 +30,7 @@ output <- data[,c("race", "sex", "arstmade")]
 res <- "arstmade"
 prot <- c("race", "sex")
 t(head(data))[,1:3]
+print(reasoncols)
 ```
 
 ## Imbalances in the data
