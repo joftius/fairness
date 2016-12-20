@@ -1,17 +1,32 @@
 # Load and preproces the stop and frisk dataset
 
-stopandfrisk <- read.csv("2014_stop_and_frisk.csv", strip.white = TRUE, header = TRUE)
-stopandfrisk <- stopandfrisk[,which(apply(stopandfrisk, 2, function(col) mean(is.na(col))) < .4)]
+stopandfrisk <- read.csv("2014_stop_and_frisk.csv",
+                         strip.white = TRUE,
+                         header = TRUE,
+                         stringsAsFactors = FALSE)
+
+#keepcols <- which(apply(stopandfrisk, 2, function(col) mean(is.na(col))) < .4)
+nacols <- c("forceuse", "beat", "post")
+stopandfrisk[,nacols] <- NULL
+
+# many NAs but don't want to be excluded, so set to 0
 cols <- which(apply(stopandfrisk, 2, function(col) mean(is.na(col))) > .05)
 stopandfrisk[,cols][is.na(stopandfrisk[,cols])] <- 0
-stopandfrisk[,c("year", "linecm", "dob"," datestop", "repcmd", "revcmd", "ser_num",
-                "addrpct", "typeofid", "explnstop", "offverb", "officrid", "offshld",
+
+stopandfrisk[,c("year", "linecm", "dob", "datestop", "revcmd", "ser_num",
+                "addrpct", "typeofid", "explnstp", "offverb", "officrid", "offshld",
                 "recstat")] <- NULL
+
 faccols <- which(apply(stopandfrisk, 2, function(col) length(unique(col))) < 10)
 for (col in faccols) stopandfrisk[,col] <- factor(stopandfrisk[,col])
-stringcols <- which(sapply(stopandfrisk[1,], function(v) is.factor(v) & nlevels(v) > 10))
+
+stringcols <- which(sapply(stopandfrisk[1,], function(v) is.character(v)))
 stopandfrisk <- stopandfrisk[,-stringcols]
+
+# Remove all cases with any remaining NAs, about 10%
 stopandfrisk <- stopandfrisk[complete.cases(stopandfrisk),]
+
+# More factor wrangling
 stopandfrisk$pct <- factor(stopandfrisk$pct)
 stopandfrisk$sector <- factor(stopandfrisk$sector)
 stopandfrisk$race <- fct_recode(factor(stopandfrisk$race),
@@ -29,10 +44,10 @@ stopandfrisk$haircolr <- fct_recode(factor(stopandfrisk$haircolr), black = "1", 
 
 # Collapse some categories
 othrweapons <- c("riflshot", "asltweap", "machgun", "othrweap")
-stopandfrisk$othrweapon <- apply(stopandfrisk[,othrweapons], 1, function(x) (any(x == "1")))
+stopandfrisk$othrweapon <- apply(stopandfrisk[,othrweapons], 1, function(x) (any(x == 1)))
 stopandfrisk[,othrweapons] <- NULL
 othrforce <- c("pf_baton", "pf_pepsp", "pf_other")
-stopandfrisk$pf_othr <- apply(stopandfrisk[,othrforce], 1, function(x) (any(x == "1")))
+stopandfrisk$pf_othr <- apply(stopandfrisk[,othrforce], 1, function(x) (any(x == 1)))
 stopandfrisk[,othrforce] <- NULL
 
 pf_cols <- grep("pf_", names(stopandfrisk), fixed = TRUE, value = TRUE)

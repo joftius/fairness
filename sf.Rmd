@@ -10,8 +10,6 @@ library(tidyverse)
 library(forcats)
 library(ggplot2)
 library(reshape2)
-library(e1071)
-library(glmnet)
 source("functions.R")
 options(dplyr.width = Inf)
 ```
@@ -23,14 +21,17 @@ From the [NYC Stop and Frisk dataset](http://www.nyclu.org/content/stop-and-fris
 ```{r}
 source("load_stopandfrisk.R")
 data <- stopandfrisk
-data$arstmade <- as.numeric(data$arstmade) -1
-meanarst <- mean(data$arstmade)
-data$arstmade <- data$arstmade - meanarst
-output <- data[,c("race", "sex", "arstmade")]
-res <- "arstmade"
+data$found <- apply(data[,c("pistol", "knifcuti", "contrabn", "othrweapon")], 1, function(x) any(x == 1))
+data$charged <- apply(data[,c("arstmade", "sumissue")], 1, function(x) any(x == 1))
+data$force <- apply(data[,pf_cols], 1, function(x) any(x == 1))
+
+meancharged <- mean(data$charged)
+data$charged <- data$charged - meancharged
+output <- data[,c("race", "sex", "charged")]
+res <- "charged"
 prot <- c("race", "sex")
 t(head(data))[,1:3]
-print(reasoncols)
+#print(reasoncols)
 ```
 
 ## Imbalances in the data
@@ -38,7 +39,7 @@ print(reasoncols)
 Average outcomes by race.
 
 ```{r}
-data %>% group_by(race) %>% summarise(count = n(), arstmade = meanarst + mean(arstmade))
+data %>% filter(charged == 1) %>% group_by(race) %>% summarise(count = n(), force = mean(force))
 ```
 
 ### Linear regression

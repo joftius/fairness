@@ -1,3 +1,7 @@
+library(e1071)
+library(glmnet)
+library(randomForest)
+
 #' Predictive model ``blinded'' from protected covariates.
 #'
 #' Calls \code{\link{lm}} or \code{\link{e1071::svm}},
