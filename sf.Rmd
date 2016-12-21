@@ -7,7 +7,6 @@ bibliography: bibliography.bib
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
-library(forcats)
 library(ggplot2)
 library(reshape2)
 source("functions.R")
@@ -20,16 +19,19 @@ From the [NYC Stop and Frisk dataset](http://www.nyclu.org/content/stop-and-fris
 
 ```{r}
 source("load_stopandfrisk.R")
-data <- stopandfrisk
-data$found <- apply(data[,c("pistol", "knifcuti", "contrabn", "othrweapon")], 1, function(x) any(x == 1))
-data$charged <- apply(data[,c("arstmade", "sumissue")], 1, function(x) any(x == 1))
-data$force <- apply(data[,pf_cols], 1, function(x) any(x == 1))
+stopandfrisk$found <- apply(stopandfrisk[,c("pistol", "knifcuti", "contrabn", "othrweapon")], 1, function(x) any(x == 1))
+stopandfrisk$charged <- apply(stopandfrisk[,c("arstmade", "sumissue")], 1, function(x) any(x == 1))
+stopandfrisk$force <- apply(stopandfrisk[,pf_cols], 1, function(x) any(x == 1))
+data <- subset(stopandfrisk, charged == 0)
+data[,pf_cols] <- NULL
+data[,c("charged", "arstmade", "sumissue", "xcoord", "ycoord")] <- NULL
 
-meancharged <- mean(data$charged)
-data$charged <- data$charged - meancharged
-output <- data[,c("race", "sex", "charged")]
-res <- "charged"
-prot <- c("race", "sex")
+meanforce <- mean(data$force)
+data$force <- data$force - meanforce
+
+output <- data[,c("race", "force")]
+res <- "force"
+prot <- "race"
 t(head(data))[,1:3]
 #print(reasoncols)
 ```
@@ -39,7 +41,7 @@ t(head(data))[,1:3]
 Average outcomes by race.
 
 ```{r}
-data %>% filter(charged == 1) %>% group_by(race) %>% summarise(count = n(), force = mean(force))
+data %>% group_by(race) %>% summarise(count = n(), force = mean(force) + meanforce)
 ```
 
 ### Linear regression
@@ -47,7 +49,7 @@ data %>% filter(charged == 1) %>% group_by(race) %>% summarise(count = n(), forc
 Predicted averages coincide with data averages.
 
 ```{r}
-model.lm <- lm(arstmade ~ .-1, data)
+model.lm <- lm(force ~ .-1, data)
 output$predlm <- predict(model.lm)
 ```
 
@@ -84,7 +86,7 @@ output$enet <- enet$predictions
 Subgroup means.
 
 ```{r}
-output <- output %>% mutate_if(is.numeric, funs(. + meanarst))
+output <- output %>% mutate_if(is.numeric, funs(. + meanforce))
 output %>% group_by(race) %>% summarise_if(is.numeric, .funs = funs("mean"))
 ```
 
@@ -92,9 +94,6 @@ Distribution plots.
 
 ```{r}
 pd <- melt(output)
-ggplot(pd, aes(value, fill = sex)) + geom_density(alpha = .3) +
-  facet_wrap(~variable) + xlim(-.5, 1) + theme_bw()
-
 ggplot(pd, aes(value, fill = race)) + geom_density(alpha = .3) +
   facet_wrap(~variable) + xlim(-.5, 1) + theme_bw()
 ```
@@ -102,7 +101,7 @@ ggplot(pd, aes(value, fill = race)) + geom_density(alpha = .3) +
 ### Comparing (in-sample) mean-squared prediction error
 
 ```{r}
-outputMSE <- data.frame((output$arstmade - output[,4:ncol(output)])^2)
-outputMSE$const <- output$arstmade^2
+outputMSE <- data.frame((output$force - output[,3:ncol(output)])^2)
+outputMSE$const <- output$force^2
 outputMSE %>% summarise_all("mean")
 ```

@@ -1,4 +1,5 @@
 # Load and preproces the stop and frisk dataset
+library(forcats)
 
 stopandfrisk <- read.csv("2014_stop_and_frisk.csv",
                          strip.white = TRUE,
@@ -6,7 +7,7 @@ stopandfrisk <- read.csv("2014_stop_and_frisk.csv",
                          stringsAsFactors = FALSE)
 
 #keepcols <- which(apply(stopandfrisk, 2, function(col) mean(is.na(col))) < .4)
-nacols <- c("forceuse", "beat", "post")
+nacols <- c("beat", "post") # forceuse
 stopandfrisk[,nacols] <- NULL
 
 # many NAs but don't want to be excluded, so set to 0
