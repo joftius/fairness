@@ -1,0 +1,144 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%% ICML 2016 EXAMPLE LATEX SUBMISSION FILE %%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Use the following line _only_ if you're still using LaTeX 2.09.
+%\documentstyle[icml2016,epsf,natbib]{article}
+% If you rely on Latex2e packages, like most moden people use this:
+\documentclass{article}
+
+% use Times
+\usepackage{times}
+% For figures
+\usepackage{graphicx} % more modern
+%\usepackage{epsfig} % less modern
+\usepackage{subfigure} 
+
+% For citations
+\usepackage{natbib}
+
+% For algorithms
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{psfrag,graphicx,graphics,epstopdf,colortbl}
+\usepackage{fancyhdr}
+\usepackage{amsmath,amsfonts}
+\usepackage{amsthm,amssymb,amsopn}
+\usepackage{wrapfig}
+
+
+% As of 2011, we use the hyperref package to produce hyperlinks in the
+% resulting PDF.  If this breaks your system, please commend out the
+% following usepackage line and replace \usepackage{icml2016} with
+% \usepackage[nohyperref]{icml2016} above.
+\usepackage{hyperref}
+
+% Packages hyperref and algorithmic misbehave sometimes.  We can fix
+% this with the following command.
+\newcommand{\theHalgorithm}{\arabic{algorithm}}
+
+% Employ the following version of the ``usepackage'' statement for
+% submitting the draft version of the paper for review.  This will set
+% the note in the first column to ``Under review.  Do not distribute.''
+\usepackage{icml2016} 
+
+% Employ this version of the ``usepackage'' statement after the paper has
+% been accepted, when creating the final version.  This will set the
+% note in the first column to ``Proceedings of the...''
+%\usepackage[accepted]{icml2016}
+
+
+% The \icmltitle you define below is probably too long as a header.
+% Therefore, a short form for the running title is supplied here:
+\icmltitlerunning{Counterfactual Fairness}
+
+\begin{document} 
+
+\twocolumn[
+\icmltitle{Counterfactual Fairness}
+
+% It is OKAY to include author information, even for blind
+% submissions: the style file will automatically remove it for you
+% unless you've provided the [accepted] option to the icml2016
+% package.
+\icmlauthor{Your Name}{email@yourdomain.edu}
+\icmladdress{Your Fantastic Institute,
+            314159 Pi St., Palo Alto, CA 94306 USA}
+\icmlauthor{Your CoAuthor's Name}{email@coauthordomain.edu}
+\icmladdress{Their Fantastic Institute,
+            27182 Exp St., Toronto, ON M6H 2T1 CANADA}
+
+% You may provide any keywords that you 
+% find helpful for describing your paper; these are used to populate 
+% the "keywords" metadata in the PDF but will not be shown in the document
+\icmlkeywords{causality, fairness}
+
+\vskip 0.3in
+]
+
+
+
+
+\begin{abstract}
+There has been immense recent interest in fairness in machine learning. Algorithms trained on data from the real world, which for historical reasons may produce unfair outcomes, will tend to perpetuate that unfairness through their predictions. For example, racial disparities in the US criminal justice system (cite) may be perpetuated through the predictions of recidivism risk assessment algorithms (cite). A number of recent papers have attempted to address this issue by defining various notions of fairness and proposing algorithms designed to give the best possible predictions while satisfying that definition of fairness. In this work, we leverage the language and methodology developed in the literature on causal inference to address fairness.
+%For instance, imagine a bank wishes to train a machine learning model to predict whether or not an individual should be given a loan to buy a house. If the bank simply tries to learn a model that accurately predicts who to loan to solely based on whether the loan will be paid back. 
+%Specifically, we would want any model that offers house loans to individuals to not be biased by an individual's race in granting such loans. Or we would like a
+%with respect to race, gender, and any other individual attribute 
+\end{abstract} 
+
+
+\section{Introduction}
+\input{intro.tex}
+
+\section{Fairness in machine learning}
+\input{background.tex}
+
+\section{The counterfactual approach}
+\input{counterfact.tex}
+
+
+\section{Unprejudicial Inference under Causal Structures}
+\label{sec-1}
+
+Much as we talk about variables being causally independent of one
+another, it's possible to talk of predictions being counter factually
+fair.
+
+We say that a predictor of $Y$, $\hat Y(X,A)$ is causally
+independent of $A$ if 
+%
+\[ \hat Y(X,A)=\hat Y(X,A)|\text{do}(A=a) \] 
+%
+In the general case, a classifier $\hat Y (X)$ that does not directly
+depend on $A$ need not be causally independent of $A$ if $X$ depends on $A$.
+
+We are interested in three related questions, illustrated by the
+causal diagrams in figure 1. From left to right:
+
+\begin{enumerate}
+\item Given a $Y$ causally independent of $A$, can we learn a $\hat Y$,
+causally independent of $A$ that accurately predicts $Y$?
+\item Given a $Y$ causally \textbf{dependent} on $A$, can we learn a $\hat Y$,
+causally independent of $A$ that predicts $Y$ as closely as possible?
+\item Given a $Y'$, causally independent of $A$ but unobserved, and an
+observed $Y$ which represents $Y$ corrupted by a function of $A$,
+can we recover $Y'$?
+\end{enumerate}
+
+To simplify this problem, we first consider the linear case in where
+variables are distributed Gaussianly and the dependencies are
+additive, and related this to previous existing work on orthogonality
+in fairness, before considering the more general case.
+
+\subsection{Fair Learning in a Fair World}
+\label{sec-1-1}
+\subsection{Fair Learning in an Unfair World}
+\label{sec-1-2}
+\subsection{Recovering Fairness from Corrupted Data}
+\label{sec-1-3}
+
+
+\bibliography{bibliography}
+\bibliographystyle{icml2016}
+
+\end{document} 

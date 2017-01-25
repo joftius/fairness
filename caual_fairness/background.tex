@@ -1,0 +1,46 @@
+% fair prediction is a hot topic
+We begin by introducing notation in order to describe the task of fair predictions. Our goal is to learn a classifier from a set of features $X_1,\ldots,X_d$ to a class $Y$ (which may be binary: $Y \in \{0,1\}$, categorical: $Y \in \{1,\ldots,C\}$, or real: $Y \in \mathcal{R}$, and similarly for all $X$). Importantly, this classifier should be `fair' w.r.t. a sensitive attribute $A$ (most often binary). We will denote our classifier as $\hat{Y}$.
+
+Given this, we can give an intuition and a formal definition (in Table~\ref{table.fair}) for a few popular notions of fairness:
+\begin{enumerate}
+    \item \textbf{Fairness through unawareness (FTU)}: \emph{an automated algorithm is fair so long as the sensitive attribute $A$ is not explicitly used in the decision-making process.} %\\ Formally, any classifier $\hat{Y}(X_1, \ldots, X_d)$ satisfies this definition.
+    \item \textbf{Demographic parity (DP)}: \emph{a decision is fair if it is completely independent of the sensitive attribute $A$ of the individual.} 
+    (CITE)
+%    \item \textbf{Individual fairness (IF)}: \emph{a fair classifier treats individuals that are similar in a similar way.} (CITE)
+    \item \textbf{Equal opportunity (EO)}: \emph{a decision is fair if it is equally accurate, regardless of an individual's sensitive attribute $A$} (CITE)
+\end{enumerate}
+
+In % HERERE
+
+\begin{table}[t]
+\vspace{-2ex}
+\caption{Different definitions of fairness, see the descriptions of each method for more information.}
+\vspace{-3ex}
+\label{table.fair}
+\begin{center}
+\resizebox{\columnwidth}{!}
+{
+\begin{sc}
+\footnotesize
+\begin{tabular}{c|c}
+\hline
+%\multicolumn{5}{c}{\textbf{Lower Bounds}}\\
+\hline
+definition & formalization  \\
+\hline
+FTU & $\hat{Y}(X_1, \ldots, X_d)$  \\ 
+DP  & $P(\hat{Y} | A=0) = P(\hat{Y} | A=1)$ \\
+%IF  & $d(x,\tilde{x}) \approx D(P(Y | \tilde{x}), P(Y | \tilde{x}))$ \\
+EO  & $P(\hat{Y} = 1 | A = 0, Y = 1) = P(\hat{Y} = 1 | A=1, Y = 1)$ \\
+\hline
+\textbf{CF} & $P(\hat{Y}_{A=0} | A) = P(\hat{Y}_{A=1} | A)$ \\
+\textbf{CFX} & $P(\hat{Y}_{A=0} | A, X) = P(\hat{Y}_{A=1} | A, X)$ \\
+\hline
+\end{tabular}
+\end{sc}
+}
+\end{center}
+\vspace{-4ex}
+\end{table}
+
+

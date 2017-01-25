@@ -1,0 +1,57 @@
+% ml is now everywhere
+Machine learning is now used in fields as diverse as credit scoring (CITE), crime prediction (CITE), and loan assessment (CITE). As machine learning enters these new areas it is necessary for the modeler to think beyond the simple objective of maximizing prediction accuracy.
+
+% in these new ml fields, we cannot discriminate
+% discrimination can happen in multiple ways
+% - direct discrimination
+In particular, for many of these new applications, it is crucial to consider whether the predictions of a machine learning model are fair. For instance, imagine a bank wishes to train a machine learning model to predict whether or not an individual should be given a loan to buy a house. The bank wishes to use historical lending data on whether or not a loan was paid back, along with personal information on individuals. If the bank simply tries to learn a model that accurately predicts who to loan to solely based on whether the loan will be paid back, it may unjustly favor giving loans to applicants of a particular race. This could be due to many factors that are observed and unobserved in the features of a given dataset such as:
+\begin{itemize}
+\item (\emph{observed}) race could be a feature in the dataset, thus any algorithm using this feature for prediction is directly using race to discriminate.
+\item (\emph{observed}) other features could be proxies for race, such as where an individual currently lives.
+\item (\emph{unobserved}) there may exist historical biases that make it more difficult for certain races to secure employment, thereby making a direct comparison between two individuals of different races unfair and could actually harm prediction (as a high-earning individual in one race may have had to work much harder to obtain work than a similar individual in another race, thus it may be crucial to look beyond observed features and favor the hard-working individual).
+\item (\emph{unobserved}) the historical bank data may favor giving loans to individuals of a certain race because of prejudiced lenders.
+\end{itemize}
+These are just a few possible sources of unfairness that an unaware classifier could exploit in order to make more accurate predictions.
+
+% there's a lot of interest in this
+There has been immense interest recently in designing machine learning algorithms that make fair predictions. (CITE A MILLION PAPERS). In large part each work focuses on formalizing fairness into a concrete definition that can be tested, and for which algorithms can be developed. 
+
+By defining fairness concretely, one can design specific algorithms to satisfy such definitions. The hope is that such algorithms can begin to address the calls of various governing bodies about the need for fairness in automated algorithms. For instance, in the United States the Obama Administration has issued two reports (CITE), the first warning individuals about ``the potential of encoding discrimination in automated decisions" and the second describing ``how technologies can deliberately or inadvertently perpetuate, exacerbate, or mask discrimination"\footnote{https://obamawhitehouse.archives.gov/blog/2016/05/04/big-risks-big-opportunities-intersection-big-data-and-civil-rights}. Thus there is significant interest defining fairness in order to address it.
+
+% a lot of this work just proposes a new definition of fairness and checks it
+% these definitions may or may not be appropriate for a given problem
+In large part, the initial work on fairness in machine learning has focused on formalizing the above definitions and using them to solve a discrimination problem in a certain dataset. Unfortunately, for a practitioner, law-maker, judge, or anyone else who is interested in implementing algorithms that control for discrimination, it can be difficult to decide which definition of fairness to choose for the task at hand. Indeed, we demonstrate that depending on the relationship between a sensitive attribute and the data certain definitions of fairness can actually \emph{increase discrimination}.
+
+% we propose a way to model data that allows a practitioner to assess what definitions of fairness are right for the problem at hand, and algorithms to ensure fairness
+% OR
+% we propose a way to interpret fairness...
+% a) relationship between fairness and causality
+% b) use pearl's models
+% c) having an explicit model allows us to test fairness with the assumptions laid bare
+% tension: Pearl already talks about discrimination, so we aren't really inventing new models. Are we even new in using these models to talk about fairness? Maybe... Pearl talks about variables that we might want to compute counterfactuals for in order to see if discrimination is happening.  
+% Our proposal is:
+% - situate a sensitive variable in a graph (not new).
+% - Look at old definitions and see if anything bad could happen (new). 
+% - Then define counterfactual fairness (new). 
+% - Modeling helps us see where the weaknesses are in our assumptions and definitions (maybe not new)
+% We don't want to see if every definition is counterfactually fair because then we're like everyone else, saying our definition is best
+% 
+
+In this work, we describe how techniques from causal inference can be used to formalize questions of fair prediction. Specifically, we develop a technique to leverage the causal models of Pearl \cite{pearl2009causal} to model the relationship between the sensitive attribute and data. Our contributions are as follows:
+\begin{itemize}
+    \item We make use of causal modelling to analyze how previous definitions of fairness fare under different circumstances.
+    \item We design a novel definition called \emph{counterfactual fairness} that is naturally naturally suited to the causal modelling of fairness.
+\end{itemize}
+We demonstrate that by explicitly representing fairness within a causal model it becomes easy to critique different definitions of fairness as well the prediction methods that aim to accomplish these notions of fairness.
+
+
+
+
+
+
+
+
+
+
+
+% RETHINK SPIN, ALWAYS RETHINK
