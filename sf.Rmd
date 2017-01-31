@@ -23,6 +23,8 @@ stopandfrisk$found <- apply(stopandfrisk[,c("pistol", "knifcuti", "contrabn", "o
 stopandfrisk$charged <- apply(stopandfrisk[,c("arstmade", "sumissue")], 1, function(x) any(x == 1))
 stopandfrisk$force <- apply(stopandfrisk[,pf_cols], 1, function(x) any(x == 1))
 data <- subset(stopandfrisk, charged == 0)
+
+
 data[,pf_cols] <- NULL
 data[,c("charged", "arstmade", "sumissue", "xcoord", "ycoord")] <- NULL
 
