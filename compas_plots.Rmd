@@ -1,0 +1,37 @@
+---
+title: "COMPAS analysis with latent criminality and selection"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(ggplot2)
+library(reshape2)
+options(dplyr.width = Inf)
+```
+
+## Write model here
+
+We infer $U$ using a Bayesian method
+
+## Load data
+
+
+```{r cars}
+data <- read.csv("compas_stan_results.csv")
+head(data)
+```
+
+## Plots of inferred latent criminality
+
+
+```{r pressure, echo=FALSE}
+p <- ggplot(data, aes(u_hat)) + geom_density() + theme_bw()
+p
+q <- p + geom_density(aes(colour = factor(race)))
+q
+q + facet_wrap(~two_year_recid)
+```
+
+

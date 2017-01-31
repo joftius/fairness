@@ -54,10 +54,11 @@ n <- nrow(df)
 race <- rep(1, n); race[df$race == "Caucasian"] <- 0
 age <- (df$age - mean(df$age)) / sd(df$age)
 gender <- as.numeric(df$gender_factor) - 1
-
-x <- cbind(rep(1, n), race, age, gender)
-y <- df$priors_count
 s <- rep(1, n)
+
+x <- cbind(s, race, age, gender)
+y <- df$priors_count
+
 
 # Prior for coefficients of covariates on S: Gaussian with this mean and variance
 
@@ -97,6 +98,16 @@ la <- extract(fit, permuted = TRUE)
 u_hat <- colMeans(la$u)
 
 ######################################################################################################
+# Store data for prediction module
+
+output <- data.frame(two_year_recid = df$two_year_recid,
+                     prior_counts = df$priors_count,
+                     s = s, race = race, age = age,
+                     gender = gender, u_hat = u_hat)
+
+write.csv(output, file = "compas_stan_results.csv", row.names = FALSE)
+
+######################################################################################################
 # Now, check classification performance
 
 library(randomForest)
@@ -113,4 +124,5 @@ unfair$confusion
 
 cat("Confusion matrix for fair classifier:")
 fair$confusion
+
 
