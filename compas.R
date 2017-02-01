@@ -118,11 +118,26 @@ x_fair <- cbind(u_hat, df$priors_count)
 
 unfair <- randomForest(x_unfair, y)
 fair <- randomForest(x_fair, y)
+fair2 <- randomForest(cbind(u_hat), y)
 
 cat("Confusion matrix for unfair classifier:")
 unfair$confusion
 
 cat("Confusion matrix for fair classifier:")
 fair$confusion
+
+cat("Confusion matrix for just U classifier:")
+fair2$confusion
+
+cat("Demographic parity?")
+p_fair <- fair2$predicted
+p_unfair <- unfair$predicted
+
+recid_total = sum(p_fair == 1)/length(p_fair)
+recid_nonwhi = sum(p_fair[race == 1] == 1) / sum(race == 1)
+
+recid_total_uf = sum(p_unfair == 1)/length(p_unfair)
+recid_nonwhi_uf = sum(p_unfair[race == 1] == 1) / sum(race == 1)
+
 
 
