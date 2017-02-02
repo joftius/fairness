@@ -120,6 +120,14 @@ unfair <- randomForest(x_unfair, y)
 fair <- randomForest(x_fair, y)
 fair2 <- randomForest(cbind(u_hat), y)
 
+model_u <- glm(y ~ x_unfair,family=binomial(link='logit'))
+model_f <- glm(y ~ x_fair,family=binomial(link='logit'))
+model_f2 <- glm(y ~ cbind(u_hat),family=binomial(link='logit'))
+
+pr <- prediction(model_u$fitted.values, y)
+prf <- performance(pr, measure = "tpr", x.measure = "fpr")
+plot(prf)
+
 cat("Confusion matrix for unfair classifier:")
 unfair$confusion
 
