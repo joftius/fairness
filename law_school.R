@@ -1,21 +1,44 @@
 
 library(dplyr)
+library(caret)
 
 raw_data <- read.csv("law_data.csv")
 df2 <- dplyr::select(raw_data, race, sex, LSAT, UGPA, region_first, ZFYA, sander_index, first_pf) 
 
 
+#set.seed(0)
+#trainIndex <- createDataPartition(df2$first_pf, p = .8, 
+#                                  list = FALSE, 
+#                                  times = 1)
+#lawTrain <- df2[trainIndex,]
+#lawTest  <- df2[-trainIndex,]
+
 n <- nrow(df2)
+#n <- nrow(lawTrain)
+#ne <- nrow(lawTest)
 
 race <- rep(1, n); race[df2$race == "White"] <- 0
+#race_te <- rep(1, ne); race_te[lawTest$race == "White"] <- 0
+
+
 gender <- df2$sex - 1
+#gender_te <- lawTest$sex - 1
 
 a <- cbind(gender, race)
+
 z <- df2$ZFYA
 t <- as.integer(df2$LSAT)
-g <- df2$UGPA
+g <- lawTrain$UGPA
 l <- as.numeric(df2$region_first) - 1
+
 y <- df2$first_pf
+
+#a_te <- cbine(gender_te, race_te)
+#z_te <- lawTest$ZFYA
+#t_te <- as.integer(lawTest$LSAT)
+#g_te <- lawTest$UGPA
+#l_te <- as.numeric(lawTest$region_first) - 1
+#y_te <- lawTest$first_pf
 
 k <- ncol(a)
 
