@@ -6,39 +6,39 @@ raw_data <- read.csv("law_data.csv")
 df2 <- dplyr::select(raw_data, race, sex, LSAT, UGPA, region_first, ZFYA, sander_index, first_pf) 
 
 
-#set.seed(0)
-#trainIndex <- createDataPartition(df2$first_pf, p = .8, 
-#                                  list = FALSE, 
-#                                  times = 1)
-#lawTrain <- df2[trainIndex,]
-#lawTest  <- df2[-trainIndex,]
+set.seed(0)
+trainIndex <- createDataPartition(df2$first_pf, p = .8, 
+                                  list = FALSE, 
+                                  times = 1)
+lawTrain <- df2[trainIndex,]
+lawTest  <- df2[-trainIndex,]
 
-n <- nrow(df2)
-#n <- nrow(lawTrain)
-#ne <- nrow(lawTest)
+#n <- nrow(df2)
+n <- nrow(lawTrain)
+ne <- nrow(lawTest)
 
-race <- rep(1, n); race[df2$race == "White"] <- 0
-#race_te <- rep(1, ne); race_te[lawTest$race == "White"] <- 0
+race <- rep(1, n); race[lawTrain$race == "White"] <- 0
+race_te <- rep(1, ne); race_te[lawTest$race == "White"] <- 0
 
 
-gender <- df2$sex - 1
-#gender_te <- lawTest$sex - 1
+gender <- lawTrain$sex - 1
+gender_te <- lawTest$sex - 1
 
 a <- cbind(gender, race)
 
-z <- df2$ZFYA
-t <- as.integer(df2$LSAT)
+z <- lawTrain$ZFYA
+t <- as.integer(lawTrain$LSAT)
 g <- lawTrain$UGPA
-l <- as.numeric(df2$region_first) - 1
+l <- as.numeric(lawTrain$region_first) - 1
 
-y <- df2$first_pf
+y <- lawTrain$first_pf
 
-#a_te <- cbine(gender_te, race_te)
-#z_te <- lawTest$ZFYA
-#t_te <- as.integer(lawTest$LSAT)
-#g_te <- lawTest$UGPA
-#l_te <- as.numeric(lawTest$region_first) - 1
-#y_te <- lawTest$first_pf
+a_te <- cbind(gender_te, race_te)
+z_te <- lawTest$ZFYA
+t_te <- as.integer(lawTest$LSAT)
+g_te <- lawTest$UGPA
+l_te <- as.numeric(lawTest$region_first) - 1
+y_te <- lawTest$first_pf
 
 k <- ncol(a)
 
@@ -74,28 +74,43 @@ sigma_y0 <- 1
 #mu_a_y <- 0
 #sigma_a_y <- 1
 
-#mu_l_y <- 0
-#sigma_l_y <- 1
+mu_l_y <- 0
+sigma_l_y <- 1
 
 mu_u_y <- 0
 sigma_u_y <- 1
 
+mu_a_g <- 0
+sigma_a_g <- 1
+
+mu_a_t <- 0
+sigma_a_t <- 1
+
+mu_a_z <- 0
+sigma_a_z <- 1
+
 
 library(rstan)
 
+
 law_stan_dat <- list(N = n, K = k, a = a, z = z, t = t, g = g, l = l, y = y,
+                        N_TE = ne, a_TE = a_te, z_TE = z_te, t_TE = t_te, g_TE = g_te, l_TE = l_te,
                         mu_g0 = mu_g0, sigma_g0 = sigma_g0, mu_u_g = mu_u_g, sigma_u_g = sigma_u_g,
                         mu_l0 = mu_l0, sigma_l0 = sigma_l0,
                         mu_u_t = mu_u_t, sigma_u_t = sigma_u_t,
                         mu_u_z = mu_u_z, sigma_u_z = sigma_u_z,
                         #mu_yp0 = mu_yp0, sigma_yp0 = sigma_yp0, mu_u_yp = mu_u_yp, sigma_u_yp = sigma_u_yp,
                         #mu_y0 = mu_y0, sigma_y0 = sigma_y0, mu_yp_y = mu_yp_y, sigma_yp_y = sigma_yp_y,
-                        #mu_a_y = mu_a_y, sigma_a_y = sigma_a_y, mu_l_y = mu_l_y, sigma_l_y = sigma_l_y,
+                        #mu_a_y = mu_a_y, sigma_a_y = sigma_a_y,
+                        mu_l_y = mu_l_y, sigma_l_y = sigma_l_y,
                         mu_y0 = mu_y0, sigma_y0 = sigma_y0,
-                        mu_u_y = mu_u_y, sigma_u_y = sigma_u_y)
+                        mu_u_y = mu_u_y, sigma_u_y = sigma_u_y,
+                        mu_a_g = mu_a_g, sigma_a_g = sigma_a_g,
+                        mu_a_t = mu_a_t, sigma_a_t = sigma_a_t,
+                        mu_a_z = mu_a_z, sigma_a_z = sigma_a_z)
                         
                 
-fit <- stan(file = 'law_school.stan', data = law_stan_dat, iter = 2000, chains = 1, verbose = TRUE)
+fit <- stan(file = 'law_school_l.stan', data = law_stan_dat, iter = 2000, chains = 1, verbose = TRUE)
 
 # Extract information
 

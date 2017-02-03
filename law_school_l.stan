@@ -9,6 +9,14 @@ data {
   vector[N]      l; // bar exam location
   int<lower = 0> y[N]; // pass the bar exam the first time
   
+  // Test data
+  int<lower = 0>  N_TE;
+  matrix[N_TE, K] a_TE;
+  real            z_TE[N_TE];
+  int             t_TE[N_TE]; // LSAT
+  real            g_TE[N_TE]; // UGPA
+  vector[N_TE]    l_TE; // bar exam location
+  
   //matrix[N, K]   x; // covariates
   //int<lower = 0> f[N]; // outcome 2
   //real mu_eta[K]; // Prior mean for eta_s
@@ -45,10 +53,16 @@ data {
   //real<lower = 0> sigma_yp_y;
   //real mu_a_y[K];
   //real<lower = 0> sigma_a_y[K];
-  //real mu_l_y;
-  //real<lower = 0> sigma_l_y;
+  real mu_l_y;
+  real<lower = 0> sigma_l_y;
   real mu_u_y;
   real<lower = 0> sigma_u_y;
+  real mu_a_g;
+  real<lower = 0> sigma_a_g;
+  real mu_a_t;
+  real<lower = 0> sigma_a_t;
+  real mu_a_z;
+  real<lower = 0> sigma_a_z;
 }
 
 parameters {
@@ -61,6 +75,8 @@ parameters {
   //real u_f;
 
   vector[N] u;
+  vector[N_TE] u_TE;
+  
   real g0;
   real eta_u_g;
   real l0;
@@ -71,8 +87,11 @@ parameters {
   real y0;
   //real eta_yp_y;
   //vector[K] eta_a_y;
-  //real eta_l_y;
+  real eta_l_y;
   real eta_u_y;
+  vector[K] eta_a_g;
+  vector[K] eta_a_t;
+  vector[K] eta_a_z;
   
   //vector[N] yp;
   
@@ -117,18 +136,27 @@ model {
   eta_u_y ~ normal(mu_u_y, sigma_u_y);
   //eta_yp_y ~ normal(mu_yp_y, sigma_yp_y);
   //eta_a_y ~ normal(mu_a_y, sigma_a_y);
-  //eta_l_y ~ normal(mu_l_y, sigma_l_y);
+  eta_l_y ~ normal(mu_l_y, sigma_l_y);
+  eta_a_g ~ normal(mu_a_g, sigma_a_g);
+  eta_a_t ~ normal(mu_a_t, sigma_a_t);
+  eta_a_z ~ normal(mu_a_z, sigma_a_z);
   
   sigma_g_Sq ~ inv_gamma(1, 1);
 
   // have data about these
-  g ~ normal(g0 + eta_u_g * u, sigma_g);
-  t ~ poisson(exp(l0 + eta_u_t * u)); // LSAT
-  z ~ normal(eta_u_z * u,1);
+  g ~ normal(g0 + eta_u_g * u + a * eta_a_g, sigma_g); // TODO: ADD RACE AND GENDER
+  t ~ poisson(exp(l0 + eta_u_t * u + a * eta_a_t)); // LSAT
+  z ~ normal(eta_u_z * u + a * eta_a_z,1);
 //  y ~ bernoulli_logit(y0 + yp * eta_yp_y + a * eta_a_y + l * eta_l_y);
 //  y ~ bernoulli_logit(y0 + eta_u_y * u);
   y ~ bernoulli_logit(y0 + eta_u_y * u + l * eta_l_y);
   
+
+  // test versions
+  g_TE ~ normal(g0 + eta_u_g * u_TE + a_TE * eta_a_g, sigma_g);
+  t_TE ~ poisson(exp(l0 + eta_u_t * u_TE + a_TE * eta_a_t)); // LSAT
+  z_TE ~ normal(eta_u_z * u_TE + a_TE * eta_a_z,1);
+
 
   // don't have data about this
 //  yp ~ bernoulli_logit(yp0 + eta_u_yp * u);
