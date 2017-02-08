@@ -4,19 +4,25 @@ Machine learning is now used in fields as diverse as credit scoring (CITE), crim
 % in these new ml fields, we cannot discriminate
 % discrimination can happen in multiple ways
 % - direct discrimination
-In particular, for many of these new applications, it is crucial to consider whether the predictions of a machine learning model are fair. For instance, imagine a bank wishes to train a machine learning model to predict whether or not an individual should be given a loan to buy a house. The bank wishes to use historical lending data on whether or not a loan was paid back, along with personal information on individuals. If the bank simply tries to learn a model that accurately predicts who to loan to solely based on whether the loan will be paid back, it may unjustly favor giving loans to applicants of a particular race. This could be due to many factors that are observed and unobserved in the features of a given dataset such as:
-\begin{itemize}
-\item (\emph{observed}) race could be a feature in the dataset, thus any algorithm using this feature for prediction is directly using race to discriminate.
-\item (\emph{observed}) other features could be proxies for race, such as where an individual currently lives.
-\item (\emph{unobserved}) there may exist historical biases that make it more difficult for certain races to secure employment, thereby making a direct comparison between two individuals of different races unfair and could actually harm prediction (as a high-earning individual in one race may have had to work much harder to obtain work than a similar individual in another race, thus it may be crucial to look beyond observed features and favor the hard-working individual).
-\item (\emph{unobserved}) the historical bank data may favor giving loans to individuals of a certain race because of prejudiced lenders.
-\end{itemize}
-These are just a few possible sources of unfairness that an unaware classifier could exploit in order to make more accurate predictions.
+In particular, for many of these new applications, it is crucial to consider whether the predictions of a machine learning model are \emph{fair}. For instance, imagine a bank wishes to train a machine learning model to predict whether or not an individual should be given a loan to buy a house. The bank wishes to use historical lending data on whether or not a loan was paid back, along with personal information on individuals. If the bank simply tries to learn a model that accurately predicts who to loan to solely based on whether the loan will be paid back, it may unjustly favor giving loans to applicants of a particular demographic group, due to historical and present prejudices. The Obama Administration released a report that precisely describes this, and urged machine learning practicioners to analyze ``how technologies can deliberately or inadvertently perpetuate, exacerbate, or mask discrimination"\footnote{https://obamawhitehouse.archives.gov/blog/2016/05/04/big-risks-big-opportunities-intersection-big-data-and-civil-rights}.
+
+As a result, there has been immense interest recently in designing machine learning algorithms that make fair predictions. (CITE A MILLION PAPERS). In large part each work focuses on formalizing fairness into a concrete definition that can be tested, and for which algorithms can be developed. By defining fairness concretely, one can design specific algorithms to satisfy such definitions. 
+
+
+
+%  This could be due to many factors that are observed and unobserved in the features of a given dataset such as:
+% \begin{itemize}
+% \item (\emph{observed}) race could be a feature in the dataset, thus any algorithm using this feature for prediction is directly using race to discriminate.
+% \item (\emph{observed}) other features could be proxies for race, such as where an individual currently lives.
+% \item (\emph{unobserved}) there may exist historical biases that make it more difficult for certain races to secure employment, thereby making a direct comparison between two individuals of different races unfair and could actually harm prediction (as a high-earning individual in one race may have had to work much harder to obtain work than a similar individual in another race, thus it may be crucial to look beyond observed features and favor the hard-working individual).
+% \item (\emph{unobserved}) the historical bank data may favor giving loans to individuals of a certain race because of prejudiced lenders.
+% \end{itemize}
+% These are just a few possible sources of unfairness that an unaware classifier could exploit in order to make more accurate predictions.
 
 % there's a lot of interest in this
-There has been immense interest recently in designing machine learning algorithms that make fair predictions. (CITE A MILLION PAPERS). In large part each work focuses on formalizing fairness into a concrete definition that can be tested, and for which algorithms can be developed. 
+% There has been immense interest recently in designing machine learning algorithms that make fair predictions. (CITE A MILLION PAPERS). In large part each work focuses on formalizing fairness into a concrete definition that can be tested, and for which algorithms can be developed. 
 
-By defining fairness concretely, one can design specific algorithms to satisfy such definitions. The hope is that such algorithms can begin to address the calls of various governing bodies about the need for fairness in automated algorithms. For instance, in the United States the Obama Administration has issued two reports (CITE), the first warning individuals about ``the potential of encoding discrimination in automated decisions" and the second describing ``how technologies can deliberately or inadvertently perpetuate, exacerbate, or mask discrimination"\footnote{https://obamawhitehouse.archives.gov/blog/2016/05/04/big-risks-big-opportunities-intersection-big-data-and-civil-rights}. Thus there is significant interest defining fairness in order to address it.
+% By defining fairness concretely, one can design specific algorithms to satisfy such definitions. The hope is that such algorithms can begin to address the calls of various governing bodies about the need for fairness in automated algorithms. For instance, in the United States the Obama Administration has issued two reports (CITE), the first warning individuals about ``the potential of encoding discrimination in automated decisions" and the second describing ``how technologies can deliberately or inadvertently perpetuate, exacerbate, or mask discrimination"\footnote{https://obamawhitehouse.archives.gov/blog/2016/05/04/big-risks-big-opportunities-intersection-big-data-and-civil-rights}. Thus there is significant interest defining fairness in order to address it.
 
 % a lot of this work just proposes a new definition of fairness and checks it
 % these definitions may or may not be appropriate for a given problem
