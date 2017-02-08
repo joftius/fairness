@@ -112,52 +112,22 @@ TODO
 
 \section{Counterfactual Fairness}
 \label{sec:count_fair}
+\input{fairness}
 
-\subsection{Definition}
-
-TODO. Here the main definition is introduced, and how it relates to ``path deletion'',
-including the core example of $A \rightarrow X \rightarrow Y$, with two latent
-variables $U_x \rightarrow X$ and $U_y \rightarrow Y$, arguing that one might judge
-that the path from $A$ to $Y$ via is due to an unfair mechanism and that we need a
-notion of ``closest world''.
-
-\subsection{Other Examples}
-
-TODO. Here the examples and their motivation can be as follows:
-
-\begin{itemize}
-\item something analogous to the red car example: $A$ is not a cause of
-  $Y$ but might indirectly bias the result even without using $A$ as a predictor;
-\item something with selection bias, maybe a toy version of COMPAS;
-\item something where an unfair judgement (say, credit score) that can be potentially
-  considered as a target variable, and an
-  ``objective target'' (say, defaulting on a loan) are present, and
-  what the recommendation is
-\end{itemize}
 
 \section{Methods and Assessment}
 \label{sec:methods}
+\input{methods}
 
-TODO. General recipe on how to put a model together, including the practical
-issues of $U$ and $A$ being dependent due to randomness of $U$.
 
-\subsection{Special Cases}
-
-Talk about linear models, including those based on PCA/ICA.
-
-\subsection{Criticisms}
-
-TODO. Criticism on difficulty of untestability of assumptions.
-More on assumptions used by other methods, including causal
-estimation methods based on additive error models.
 
 \section{Experiments}
-
-TODO
+\label{sec:experiments}
+\input{experiments}
 
 \section{Conclusion}
-
-TODO
+\label{sec:conclusion}
+\input{conclusion}
 
 \bibliography{rbas}
 \bibliographystyle{icml2017}
