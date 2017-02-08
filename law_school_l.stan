@@ -124,6 +124,7 @@ model {
   
   // don't have data about this
   u ~ normal(0, 1);
+  u_TE ~ normal(0, 1);
   
   g0 ~ normal(mu_g0, sigma_g0);
   eta_u_g ~ normal(mu_u_g, sigma_u_g);

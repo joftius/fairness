@@ -116,7 +116,7 @@ fit <- stan(file = 'law_school_l.stan', data = law_stan_dat, iter = 2000, chains
 
 la <- extract(fit, permuted = TRUE)
 u_hat <- colMeans(la$u)
-
+u_te_hat <- colMeans(la$u_TE)
 # Predict Y
 
 ######################################################################################################
@@ -131,22 +131,61 @@ output <- data.frame(bar_pass_fair = y,
                      gender = gender, 
                      u_hat = u_hat)
 
-write.csv(output, file = "law_school_stan_results.csv", row.names = FALSE)
+output_te <- data.frame(bar_pass_fair = y_te,
+                     location = l_te,
+                     UGPA = g_te, 
+                     LSAT = t_te, 
+                     ZFYA = z_te,
+                     race = race_te,
+                     gender = gender_te, 
+                     u_hat = u_te_hat)
+
+write.csv(output, file = "law_school_l_stan_transductive_train.csv", row.names = FALSE)
+write.csv(output_te, file = "law_school_l_stan_transductive_test.csv", row.names = FALSE)
+
 
 #########################################
 
 x_unfair <- cbind(a, z, t, g, l)
-x_fair <- cbind(u_hat, l)
+x_unfair_te <- cbind(a_te, z_te, t_te, g_te, l_te)
 
-model_u <- glm(y ~ x_unfair,family=binomial(link='logit'))
-model_f <- glm(y ~ x_fair,family=binomial(link='logit'))
+X_U <- as.data.frame(a)
+X_U$z <- z
+X_U$t <- t
+X_U$g <- g
+X_U$l <- l
 
+model_u <- glm(y ~ gender + race + z + t + g + l + 1,family=binomial(link='logit'), data=X_U)
 pred_u <- predict.glm(model_u, type = "response")
-pred_u_t <- function(t) ifelse(pred_u > t , 1,0)
-confusionMatrix(pred_u_t(0.5),y)
+
+X_U_TE <- data.frame(gender=gender_te, race=race_te, z=z_te, t=t_te, g=g_te, l=l_te)
+pred_u_te <- predict(model_u, newdata=X_U_TE, type = "response")
+
+pred_u_thres <- function(t) ifelse(pred_u > t , 1,0)
+pred_u_te_thres <- function(t) ifelse(pred_u_te > t , 1,0)
+
+#confusionMatrix(pred_u_thres(0.5),y)
+confusionMatrix(pred_u_te_thres(0.5),y_te)
+
+x_fair <- cbind(u_hat, l)
+x_fair_te <- cbind(u_te_hat, l_te)
+
+
+X_F <- data.frame(u_hat=u_hat, l=l)
+X_F_TE <- data.frame(u_hat=u_te_hat, l=l_te)
+
+#model_f <- glm(y ~ x_fair,family=binomial(link='logit'))
+model_f <- glm(y ~ u_hat + l + 1, family=binomial(link='logit'), data=X_F)
 
 pred_f <- predict.glm(model_f, type = "response")
-pred_f_t <- function(t) ifelse(pred_f > t , 1,0)
-confusionMatrix(pred_f_t(0.5),y)
+pred_f_te <- predict.glm(model_f, newdata=X_F_TE, type = "response")
+
+pred_f_thres <- function(t) ifelse(pred_f > t , 1,0)
+pred_f_te_thres <- function(t) ifelse(pred_f_te > t , 1,0)
 
 
+confusionMatrix(pred_f_thres(0.5),y)
+confusionMatrix(pred_f_te_thres(0.5),y_te)
+
+fixed <- rep(1, 4358)
+confusionMatrix(fixed,y_te)
