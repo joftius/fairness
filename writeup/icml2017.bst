@@ -1,8 +1,8 @@
-%% File: `icml2010.bst'
+%% File: `icml2017.bst'
 %% A modification of `plainnl.bst' for use with natbib package 
 %%
 %% Copyright 2010 Hal Daum\'e III
-%% Modified by J. Fï¿½rnkranz
+%% Modified by J. Fürnkranz
 %% - Changed labels from (X and Y, 2000) to (X & Y, 2000)
 %% - Changed References to last name first and abbreviated first names.
 %%
