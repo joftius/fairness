@@ -1,7 +1,33 @@
+%!TEX root=ricardo_draft.tex
+We begin by describing the problem of fair prediction and introduce three of the most popular definitions developed for this task.  We then give background on causal modeling which will act as our `tool-kit' for modeling and defining fairness.
 
 \subsection{Fairness}
+Let's imagine a scenario in which predictions must be fair. For instance, imagine a university in the United States (US) would like to know how successful an applicant is going to be after graduation, call this $Y$, given their current incoming features $X$ such as test scores, grade-point average (GPA). To predict success a modeler is given a dataset of $n$ applications with features $\{X^{(1)}, \ldots, X^{(n)} \}$ and measures of graduation success $\{Y^{(1)}, \ldots, Y^{(n)}\}$. However, universities in the US have historically had racial and gender biases in student admission \cite{kane1998racial,kidder2000portia}. Thus, in addition we are given demographic and gender information for each individual $\{A^{(1)}, \ldots, A^{(n)}\}$ that we would like to use to ensure our model is fair.
 
-TODO
+What does it mean for a model to be fair? To answer this there has been a wealth of recent work aimed at defining fairness (CITE PAPERS). A few popular definitions are (a) Fairness Through Unawareness (FTU), (b) Demographic Parity (DP), (c) Equal Opportunity (EO), and (d) Individial Fairness (IF). These are defined as follows:
+
+\begin{define}[Fairness Through Unawareness (FTU)]
+An algorithm is fair so long as the sensitive attribute $A$ is not explitictly used in the decision-making process. Formally, any mapping $\hat{Y}: X \rightarrow Y$ satisfies this definition.
+\end{define}
+
+\begin{define}[Demographic Parity (DP)]
+An algorithm is fair if its predictions are independent of the sensitive attributes $A$ across the population. Formally, a prediction $\hat{Y}$ satisfies this definition if, 
+\begin{align}
+P(\hat{Y} | A = 0) = P(\hat{Y} | A = 1). \nonumber
+\end{align}
+\end{define}
+
+\begin{define}[Equal Opportunity (EO)]
+An algorithm is fair if it is equally accurate for every value of the sensitive attribute $A$. Formally, a prediction $\hat{Y}$ satisfies this if,
+\begin{align}
+P(\hat{Y}=1 | A=0,Y=1) = P(\hat{Y}=1 | A=1,Y=1). \nonumber
+\end{align}
+\end{define}
+
+\begin{define}[Individual Fairness (IF)]
+An algorithm is fair if it give similar predictions to similar individuals. Formally, if individuals $i$ and $j$ are similar then $\hat{Y}(X^{(i)}, A^{(i)}) \approx \hat{Y}(X^{(j)}, A^{(j)})$.
+\end{define}
+
 
 \subsection{Causal Models and Counterfactuals}
 
@@ -66,3 +92,14 @@ three steps, as explained in more detail in Chapter 4 of
 \item Compute the implied distribution on the remaining elements of $V$
      using $F_x$ and the posterior $P(U\ | W = w)$.
 \end{enumerate}
+
+
+\begin{figure*}[th!]
+\begin{center}
+\vspace{-2ex}
+\centerline{\includegraphics[width=\textwidth]{simple_models_no_q}}
+\vspace{-2ex}
+\caption{Three possible states of the world.\label{figure.simple_models}}
+\vspace{-2ex}
+\end{center}
+\end{figure*}
