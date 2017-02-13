@@ -14,31 +14,39 @@ When describing counterfactual fairness, it is important to
 distinguish between a counterfactually fair {\em world} in which the
 variable $Y$ we are interested in predicting is inherently
 counterfactually fair with respect to the protected attributes $A$,
-and a counterfactorially fair {\em predictor} $\hat Y$, guarenteed to
-be counterfactorally fair, regardless of the behaviour of $Y$.
+and a counterfactually fair {\em predictor} $\hat Y$, guaranteed to
+be counterfactually fair, regardless of the behavior of $Y$.
 
 Figure~\ref{figure.simple_models} shows possible worlds. {\em Left:} A
 counterfactually fair world in which the state of $Y$ has no
-dependencies on $A$. {\em Centre and Right:} Potentially unfair worlds
+dependencies on $A$. {\em Center and Right:} Potentially unfair worlds
 in which the state of $A$ can influence the state of $Y$ either
-indirectly as in {\em centre} or directly as in {\em Right}.
+indirectly as in {\em center} or directly as in {\em Right}.
 
 To provide intuition, we outline simple scenarios corresponding to each world:
 \paragraph{Left: The Red Car.}
-Imagine a car insurance company wishez to price insurance for car owners by
+Imagine a car insurance company wishes to price insurance for car owners by
 predicting their accident rate $Y$. We assume there is $U$, an
-unobserved factor corresponding to aggresive driving, that causes
+unobserved factor corresponding to aggressive driving, that causes
 drivers to be more likely have an accident, and that aggressive
 individuals are more likely to prefer to drive red cars (our observed
 variable $X$). Moreover, we assume that individuals belonging to a
 protected attribute ($A$) are more likely to drive red cars, but
-importantly, they are no more likely to be agressive or to get in
+importantly, they are no more likely to be aggressive or to get in
 accidents than any one else.
 
 
-\paragraph{Center: High Crime regions} We're interested in predicting the likelihood of a particular individuals house being broken in to $Y$. This likelihood may depend on a variety of unobserved factors ($U$) but also upon the neighbourhood the house lies in ($X$), and the neighbourhood an individual lives in may be strongly correlated with race $A$. In such a scenario, although the likelihood of a particular person having their house broken into does not depend upon race directly, it does vary which a persons race and so is not counterfactually fair.
+\paragraph{Center: High Crime regions} We're interested in predicting
+the likelihood of a particular individuals house being broken in to
+$Y$. This likelihood may depend on a variety of unobserved factors
+($U$) but also upon the neighborhood the house lies in ($X$), and the
+neighborhood an individual lives in may be strongly correlated with
+race $A$. In such a scenario, although the likelihood of a particular
+person having their house broken into does not depend upon race
+directly, it does vary which a persons race and so is not
+counterfactually fair.
 
-\paragraph{Right: Predicial sampling}
+\paragraph{Right: Prejudicial sampling}
 \subsection{Definition}
 
 TODO. Here the main definition is introduced, and how it relates to ``path deletion'',
