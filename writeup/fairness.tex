@@ -7,6 +7,14 @@ that the path from $A$ to $Y$ via is due to an unfair mechanism and that we need
 notion of ``closest world''.
 
 \subsection{Other Examples}
+To get an intution for what counterfactual fairness means, we will begin by describing a few possible real-world scenarios. For each of these we will describe what counterfactually-fair and counterfactually-unfair predictors look like.
+
+\paragraph{Scenario 1: The Red Car.}
+Imagine a car insurance company wants a quick, anonymous way to determine how to price insurance for different car owners by predicting their accident likelihood $Y$. They've noticed that there is a correlation between driving a red car $X$ and a higher rate of automobile accidents. Thus they would like to increase the insurance for all red car drivers. 
+
+Imagine what's really going on is shown in Figure 1 (\emph{Left}). The correlation between have a red car $X$ and accidents $Y$ is due to an `aggressiveness' factor $U$: aggressiveness causes individuals to be in accidents more often, and it also attracts them to red cars. Unfortunately, the red car feature $X$ is also affected by an individual's race $A$. Thus, simply using $X$ to predict $Y$ would seem to be an unfair prediction because it may charge individual's of a certain race more than others. Counterfactual fairness agrees with this. We can test whether a predictor $\hat{Y}(X)$ is counterfactually-fair using the procedure described in 
+
+
 
 TODO. Here the examples and their motivation can be as follows:
 
