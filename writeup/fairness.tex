@@ -46,21 +46,37 @@ person having their house broken into does not depend upon race
 directly, it does vary which a persons race and so is not
 counterfactually fair.
 
-\paragraph{Right: Prejudicial Estimation} The world on the right shows a
-causally fair variable $Y'$ that doesn't depend on $A$ being directly
+\paragraph{Right: Prejudicial Estimation} The world on the right shows $Y'$ a
+causally fair variable that doesn't depend on $A$ being directly
 corrupted by a bias relating to $A$, resulting in an observation
 $Y$. In this case, learning a causally fair approximation of $Y$ can
 recover the true variable $Y'$ (up to noise).
-
+Rdef
 \subsection{Definition}
-TODO. Here the main definition is introduced, and how it relates to ``path deletion'',
-including the core example of $A \rightarrow X \rightarrow Y$, with two latent
-variables $U_x \rightarrow X$ and $U_y \rightarrow Y$, arguing that one might judge
-that the path from $A$ to $Y$ via is due to an unfair mechanism and that we need a
-notion of ``closest world''.
+Formally, a variable $Y$ is said to be counterfactually fair with
+respect to a protected attribute $A$ if
+\begin{define}[Counterfactually Fair] setting variable $A$ to a
+  particular state as detailed by \ref{subsec:cmc} does not alter the
+  probability of $Y$ taking a particular state.
+\begin{equation}
+P(Y)=P(Y=y|\text{do}(A=a))\forall a,y 
+\end{equation}
+\end{define}
+This definition substantially differs from Fairness Through
+Unawareness, as it considers the influence of attributes such as race
+on other measured variables.
 
-\subsection{Other Examples}
-To get an intution for what counterfactual fairness means, we will begin by describing a few possible real-world scenarios. For each of these we will describe what counterfactually-fair and counterfactually-unfair predictors look like.
+% TODO. Here the main
+% definition is introduced, and how it relates to ``path deletion'',
+% including the core example of $A \rightarrow X \rightarrow Y$, with
+% two latent variables $U_x \rightarrow X$ and $U_y \rightarrow Y$,
+% arguing that one might judge that the path from $A$ to $Y$ via is due
+% to an unfair mechanism and that we need a notion of ``closest world''.
+
+\subsection{Examples}
+To get an intution for what the different definitions of fairness imply, we will
+revisit the examples of figure \ref{figure.simple_models}.
+% begin by describing a few possible real-world scenarios. For each of these we will describe what counterfactually-fair and counterfactually-unfair predictors look like.
 
 \paragraph{Scenario 1: The Red Car.}
 Imagine a car insurance company wants a quick, anonymous way to determine how to price insurance for different car owners by predicting their accident likelihood $Y$. They've noticed that there is a correlation between driving a red car $X$ and a higher rate of automobile accidents. Thus they would like to increase the insurance for all red car drivers. 
@@ -70,7 +86,7 @@ Imagine what's really going on is shown in Figure~\ref{figure.simple_models} (\e
 Thus, simply using $X$ to predict $Y$ would seem to be an unfair prediction because it may charge individual's of a certain race more than others. Counterfactual fairness agrees with this. 
 
 \begin{lem}
-The predictor $\hat{Y}(X)$ is not counterfatually fair for the model in Figure~\ref{figure.simple_models} (\emph{Left}).
+The predictor $\hat{Y}(X)$ is not counterfactually fair for the model in Figure~\ref{figure.simple_models} (\emph{Left}).
 \end{lem}
 
 \begin{proof}
