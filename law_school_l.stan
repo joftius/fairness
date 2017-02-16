@@ -6,7 +6,7 @@ data {
   real           z[N]; // ZFYA
   int            t[N]; // LSAT
   real           g[N]; // UGPA
-  vector[N]      l; // bar exam location
+  //vector[N]      l; // bar exam location
   int<lower = 0> y[N]; // pass the bar exam the first time
   
   // Test data
@@ -15,7 +15,7 @@ data {
   real            z_TE[N_TE];
   int             t_TE[N_TE]; // LSAT
   real            g_TE[N_TE]; // UGPA
-  vector[N_TE]    l_TE; // bar exam location
+  //vector[N_TE]    l_TE; // bar exam location
   
   //matrix[N, K]   x; // covariates
   //int<lower = 0> f[N]; // outcome 2
@@ -53,8 +53,8 @@ data {
   //real<lower = 0> sigma_yp_y;
   //real mu_a_y[K];
   //real<lower = 0> sigma_a_y[K];
-  real mu_l_y;
-  real<lower = 0> sigma_l_y;
+  //real mu_l_y;
+  //real<lower = 0> sigma_l_y;
   real mu_u_y;
   real<lower = 0> sigma_u_y;
   real mu_a_g;
@@ -63,6 +63,8 @@ data {
   real<lower = 0> sigma_a_t;
   real mu_a_z;
   real<lower = 0> sigma_a_z;
+  real mu_a_y;
+  real<lower = 0> sigma_a_y;
 }
 
 parameters {
@@ -87,11 +89,12 @@ parameters {
   real y0;
   //real eta_yp_y;
   //vector[K] eta_a_y;
-  real eta_l_y;
+  //real eta_l_y;
   real eta_u_y;
   vector[K] eta_a_g;
   vector[K] eta_a_t;
   vector[K] eta_a_z;
+  vector[K] eta_a_y;
   
   //vector[N] yp;
   
@@ -137,10 +140,11 @@ model {
   eta_u_y ~ normal(mu_u_y, sigma_u_y);
   //eta_yp_y ~ normal(mu_yp_y, sigma_yp_y);
   //eta_a_y ~ normal(mu_a_y, sigma_a_y);
-  eta_l_y ~ normal(mu_l_y, sigma_l_y);
+  //eta_l_y ~ normal(mu_l_y, sigma_l_y);
   eta_a_g ~ normal(mu_a_g, sigma_a_g);
   eta_a_t ~ normal(mu_a_t, sigma_a_t);
   eta_a_z ~ normal(mu_a_z, sigma_a_z);
+  eta_a_y ~ normal(mu_a_y, sigma_a_y);
   
   sigma_g_Sq ~ inv_gamma(1, 1);
 
@@ -150,7 +154,7 @@ model {
   z ~ normal(eta_u_z * u + a * eta_a_z,1);
 //  y ~ bernoulli_logit(y0 + yp * eta_yp_y + a * eta_a_y + l * eta_l_y);
 //  y ~ bernoulli_logit(y0 + eta_u_y * u);
-  y ~ bernoulli_logit(y0 + eta_u_y * u + l * eta_l_y);
+  y ~ bernoulli_logit(y0 + eta_u_y * u + a * eta_a_y);//+ l * eta_l_y);
   
 
   // test versions

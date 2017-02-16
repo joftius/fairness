@@ -3,28 +3,45 @@ library(dplyr)
 library(caret)
 
 raw_data <- read.csv("law_data.csv")
-df2 <- dplyr::select(raw_data, race, sex, LSAT, UGPA, region_first, ZFYA, sander_index, first_pf) 
+law <- dplyr::select(raw_data, race, sex, LSAT, UGPA, region_first, ZFYA, sander_index, first_pf) 
+law <- law[law$region_first != "PO",]
+law$region_first <- factor(law$region_first)
 
+
+#race <- rep(1, n); race[lawTrain$race == "White"] <- 0
+#race_te <- rep(1, ne); race_te[lawTest$race == "White"] <- 0
+
+law$amerind <- as.numeric(law$race == "Amerindian")
+law$asian   <- as.numeric(law$race == "Asian")
+law$black   <- as.numeric(law$race == "Black")
+law$hisp    <- as.numeric(law$race == "Hispanic")
+law$mexican <- as.numeric(law$race == "Mexican")
+law$other   <- as.numeric(law$race == "Other")
+law$puerto  <- as.numeric(law$race == "Puertorican")
+law$white   <- as.numeric(law$race == "White")
+
+law$female    <- as.numeric(law$sex == 1)
+law$male      <- as.numeric(law$sex == 2)
+
+sense_cols <- c("amerind", "asian", "black", "hisp", "mexican", "other", "puerto", "white", "male", "female")
 
 set.seed(0)
-trainIndex <- createDataPartition(df2$first_pf, p = .8, 
+trainIndex <- createDataPartition(law$first_pf, p = .8, 
                                   list = FALSE, 
                                   times = 1)
-lawTrain <- df2[trainIndex,]
-lawTest  <- df2[-trainIndex,]
+lawTrain <- law[trainIndex,]
+lawTest  <- law[-trainIndex,]
 
 #n <- nrow(df2)
 n <- nrow(lawTrain)
 ne <- nrow(lawTest)
 
-race <- rep(1, n); race[lawTrain$race == "White"] <- 0
-race_te <- rep(1, ne); race_te[lawTest$race == "White"] <- 0
 
 
-gender <- lawTrain$sex - 1
-gender_te <- lawTest$sex - 1
+#gender <- lawTrain$sex - 1
+#gender_te <- lawTest$sex - 1
 
-a <- cbind(gender, race)
+#a <- cbind(gender, race)
 
 z <- lawTrain$ZFYA
 t <- as.integer(lawTrain$LSAT)
@@ -33,14 +50,14 @@ l <- as.numeric(lawTrain$region_first) - 1
 
 y <- lawTrain$first_pf
 
-a_te <- cbind(gender_te, race_te)
+#a_te <- cbind(gender_te, race_te)
 z_te <- lawTest$ZFYA
 t_te <- as.integer(lawTest$LSAT)
 g_te <- lawTest$UGPA
 l_te <- as.numeric(lawTest$region_first) - 1
 y_te <- lawTest$first_pf
 
-k <- ncol(a)
+k <- length(sense_cols) #ncol(a)
 
 
 # Priors for coefficients
@@ -74,8 +91,8 @@ sigma_y0 <- 1
 #mu_a_y <- 0
 #sigma_a_y <- 1
 
-mu_l_y <- 0
-sigma_l_y <- 1
+#mu_l_y <- 0
+#sigma_l_y <- 1
 
 mu_u_y <- 0
 sigma_u_y <- 1
@@ -89,12 +106,16 @@ sigma_a_t <- 1
 mu_a_z <- 0
 sigma_a_z <- 1
 
+mu_a_y <- 0
+sigma_a_y <- 1
+
 
 library(rstan)
 
 
-law_stan_dat <- list(N = n, K = k, a = a, z = z, t = t, g = g, l = l, y = y,
-                        N_TE = ne, a_TE = a_te, z_TE = z_te, t_TE = t_te, g_TE = g_te, l_TE = l_te,
+law_stan_dat <- list(N = n, K = k, a = data.matrix(lawTrain[,sense_cols]), z = z, t = t, g = g, #l = l, 
+                        y = y,
+                        N_TE = ne, a_TE = data.matrix(lawTest[,sense_cols]), z_TE = z_te, t_TE = t_te, g_TE = g_te, #l_TE = l_te,
                         mu_g0 = mu_g0, sigma_g0 = sigma_g0, mu_u_g = mu_u_g, sigma_u_g = sigma_u_g,
                         mu_l0 = mu_l0, sigma_l0 = sigma_l0,
                         mu_u_t = mu_u_t, sigma_u_t = sigma_u_t,
@@ -102,12 +123,13 @@ law_stan_dat <- list(N = n, K = k, a = a, z = z, t = t, g = g, l = l, y = y,
                         #mu_yp0 = mu_yp0, sigma_yp0 = sigma_yp0, mu_u_yp = mu_u_yp, sigma_u_yp = sigma_u_yp,
                         #mu_y0 = mu_y0, sigma_y0 = sigma_y0, mu_yp_y = mu_yp_y, sigma_yp_y = sigma_yp_y,
                         #mu_a_y = mu_a_y, sigma_a_y = sigma_a_y,
-                        mu_l_y = mu_l_y, sigma_l_y = sigma_l_y,
+                        #mu_l_y = mu_l_y, sigma_l_y = sigma_l_y,
                         mu_y0 = mu_y0, sigma_y0 = sigma_y0,
                         mu_u_y = mu_u_y, sigma_u_y = sigma_u_y,
                         mu_a_g = mu_a_g, sigma_a_g = sigma_a_g,
                         mu_a_t = mu_a_t, sigma_a_t = sigma_a_t,
-                        mu_a_z = mu_a_z, sigma_a_z = sigma_a_z)
+                        mu_a_z = mu_a_z, sigma_a_z = sigma_a_z,
+                        mu_a_y = mu_a_y, sigma_a_y = sigma_a_y)
                         
                 
 fit <- stan(file = 'law_school_l.stan', data = law_stan_dat, iter = 2000, chains = 1, verbose = TRUE)
