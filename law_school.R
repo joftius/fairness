@@ -132,13 +132,13 @@ law_stan_dat <- list(N = n, K = k, a = data.matrix(lawTrain[,sense_cols]), z = z
                         mu_a_y = mu_a_y, sigma_a_y = sigma_a_y)
                         
                 
-fit <- stan(file = 'law_school_l.stan', data = law_stan_dat, iter = 2000, chains = 1, verbose = TRUE)
+fit_law <- stan(file = 'law_school_l.stan', data = law_stan_dat, iter = 2000, chains = 1, verbose = TRUE)
 
 # Extract information
 
-la <- extract(fit, permuted = TRUE)
-u_hat <- colMeans(la$u)
-u_te_hat <- colMeans(la$u_TE)
+la_law <- extract(fit_law, permuted = TRUE)
+u_hat <- colMeans(la_law$u)
+u_te_hat <- colMeans(la_law$u_TE)
 # Predict Y
 
 ######################################################################################################
@@ -149,8 +149,16 @@ output <- data.frame(bar_pass_fair = y,
                      UGPA = g, 
                      LSAT = t, 
                      ZFYA = z,
-                     race = race,
-                     gender = gender, 
+                     amerind = lawTrain$amerind,
+                     asian   = lawTrain$asian  ,
+                     black   = lawTrain$black  ,
+                     hisp    = lawTrain$hisp   ,
+                     mexican = lawTrain$mexican,
+                     other   = lawTrain$other  ,
+                     puerto  = lawTrain$puerto ,
+                     white   = lawTrain$white  ,
+                     female  = lawTrain$female,
+                     male    = lawTrain$male,
                      u_hat = u_hat)
 
 output_te <- data.frame(bar_pass_fair = y_te,
@@ -158,8 +166,16 @@ output_te <- data.frame(bar_pass_fair = y_te,
                      UGPA = g_te, 
                      LSAT = t_te, 
                      ZFYA = z_te,
-                     race = race_te,
-                     gender = gender_te, 
+                     amerind = lawTest$amerind,
+                     asian   = lawTest$asian  ,
+                     black   = lawTest$black  ,
+                     hisp    = lawTest$hisp   ,
+                     mexican = lawTest$mexican,
+                     other   = lawTest$other  ,
+                     puerto  = lawTest$puerto ,
+                     white   = lawTest$white  ,
+                     female  = lawTest$female,
+                     male    = lawTest$male,
                      u_hat = u_te_hat)
 
 write.csv(output, file = "law_school_l_stan_transductive_train.csv", row.names = FALSE)
