@@ -78,7 +78,7 @@ any endogenous variable is fully determined by
 the background variables and structural equations. The counterfactual is
 modeled as the solution for $Y$ for a given $U = u$ where the equation(s)
 for $X$ is (are) replaced with $X = x$.  We denote it by $Y_{X \leftarrow x}(u)$
-\cite{pearl:00}.
+\cite{pearl:00}, and sometimes as $Y_x$ if the context of the notation is clear.
 
 Counterfactual inference, as specified by a causal model $(U, V, F)$,
 is the computation of probabilities $P(Y_{X \leftarrow x}(U)\ |\ W =
@@ -86,10 +86,11 @@ w)$, where $W$, $X$ and $Y$ are subsets of $V$. Inference proceeds in
 three steps, as explained in more detail in Chapter 4 of
 \cite{pearl:16}:
 \begin{enumerate}
-\item For a given prior on $U$, compute the posterior distribution of $U$ given the evidence $W = w$;
-\item Substitute the equations for $X$ with the interventional values $x$, resulting
+\item Abduction: for a given prior on $U$, compute the posterior
+  distribution of $U$ given the evidence $W = w$;
+\item Action: substitute the equations for $X$ with the interventional values $x$, resulting
      in the modified set of equations $F_x$;
-\item Compute the implied distribution on the remaining elements of $V$
+\item Prediction: compute the implied distribution on the remaining elements of $V$
      using $F_x$ and the posterior $P(U\ | W = w)$.
 \end{enumerate}
 

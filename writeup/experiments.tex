@@ -10,8 +10,8 @@ We propose to model the law school data as shown in Figure~\ref{figure.law_schoo
 \begin{align}
 G &\sim {\cal N}(b_G + w_1 K + w_2 R + w_3 S, \sigma_G) \nonumber \\
 L &\sim \textrm{Poisson}(\exp(b_L + w_4 K + w_5 R + w_6 S)) \nonumber \\
-F &\sim {\cal N}(w_7 K + w_8 + w_9 R + w_{10} S, 1) \nonumber \\
-P &\sim \textrm{Bernoulli}([1+\exp(-b_P + w_{11} K + w_{12} R + w_{13} S)]^{-1}) \nonumber \\
+F &\sim {\cal N}(b_F + w_7 K + w_8 R + w_{9} S, 1) \nonumber \\
+P &\sim \textrm{Bernoulli}([1+\exp(-b_P + w_{10} K + w_{11} R + w_{12} S)]^{-1}) \nonumber \\
 K &\sim {\cal N}(0,1) \nonumber
 \end{align}
 
@@ -29,7 +29,55 @@ K &\sim {\cal N}(0,1) \nonumber
 \end{center}
 \end{figure}
 
+\begin{table}[t]
+\vspace{-2ex}
+\caption{Prediction results using logistic regression. Note that we must sacrifice a small amount of accuracy to ensuring counterfactually fair prediction (fair), versus the model which uses all features, including race and sex (unfair).}
+\vspace{-3ex}
+\label{table.pred_law}
+\begin{center}
+\resizebox{\columnwidth}{!}
+{
+\begin{sc}
+\footnotesize
+\begin{tabular}{c|c|c}
+\hline
+%\multicolumn{5}{c}{\textbf{Lower Bounds}}\\
+\hline
+model & balanced acc. & F1-score  \\
+\hline
+unfair & 0.590 & 0.293 \\ \hline
+fair  &  0.562 & 0.216 \\
+\hline
+\end{tabular}
+\end{sc}
+}
+\end{center}
+\vspace{-4ex}
+\end{table}
+
 
 \subsection{True vs. Perceived Criminality}
+\begin{figure*}[th!]
+\begin{center}
+\vspace{-2ex}
+\centerline{\includegraphics[width=\textwidth]{stop_and_frisk_graphs.png}}
+\vspace{-2ex}
+\caption{P.}
+\label{figure.criminality}
+\vspace{-2ex}
+\end{center}
+\end{figure*}
+
+\begin{figure}[th]
+\begin{center}
+\vspace{-1ex}
+\centerline{\includegraphics[width=\columnwidth]{stop_and_frisk_model2.pdf}}
+\vspace{-2ex}
+\caption{A causal model for the stop and frisk dataset.\label{figure.stop_and_frisk}}
+\vspace{-2ex}
+\end{center}
+\end{figure}
+
+
 
 \subsection{Model criticism}

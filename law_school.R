@@ -178,42 +178,54 @@ output_te <- data.frame(bar_pass_fair = y_te,
                      male    = lawTest$male,
                      u_hat = u_te_hat)
 
-write.csv(output, file = "law_school_l_stan_transductive_train.csv", row.names = FALSE)
-write.csv(output_te, file = "law_school_l_stan_transductive_test.csv", row.names = FALSE)
+write.csv(output, file = "law_school_l_stan_transductive_train.csv", row.names = TRUE)
+write.csv(output_te, file = "law_school_l_stan_transductive_test.csv", row.names = TRUE)
 
-
+save(la_law,file='law_school_l_stan_results.Rdata')
 #########################################
 
-x_unfair <- cbind(a, z, t, g, l)
-x_unfair_te <- cbind(a_te, z_te, t_te, g_te, l_te)
+x_unfair <- cbind(data.matrix(lawTrain[,sense_cols]), z, t, g, l)
+x_unfair_te <- cbind(data.matrix(lawTest[,sense_cols]), z_te, t_te, g_te, l_te)
 
-X_U <- as.data.frame(a)
+X_U <- as.data.frame(data.matrix(lawTrain[,sense_cols]))
 X_U$z <- z
 X_U$t <- t
-X_U$g <- g
 X_U$l <- l
 
-model_u <- glm(y ~ gender + race + z + t + g + l + 1,family=binomial(link='logit'), data=X_U)
+model_u <- glm(y ~ . + 1,family=binomial(link='logit'), data=X_U)
 pred_u <- predict.glm(model_u, type = "response")
 
-X_U_TE <- data.frame(gender=gender_te, race=race_te, z=z_te, t=t_te, g=g_te, l=l_te)
+X_U_TE <- data.frame(amerind=lawTest$amerind,
+                     asian=lawTest$asian,
+                     black=lawTest$black,
+                     hisp=lawTest$hisp,
+                     mexican=lawTest$mexican,
+                     other=lawTest$other,
+                     puerto=lawTest$puerto,
+                     white=lawTest$white,
+                     male=lawTest$male,
+                     female=lawTest$female, z=z_te, t=t_te, l=l_te)
+  #data.frame(gender=gender_te, race=race_te, z=z_te, t=t_te, g=g_te, l=l_te)
 pred_u_te <- predict(model_u, newdata=X_U_TE, type = "response")
 
 pred_u_thres <- function(t) ifelse(pred_u > t , 1,0)
 pred_u_te_thres <- function(t) ifelse(pred_u_te > t , 1,0)
 
 #confusionMatrix(pred_u_thres(0.5),y)
-confusionMatrix(pred_u_te_thres(0.5),y_te)
+conf_u <- confusionMatrix(pred_u_te_thres(0.5),y_te)
+conf_u$byClass["Balanced Accuracy"]
+F1_u <- as.numeric(2*(conf_u$byClass["Precision"]*conf_u$byClass["Recall"])/(conf_u$byClass["Precision"]+conf_u$byClass["Recall"]))
+F1_u
 
-x_fair <- cbind(u_hat, l)
-x_fair_te <- cbind(u_te_hat, l_te)
+x_fair <- cbind(u_hat)
+x_fair_te <- cbind(u_te_hat)
 
 
-X_F <- data.frame(u_hat=u_hat, l=l)
-X_F_TE <- data.frame(u_hat=u_te_hat, l=l_te)
+X_F <- data.frame(u_hat=u_hat)
+X_F_TE <- data.frame(u_hat=u_te_hat)
 
 #model_f <- glm(y ~ x_fair,family=binomial(link='logit'))
-model_f <- glm(y ~ u_hat + l + 1, family=binomial(link='logit'), data=X_F)
+model_f <- glm(y ~ u_hat + 1, family=binomial(link='logit'), data=X_F)
 
 pred_f <- predict.glm(model_f, type = "response")
 pred_f_te <- predict.glm(model_f, newdata=X_F_TE, type = "response")
@@ -222,8 +234,69 @@ pred_f_thres <- function(t) ifelse(pred_f > t , 1,0)
 pred_f_te_thres <- function(t) ifelse(pred_f_te > t , 1,0)
 
 
-confusionMatrix(pred_f_thres(0.5),y)
-confusionMatrix(pred_f_te_thres(0.5),y_te)
+#confusionMatrix(pred_f_thres(0.5),y)
+conf_f <- confusionMatrix(pred_f_te_thres(0.5),y_te)
+conf_f$byClass["Balanced Accuracy"]
+F1_f <- as.numeric(2*(conf_f$byClass["Precision"]*conf_f$byClass["Recall"])/(conf_f$byClass["Precision"]+conf_f$byClass["Recall"]))
+F1_f
+
 
 fixed <- rep(1, 4358)
 confusionMatrix(fixed,y_te)
+
+
+# use potential outcomes-like model to test how well model fits data, by generating Y(a')
+# can just use means instead of sampling
+# try just on test set for now
+
+output_te <- data.frame(bar_pass_fair = y_te,
+                        location = l_te,
+                        UGPA = g_te, 
+                        LSAT = t_te, 
+                        ZFYA = z_te,
+                        amerind = lawTest$amerind,
+                        asian   = lawTest$asian  ,
+                        black   = lawTest$black  ,
+                        hisp    = lawTest$hisp   ,
+                        mexican = lawTest$mexican,
+                        other   = lawTest$other  ,
+                        puerto  = lawTest$puerto ,
+                        white   = lawTest$white  ,
+                        female  = lawTest$female,
+                        male    = lawTest$male,
+                        u_hat = u_te_hat)
+
+lawTest[lawTest$amerind == 1,]
+G0 <- mean(la_law$g0)
+ETA_U_G <- mean(la_law$eta_u_g)
+ETA_A_G <- colMeans(la_law$eta_a_g)
+
+L0 <- mean(la_law$l0)
+ETA_U_T <- mean(la_law$eta_u_t)
+ETA_A_T <- colMeans(la_law$eta_a_t)
+
+ETA_U_Z <- mean(la_law$eta_u_z)
+ETA_A_Z <- colMeans(la_law$eta_a_z)
+
+Y0 <- mean(la_law$y0)
+ETA_U_Y <- mean(la_law$eta_u_y)
+ETA_A_Y <- colMeans(la_law$eta_a_y)
+
+G <- G0 + ETA_U_G * u_te_hat[lawTest$amerind == 1] +  ETA_A_G[2] # what if amerind -> asian
+TT <- exp(L0 + ETA_U_T * u_te_hat[lawTest$amerind == 1] + ETA_A_T[2])
+Z <- ETA_U_Z * u_te_hat[lawTest$amerind == 1] = ETA_A_Z[2]
+Y_amerind_asian <- 1/(1+exp(-(Y0 + ETA_U_Y * u_te_hat[lawTest$amerind == 1] + ETA_A_Y[2])))
+
+fairpred_pen <- function(G0, ETA_U_G, ETA_A_G, L0, ETA_U_T, ETA_A_T, ETA_U_Z, ETA_A_Z, Y0, ETA_U_Y, ETA_A_Y, inds, ix) {
+  
+  
+  G <- G0 + ETA_U_G * u_te_hat[inds] +  ETA_A_G[ix] # what if amerind -> asian
+  TT <- exp(L0 + ETA_U_T * u_te_hat[inds] + ETA_A_T[ix])
+  Z <- ETA_U_Z * u_te_hat[inds] = ETA_A_Z[ix]
+  YY <- 1/(1+exp(-(Y0 + ETA_U_Y * u_te_hat[inds] + ETA_A_Y[ix])))
+  return(YY)
+  
+}
+
+
+
