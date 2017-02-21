@@ -222,6 +222,15 @@ causal structure of the world\footnote{The notion of ``closest world''
 % dependencies on $A$. {\em Center and Right:} Potentially unfair worlds
 % in which the state of $A$ can influence the state of $Y$ either
 % indirectly as in {\em center} or directly as in {\em Right}.
+\begin{figure*}[th]
+\begin{center}
+\vspace{-2ex}
+\centerline{\includegraphics[width=0.9\textwidth]{simple_models_no_q2}}
+\vspace{-2ex}
+\caption{Three causal models for different real-world fair prediction scenarios.\label{figure.simple_models} See section \ref{sec:count_fair} for discussion.}
+\vspace{-2ex}
+\end{center}
+\end{figure*}
 
 \subsection{Examples}
 To get an intuition for counterfactual fairness we will consider three real-world fair prediction scenarios: 1. \textbf{insurance pricing}, 2. \textbf{crime prediction}, 3. \textbf{college admissions}. Each of these correspond to the three causal graphs in Figure~\ref{figure.simple_models}, we describe how below.
@@ -269,17 +278,6 @@ race $A$. We show this scenario in Figure~\ref{figure.simple_models} (\emph{Cent
 
 \paragraph{Scenario 3: University Success.}
 A university wants to know if a student is likely to be successful after they graduate $Y$. They have information such as incoming grade point average (GPA), advanced placement (AP) exams results, and other academic features $X$. The university believes however, that an individual's gender may influence these features as well as their post-graduation success $Y$ due to discrimination. So instead, they would like to model an individual's latent talent $U$ which causes $X$ and $Y$. We show this scenario in Figure~\ref{figure.simple_models} (\emph{Right}).
-
-
-\begin{figure*}[th!]
-\begin{center}
-\vspace{-2ex}
-\centerline{\includegraphics[width=0.9\textwidth]{simple_models_no_q2}}
-\vspace{-2ex}
-\caption{Three causal models for different real-world fair prediction scenarios.\label{figure.simple_models} See section \ref{sec:count_fair} for discussion.}
-\vspace{-2ex}
-\end{center}
-\end{figure*}
 
 %  The world on the right shows $Y'$ a
 % causally fair variable that doesn't depend on $A$ being directly
