@@ -2,12 +2,49 @@
 %%% TeX-master: "ricardo_draft"~\ref{figure.simple_models}
 \begin{figure*}[th!]
 \begin{center}
+\vspace{-1ex}
+\centerline{\includegraphics[width=\textwidth]{implications_fig.pdf}}
 \vspace{-2ex}
-\centerline{\includegraphics[width=\textwidth]{simple_models_no_q2}}
-\vspace{-2ex}
-\caption{Three causal models for different real-world fair prediction scenarios.\label{figure.simple_models} See section \ref{sec:count_fair} for discussion.}
+\label{fig:ex1}
+  \caption{(a) The graph corresponding to a causal model with $A$ being the protected outcome
+    and $Y$ some outcome of interest, with background variables assumed to be independent.
+    (b) Expanding the model to include an intermediate variable indicating whether the individual
+    is employed with two (latent) background variables $Prejudiced$ (whether the person in charge
+    of offering the job is prejudiced) and $Qualifications$ (a measure of the qualifications of
+    the individual). (c) A twin network representation of this system \citep{pearl:00}
+    under two different counterfactual levels for $A$. The network is created by creating copies
+    of nodes descending from $A$, which inherit parents from the factual world that have not
+    been affected.}
 \vspace{-2ex}
 \end{center}
+% \begin{center}
+  % \begin{tabular}{c}
+  %   Here, a graph $U_A \rightarrow A \rightarrow Y \leftarrow U_Y$
+  %   (rearrange it spatially in any way you want (including this table).)\\ (a)\\ \\
+  %   Here, a graph made of edges \\
+  %   $A \leftarrow U_A$, $Employed \leftarrow \{A, Prejudiced, Qualifications\}$,
+  %   $Y \leftarrow \{Employed, U_Y\}$. \\ (b)\\ \\
+  %   Here, a twin network,
+  %   $A \leftarrow U_A$, $Employed \leftarrow \{A, Prejudiced, Qualifications\}$,
+  %   $Y \leftarrow \{Employed, U_Y\}$,\\
+  %   $Employed_a \leftarrow \{a, Prejudiced, Qualifications\}$,
+  %   $Y_a \leftarrow \{Employed_a, U_Y\}$,\\
+  %   $Employed_{a'} \leftarrow \{a', Prejudiced, Qualifications\}$,
+  %   $Y_{a'} \leftarrow \{Employed_{a'}, U_Y\}$,
+  %   (``$a$'' and ``$a'$'' are two extra nodes too)\\.
+  %   \\ (c)\\
+  % \end{tabular}
+  % \label{fig:ex1}
+  % \caption{(a) The graph corresponding to a causal model with $A$ being the protected outcome
+  %   and $Y$ some outcome of interest, with background variables assumed to be independent.
+  %   (b) Expanding the model to include an intermediate variable indicating whether the individual
+  %   is employed with two (latent) background variables $Prejudiced$ (whether the person in charge
+  %   of offering the job is prejudiced) and $Qualifications$ (a measure of the qualifications of
+  %   the individual). (c) A twin network representation of this system \citep{pearl:00}
+  %   under two different counterfactual levels for $A$. The network is created by creating copies
+  %   of nodes descending from $A$, which inherit parents from the factual world that have not
+  %   been affected.}
+% \end{center}
 \end{figure*}
 
 
@@ -162,36 +199,7 @@ causal structure of the world\footnote{The notion of ``closest world''
   would be present anyway in the unfair prediction problem, and is
   orthogonal to the causal assumptions.}.
 
-\begin{figure*}
-\begin{center}
-  \begin{tabular}{c}
-    Here, a graph $U_A \rightarrow A \rightarrow Y \leftarrow U_Y$
-    (rearrange it spatially in any way you want (including this table).)\\ (a)\\ \\
-    Here, a graph made of edges \\
-    $A \leftarrow U_A$, $Employed \leftarrow \{A, Prejudiced, Qualifications\}$,
-    $Y \leftarrow \{Employed, U_Y\}$. \\ (b)\\ \\
-    Here, a twin network,
-    $A \leftarrow U_A$, $Employed \leftarrow \{A, Prejudiced, Qualifications\}$,
-    $Y \leftarrow \{Employed, U_Y\}$,\\
-    $Employed_a \leftarrow \{a, Prejudiced, Qualifications\}$,
-    $Y_a \leftarrow \{Employed_a, U_Y\}$,\\
-    $Employed_{a'} \leftarrow \{a', Prejudiced, Qualifications\}$,
-    $Y_{a'} \leftarrow \{Employed_{a'}, U_Y\}$,
-    (``$a$'' and ``$a'$'' are two extra nodes too)\\.
-    \\ (c)\\
-  \end{tabular}
-  \label{fig:ex1}
-  \caption{(a) The graph corresponding to a causal model with $A$ being the protected outcome
-    and $Y$ some outcome of interest, with background variables assumed to be independent.
-    (b) Expanding the model to include an intermediate variable indicating whether the individual
-    is employed with two (latent) background variables $Prejudiced$ (whether the person in charge
-    of offering the job is prejudiced) and $Qualifications$ (a measure of the qualifications of
-    the individual). (c) A twin network representation of this system \citep{pearl:00}
-    under two different counterfactual levels for $A$. The network is created by creating copies
-    of nodes descending from $A$, which inherit parents from the factual world that have not
-    been affected.}
-\end{center}
-\end{figure*}
+
 
 
 % TODO. Here the main
@@ -263,6 +271,15 @@ race $A$. We show this scenario in Figure~\ref{figure.simple_models} (\emph{Cent
 A university wants to know if a student is likely to be successful after they graduate $Y$. They have information such as incoming grade point average (GPA), advanced placement (AP) exams results, and other academic features $X$. The university believes however, that an individual's gender may influence these features as well as their post-graduation success $Y$ due to discrimination. So instead, they would like to model an individual's latent talent $U$ which causes $X$ and $Y$. We show this scenario in Figure~\ref{figure.simple_models} (\emph{Right}).
 
 
+\begin{figure*}[th!]
+\begin{center}
+\vspace{-2ex}
+\centerline{\includegraphics[width=0.9\textwidth]{simple_models_no_q2}}
+\vspace{-2ex}
+\caption{Three causal models for different real-world fair prediction scenarios.\label{figure.simple_models} See section \ref{sec:count_fair} for discussion.}
+\vspace{-2ex}
+\end{center}
+\end{figure*}
 
 %  The world on the right shows $Y'$ a
 % causally fair variable that doesn't depend on $A$ being directly

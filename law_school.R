@@ -88,8 +88,8 @@ sigma_y0 <- 1
 #mu_yp_y <- 0
 #sigma_yp_y <- 1
 
-#mu_a_y <- 0
-#sigma_a_y <- 1
+mu_a_y <- 0
+sigma_a_y <- 1
 
 #mu_l_y <- 0
 #sigma_l_y <- 1
@@ -184,17 +184,15 @@ write.csv(output_te, file = "law_school_l_stan_transductive_test.csv", row.names
 save(la_law,file='law_school_l_stan_results.Rdata')
 #########################################
 
-x_unfair <- cbind(data.matrix(lawTrain[,sense_cols]), z, t, g, l)
-x_unfair_te <- cbind(data.matrix(lawTest[,sense_cols]), z_te, t_te, g_te, l_te)
+x_unfair <- cbind(data.matrix(lawTrain[,sense_cols]), z, t, g)#, l)
+x_unfair_te <- cbind(data.matrix(lawTest[,sense_cols]), z_te, t_te, g_te)#, l_te)
 
 X_U <- as.data.frame(data.matrix(lawTrain[,sense_cols]))
 X_U$z <- z
 X_U$t <- t
-X_U$l <- l
-
-model_u <- glm(y ~ . + 1,family=binomial(link='logit'), data=X_U)
-pred_u <- predict.glm(model_u, type = "response")
-
+X_U$g <- g
+X_U$y <- y
+#X_U$l <- l
 X_U_TE <- data.frame(amerind=lawTest$amerind,
                      asian=lawTest$asian,
                      black=lawTest$black,
@@ -204,8 +202,14 @@ X_U_TE <- data.frame(amerind=lawTest$amerind,
                      puerto=lawTest$puerto,
                      white=lawTest$white,
                      male=lawTest$male,
-                     female=lawTest$female, z=z_te, t=t_te, l=l_te)
-  #data.frame(gender=gender_te, race=race_te, z=z_te, t=t_te, g=g_te, l=l_te)
+                     female=lawTest$female, z=z_te, t=t_te, g=g_te)      #, l=l_te)
+#data.frame(gender=gender_te, race=race_te, z=z_te, t=t_te, g=g_te, l=l_te)
+
+
+model_u <- glm(y ~ . + 1,family=binomial(link='logit'), data=X_U)
+pred_u <- predict.glm(model_u, type = "response")
+
+
 pred_u_te <- predict(model_u, newdata=X_U_TE, type = "response")
 
 pred_u_thres <- function(t) ifelse(pred_u > t , 1,0)
@@ -241,32 +245,39 @@ F1_f <- as.numeric(2*(conf_f$byClass["Precision"]*conf_f$byClass["Recall"])/(con
 F1_f
 
 
-fixed <- rep(1, 4358)
-confusionMatrix(fixed,y_te)
 
 
-# use potential outcomes-like model to test how well model fits data, by generating Y(a')
-# can just use means instead of sampling
-# try just on test set for now
+X_UNAWARE <- data.frame(z=z, t=t, g=g, y=y)
+X_UNAWARE_TE <- data.frame(z=z_te, t=t_te, g=g_te)
+model_UNA <- glm(y ~ . + 1,family=binomial(link='logit'), data=X_UNAWARE)
+pred_UNA <- predict.glm(model_UNA, type = "response")
+pred_UNA_te <- predict(model_UNA, newdata=X_UNAWARE_TE, type = "response")
+pred_UNA_thres <- function(t) ifelse(pred_UNA > t , 1,0)
+pred_UNA_te_thres <- function(t) ifelse(pred_UNA_te > t , 1,0)
+#confusionMatrix(pred_u_thres(0.5),y)
+conf_UNA <- confusionMatrix(pred_UNA_te_thres(0.5),y_te)
+conf_UNA$byClass["Balanced Accuracy"]
+F1_UNA <- as.numeric(2*(conf_UNA$byClass["Precision"]*conf_u$byClass["Recall"])/(conf_u$byClass["Precision"]+conf_u$byClass["Recall"]))
+F1_UNA
 
-output_te <- data.frame(bar_pass_fair = y_te,
-                        location = l_te,
-                        UGPA = g_te, 
-                        LSAT = t_te, 
-                        ZFYA = z_te,
-                        amerind = lawTest$amerind,
-                        asian   = lawTest$asian  ,
-                        black   = lawTest$black  ,
-                        hisp    = lawTest$hisp   ,
-                        mexican = lawTest$mexican,
-                        other   = lawTest$other  ,
-                        puerto  = lawTest$puerto ,
-                        white   = lawTest$white  ,
-                        female  = lawTest$female,
-                        male    = lawTest$male,
-                        u_hat = u_te_hat)
 
-lawTest[lawTest$amerind == 1,]
+
+
+
+
+#get_performance <- function(pred, y) {
+#  conf <- confusionMatrix(pred,y)
+#  print(conf$byClass["Balanced Accuracy"])
+#  F1 <- as.numeric(2*(conf$byClass["Precision"]*conf$byClass["Recall"])/(conf$byClass["Precision"]+conf$byClass["Recall"]))
+#  print(F1)
+#  return(list(conf$byClass["Balanced Accuracy"],F1))
+#}
+#res = get_perforamance(pred_UNA_te_thres(0.5),y_te)
+  
+
+
+# we'll try computing counterfactuals!
+# 1.  Estimate the parameters by taking the posterior expected value
 G0 <- mean(la_law$g0)
 ETA_U_G <- mean(la_law$eta_u_g)
 ETA_A_G <- colMeans(la_law$eta_a_g)
@@ -282,21 +293,341 @@ Y0 <- mean(la_law$y0)
 ETA_U_Y <- mean(la_law$eta_u_y)
 ETA_A_Y <- colMeans(la_law$eta_a_y)
 
-G <- G0 + ETA_U_G * u_te_hat[lawTest$amerind == 1] +  ETA_A_G[2] # what if amerind -> asian
-TT <- exp(L0 + ETA_U_T * u_te_hat[lawTest$amerind == 1] + ETA_A_T[2])
-Z <- ETA_U_Z * u_te_hat[lawTest$amerind == 1] = ETA_A_Z[2]
-Y_amerind_asian <- 1/(1+exp(-(Y0 + ETA_U_Y * u_te_hat[lawTest$amerind == 1] + ETA_A_Y[2])))
+SIGMA_G <- mean(la_law$sigma_g)
 
-fairpred_pen <- function(G0, ETA_U_G, ETA_A_G, L0, ETA_U_T, ETA_A_T, ETA_U_Z, ETA_A_Z, Y0, ETA_U_Y, ETA_A_Y, inds, ix) {
-  
-  
-  G <- G0 + ETA_U_G * u_te_hat[inds] +  ETA_A_G[ix] # what if amerind -> asian
-  TT <- exp(L0 + ETA_U_T * u_te_hat[inds] + ETA_A_T[ix])
-  Z <- ETA_U_Z * u_te_hat[inds] = ETA_A_Z[ix]
-  YY <- 1/(1+exp(-(Y0 + ETA_U_Y * u_te_hat[inds] + ETA_A_Y[ix])))
-  return(YY)
-  
+# 2. Simulate fake data out of it
+# sample a new training set and test set
+# fit vae on training set
+# compute Z for training set and test set
+# compute Z for counterfactual test set
+ATR = data.matrix(lawTrain[,sense_cols])
+ATE = data.matrix(lawTest[,sense_cols])
+ATE_swap <- ATE
+temp <- ATE_swap[,9]
+ATE_swap[,9] <- ATE_swap[,10]
+ATE_swap[,10] <- temp
+
+set.seed(0)
+gpa_rand_tr <- rnorm(n, mean=0, sd=SIGMA_G)
+gpa_rand_te <- rnorm(ne,mean=0, sd=SIGMA_G)
+
+lsat_rand_tr <- runif(n)
+lsat_rand_te <- runif(ne)
+
+zfya_rand_tr <- rnorm(n)
+zfya_rand_te <- rnorm(ne)
+
+pass_rand_tr <- runif(n)
+pass_rand_te <- runif(ne)
+
+u_rand_tr <- rnorm(n)
+u_rand_te <- rnorm(ne)
+
+
+sample_GPA <- function(u, a, eps) {
+  GPA_m <- G0 + ETA_U_G * u + a %*% ETA_A_G
+  #eps <- rnorm(1,mean=0,sd=SIGMA_G)
+  #return(list(GPA_m,eps))
+  return(GPA_m + eps)
 }
+
+sample_LSAT <- function(u, a, eps) {
+  #eps <- runif(1)
+  #LSAT_m <- qpois( eps, exp( L0 + ETA_U_T * u + a %*% ETA_A_T ) )
+  LSAT_m <- exp( L0 + ETA_U_T * u + a %*% ETA_A_T )
+  sample <- qpois( eps, LSAT_m )
+  return(sample)#list(LSAT_m,eps))
+}
+
+sample_ZFYA <- function(u, a, eps) {
+  ZFYA_m <- ETA_U_Z * u + a %*% ETA_A_Z
+  #eps <- rnorm(1,mean=0,sd=1)
+  return(ZFYA_m + eps)#list(ZFYA_m,eps))
+}
+
+sample_PASS <- function(u, a, eps) {
+  PASS_m <- 1.0/(1.0 + exp(-(Y0 + ETA_U_Y * u + a %*% ETA_A_Y)))
+  #eps <- runif(1)
+  # qbinom( eps, 1, PASS_m)
+  sample <- qbinom( eps, 1, PASS_m )
+  return(sample) #(list(PASS_m,eps))
+}
+
+lawSample <- lawTrain
+for (i in 1:n) {
+  lawSample$UGPA[i] = sample_GPA(u_rand_tr[i], ATR[i,], gpa_rand_tr[i])
+  lawSample$LSAT[i] = sample_LSAT(u_rand_tr[i], ATR[i,], lsat_rand_tr[i])
+  lawSample$ZFYA[i] = sample_ZFYA(u_rand_tr[i], ATR[i,], zfya_rand_tr[i])
+  lawSample$first_pf[i] = sample_PASS(u_rand_tr[i], ATR[i,], pass_rand_tr[i])
+}
+
+lawSampleTe <- lawTest
+lawSampleTeSwap <- lawTest
+for (i in 1:ne) {
+  lawSampleTe$UGPA[i] = sample_GPA(u_rand_te[i], ATE[i,], gpa_rand_te[i])
+  lawSampleTe$LSAT[i] = sample_LSAT(u_rand_te[i], ATE[i,], lsat_rand_te[i])
+  lawSampleTe$ZFYA[i] = sample_ZFYA(u_rand_te[i], ATE[i,], zfya_rand_te[i])
+  lawSampleTe$first_pf[i] = sample_PASS(u_rand_te[i], ATE[i,], pass_rand_te[i])
+  
+  lawSampleTeSwap$UGPA[i] = sample_GPA(u_rand_te[i], ATE_swap[i,], gpa_rand_te[i])
+  lawSampleTeSwap$LSAT[i] = sample_LSAT(u_rand_te[i], ATE_swap[i,], lsat_rand_te[i])
+  lawSampleTeSwap$ZFYA[i] = sample_ZFYA(u_rand_te[i], ATE_swap[i,], zfya_rand_te[i])
+  lawSampleTeSwap$first_pf[i] = sample_PASS(u_rand_te[i], ATE_swap[i,], pass_rand_te[i])
+}
+lawSampleTeSwap[,sense_cols] = ATE_swap
+
+
+outSamp <- data.frame(bar_pass = lawSample$first_pf,
+                     UGPA    = lawSample$UGPA, 
+                     LSAT    = lawSample$LSAT, 
+                     ZFYA    = lawSample$ZFYA,
+                     amerind = lawSample$amerind,
+                     asian   = lawSample$asian  ,
+                     black   = lawSample$black  ,
+                     hisp    = lawSample$hisp   ,
+                     mexican = lawSample$mexican,
+                     other   = lawSample$other  ,
+                     puerto  = lawSample$puerto ,
+                     white   = lawSample$white  ,
+                     female  = lawSample$female,
+                     male    = lawSample$male)
+
+outSampTe <- data.frame(bar_pass = lawSampleTe$first_pf,
+                        UGPA    = lawSampleTe$UGPA, 
+                        LSAT    = lawSampleTe$LSAT, 
+                        ZFYA    = lawSampleTe$ZFYA,
+                        amerind = lawSampleTe$amerind,
+                        asian   = lawSampleTe$asian  ,
+                        black   = lawSampleTe$black  ,
+                        hisp    = lawSampleTe$hisp   ,
+                        mexican = lawSampleTe$mexican,
+                        other   = lawSampleTe$other  ,
+                        puerto  = lawSampleTe$puerto ,
+                        white   = lawSampleTe$white  ,
+                        female  = lawSampleTe$female,
+                        male    = lawSampleTe$male)
+
+outSampTeSwap <- data.frame(bar_pass = lawSampleTeSwap$first_pf,
+                        UGPA    = lawSampleTeSwap$UGPA, 
+                        LSAT    = lawSampleTeSwap$LSAT, 
+                        ZFYA    = lawSampleTeSwap$ZFYA,
+                        amerind = lawSampleTeSwap$amerind,
+                        asian   = lawSampleTeSwap$asian  ,
+                        black   = lawSampleTeSwap$black  ,
+                        hisp    = lawSampleTeSwap$hisp   ,
+                        mexican = lawSampleTeSwap$mexican,
+                        other   = lawSampleTeSwap$other  ,
+                        puerto  = lawSampleTeSwap$puerto ,
+                        white   = lawSampleTeSwap$white  ,
+                        female  = lawSampleTeSwap$female,
+                        male    = lawSampleTeSwap$male)
+
+write.csv(outSamp, file = "law_school_sampled_train.csv", row.names = TRUE)
+write.csv(outSampTe, file = "law_school_sampled_test.csv", row.names = TRUE)
+write.csv(outSampTeSwap, file = "law_school_sampled_swap_test.csv", row.names = TRUE)
+
+
+# fit unfair classifier to sampled data
+
+
+model_u_samp <- glm(bar_pass ~ . + 1,family=binomial(link='logit'), data=outSamp)
+pred_u_samp_te   <- predict(model_u_samp, newdata=outSampTe, type="response")
+pred_u_samp_swap <- predict(model_u_samp, newdata=outSampTeSwap, type="response")
+pred_u_samp_te_t <- function(t) ifelse(pred_u_samp_te > t , 1,0)
+pred_u_samp_samp_t <- function(t) ifelse(pred_u_samp_swap > t , 1,0)
+
+
+
+
+D <- data.frame(pred = pred_u_samp_te_t(0.5), prob=pred_u_samp_te)
+D2<- data.frame(pred = pred_u_samp_samp_t(0.5), prob=pred_u_samp_swap, diff=pred_u_samp_te-pred_u_samp_swap)
+ppp <- pred_u_samp_te
+qqq <- pred_u_samp_swap
+M <- data.frame(ppp = ppp[lawSampleTe$male == 1], qqq=qqq[lawSampleTe$male == 1])
+F <- data.frame(ppp = ppp[lawSampleTe$female == 1], qqq=qqq[lawSampleTe$female == 1])
+
+ggplot(M, aes(ppp)) + stat_density(position="identity",geom="line")
+ggplot(M, aes(qqq)) + stat_density(position="identity",geom="line")
+
+
+ggplot(D, aes(pred)) + geom_bar(fill=c("#FFFFFF", "#FF0000"))
+ggplot(D2, aes(pred)) + geom_bar(fill=c("#FFFFFF", "#FF0000"))
+
+ggplot(D, aes(prob)) + stat_density(position="identity",geom="line")
+ggplot(D2, aes(prob)) + stat_density(position="identity",geom="line")
+
+ggplot(D2, aes(diff)) + stat_density(position="identity",geom="line")
+
+lawSampleTe$black == 1
+
+lawSampleTe$male == 1
+
+
+# fit unaware classifier to sampled data
+
+sense_cols
+
+
+
+
+
+X_UNAWARE <- data.frame(z=z, t=t, g=g, y=y)
+X_UNAWARE_TE <- data.frame(z=z_te, t=t_te, g=g_te)
+model_UNA <- glm(y ~ . + 1,family=binomial(link='logit'), data=X_UNAWARE)
+pred_UNA <- predict.glm(model_UNA, type = "response")
+pred_UNA_te <- predict(model_UNA, newdata=X_UNAWARE_TE, type = "response")
+pred_UNA_thres <- function(t) ifelse(pred_UNA > t , 1,0)
+pred_UNA_te_thres <- function(t) ifelse(pred_UNA_te > t , 1,0)
+#confusionMatrix(pred_u_thres(0.5),y)
+conf_UNA <- confusionMatrix(pred_UNA_te_thres(0.5),y_te)
+conf_UNA$byClass["Balanced Accuracy"]
+F1_UNA <- as.numeric(2*(conf_UNA$byClass["Precision"]*conf_u$byClass["Recall"])/(conf_u$byClass["Precision"]+conf_u$byClass["Recall"]))
+F1_UNA
+
+
+
+
+
+
+
+
+
+
+
+
+
+#---------------------#
+# UNTESTED CODE BELOW #
+
+
+fair_train <- read.csv("fair_class_law_train_samp.csv", header = FALSE, strip.white = TRUE)
+fair_train$y <- lawSample$first_pf
+fair_test <- read.csv("fair_class_law_test_samp.csv", header = FALSE, strip.white = TRUE)
+fair_test$y <- lawSampleTe$first_pf
+
+fair_swap <- fair_test
+fair_swap$V1 <- fair_swap$V2
+fair_swap$V2 <- NULL
+fair_test$V2 <- NULL
+ggplot(fair_test, aes(V1)) + geom_bar(fill=c("#FFFFFF", "#FF0000"))
+ggplot(fair_swap, aes(V1)) + geom_bar(fill=c("#FFFFFF", "#FF0000"))
+
+
+
+
+
+
+model_vae <- glm(y ~ V1 + 1, family=binomial(link='logit'), data=fair_train)
+
+
+vae_train_data <- read.csv("vae_generated_law_train_samp_beta200.0.csv", header = FALSE, strip.white = TRUE)
+vae_test_data  <- read.csv("vae_generated_law_test_samp_beta200.0.csv", header = FALSE, strip.white = TRUE)
+
+vae_test_swap <- vae_test_data
+vae_test_swap$V2 <- vae_test_swap$V3
+vae_test_swap$V3 <- NULL
+vae_test_data$V3 <- NULL
+
+model_vae <- glm(V1 ~ V2 + 1, family=binomial(link='logit'), data=vae_train_data)
+
+pred_vae <- predict.glm(model_vae, type = "response")
+pred_vae_te <- predict.glm(model_vae, newdata=vae_test_data, type = "response")
+pred_vae_swap <- predict.glm(model_vae, newdata=vae_test_swap, type = "response")
+
+
+pred_vae_thres <- function(t) ifelse(pred_vae > t , 1,0)
+pred_vae_te_thres <- function(t) ifelse(pred_vae_te > t , 1,0)
+pred_vae_swap_thres <- function(t) ifelse(pred_vae_swap > t , 1,0)
+
+
+#confusionMatrix(pred_f_thres(0.5),y)
+conf_vae <- confusionMatrix(pred_vae_te_thres(0.5),vae_test_data$V2)#y_te)
+conf_vae$byClass["Balanced Accuracy"]
+F1_vae <- as.numeric(2*(conf_vae$byClass["Precision"]*conf_vae$byClass["Recall"])/(conf_vae$byClass["Precision"]+conf_vae$byClass["Recall"]))
+F1_vae
+
+conf_vae_swap <- confusionMatrix(pred_vae_swap_thres(0.5),vae_test_swap$V2)#y_te)
+conf_vae_swap$byClass["Balanced Accuracy"]
+F1_vae_swap <- as.numeric(2*(conf_vae_swap$byClass["Precision"]*conf_vae_swap$byClass["Recall"])/(conf_vae_swap$byClass["Precision"]+conf_vae_swap$byClass["Recall"]))
+F1_vae_swap
+
+vae_test_data$pred <- pred_vae_te_thres(0.5)
+vae_test_swap$pred <- pred_vae_swap_thres(0.5)
+vae_test_data$prob <- pred_vae_te
+vae_test_swap$prob <- pred_vae_swap
+
+ggplot(vae_test_data, aes(pred)) + geom_bar(fill=c("#FFFFFF", "#FF0000"))
+ggplot(vae_test_swap, aes(pred)) + geom_bar(fill=c("#FFFFFF", "#FF0000"))
+
+ggplot(vae_test_data, aes(prob)) + stat_density(position="identity",geom="line")
+ggplot(vae_test_swap, aes(prob)) + stat_density(position="identity",geom="line")
+
+#---------------------#
+
+
+
+
+
+
+
+
+fixed <- rep(1, 4358)
+confusionMatrix(fixed,y_te)
+
+
+
+# use potential outcomes-like model to test how well model fits data, by generating Y(a')
+# can just use means instead of sampling
+# try just on test set for now
+
+#####output_te <- data.frame(bar_pass_fair = y_te,
+#####                        location = l_te,
+#####                        UGPA = g_te, 
+#####                        LSAT = t_te, 
+#####                        ZFYA = z_te,
+#####                        amerind = lawTest$amerind,
+#####                        asian   = lawTest$asian  ,
+#####                        black   = lawTest$black  ,
+#####                        hisp    = lawTest$hisp   ,
+#####                        mexican = lawTest$mexican,
+#####                        other   = lawTest$other  ,
+#####                        puerto  = lawTest$puerto ,
+#####                        white   = lawTest$white  ,
+#####                        female  = lawTest$female,
+#####                        male    = lawTest$male,
+#####                        u_hat = u_te_hat)
+#####
+#####lawTest[lawTest$amerind == 1,]
+#####G0 <- mean(la_law$g0)
+#####ETA_U_G <- mean(la_law$eta_u_g)
+#####ETA_A_G <- colMeans(la_law$eta_a_g)
+#####
+#####L0 <- mean(la_law$l0)
+#####ETA_U_T <- mean(la_law$eta_u_t)
+#####ETA_A_T <- colMeans(la_law$eta_a_t)
+#####
+#####ETA_U_Z <- mean(la_law$eta_u_z)
+#####ETA_A_Z <- colMeans(la_law$eta_a_z)
+#####
+#####Y0 <- mean(la_law$y0)
+#####ETA_U_Y <- mean(la_law$eta_u_y)
+#####ETA_A_Y <- colMeans(la_law$eta_a_y)
+#####
+#####G <- G0 + ETA_U_G * u_te_hat[lawTest$amerind == 1] +  ETA_A_G[2] # what if amerind -> asian
+#####TT <- exp(L0 + ETA_U_T * u_te_hat[lawTest$amerind == 1] + ETA_A_T[2])
+#####Z <- ETA_U_Z * u_te_hat[lawTest$amerind == 1] = ETA_A_Z[2]
+#####Y_amerind_asian <- 1/(1+exp(-(Y0 + ETA_U_Y * u_te_hat[lawTest$amerind == 1] + ETA_A_Y[2])))
+#####
+#####fairpred_pen <- function(G0, ETA_U_G, ETA_A_G, L0, ETA_U_T, ETA_A_T, ETA_U_Z, ETA_A_Z, Y0, ETA_U_Y, ETA_A_Y, inds, ix) {
+#####  
+#####  
+#####  G <- G0 + ETA_U_G * u_te_hat[inds] +  ETA_A_G[ix] # what if amerind -> asian
+#####  TT <- exp(L0 + ETA_U_T * u_te_hat[inds] + ETA_A_T[ix])
+#####  Z <- ETA_U_Z * u_te_hat[inds] = ETA_A_Z[ix]
+#####  YY <- 1/(1+exp(-(Y0 + ETA_U_Y * u_te_hat[inds] + ETA_A_Y[ix])))
+#####  return(YY)
+#####  
+#####}
 
 
 

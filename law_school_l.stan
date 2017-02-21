@@ -88,7 +88,6 @@ parameters {
   //real eta_u_yp;
   real y0;
   //real eta_yp_y;
-  //vector[K] eta_a_y;
   //real eta_l_y;
   real eta_u_y;
   vector[K] eta_a_g;
@@ -139,7 +138,6 @@ model {
   y0 ~ normal(mu_y0, sigma_y0);
   eta_u_y ~ normal(mu_u_y, sigma_u_y);
   //eta_yp_y ~ normal(mu_yp_y, sigma_yp_y);
-  //eta_a_y ~ normal(mu_a_y, sigma_a_y);
   //eta_l_y ~ normal(mu_l_y, sigma_l_y);
   eta_a_g ~ normal(mu_a_g, sigma_a_g);
   eta_a_t ~ normal(mu_a_t, sigma_a_t);

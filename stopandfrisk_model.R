@@ -73,6 +73,13 @@ n <- nrow(data)
 d <- ncol(data)
 
 # we'll z-score age & height & weight
+age_m <- mean(data$age)
+age_s <- sd(data$age)
+height_m <- mean(data$height)
+height_s <- sd(data$height)
+weight_m <- mean(data$weight)
+weight_s <- sd(data$weight)
+
 data$age <- (data$age - mean(data$age))/sd(data$age)
 data$height <- (data$height - mean(data$height))/sd(data$height)
 data$weight <- (data$weight - mean(data$weight))/sd(data$weight)
@@ -80,33 +87,33 @@ data$weight <- (data$weight - mean(data$weight))/sd(data$weight)
 
 # appearance variables
 app <- c("age", "height", "weight", 
-         "hairblack", "hairbrown", "hairblond", "hairred", "hairwhite", "hairbald", "hairsandy", "hairsap", "hairdyed",
-         "eyeblack",  "eyebrown", "eyeblue",    "eyegreen","eyehazel",  "eyegray",  "eyemaroon", "eyediff",
+         #"hairblack", "hairbrown", "hairblond", "hairred", "hairwhite", "hairbald", "hairsandy", "hairsap", "hairdyed",
+         #"eyeblack",  "eyebrown", "eyeblue",    "eyegreen","eyehazel",  "eyegray",  "eyemaroon", "eyediff",
          "buildheavy", "buildmusc", "buildmedium", "buildthin")
 
 
-# change "haircolr", "eyecolor", "build" to binary
-data$hairblack  <- as.numeric(data$haircolr == 1)
-data$hairbrown  <- as.numeric(data$haircolr == 2)
-data$hairblond  <- as.numeric(data$haircolr == 3)
-data$hairred    <- as.numeric(data$haircolr == 4)
-# there is no 6 in the datset, and 5 has no coding in the code book
-# so we'll assume they messed up and that 5 is white
-data$hairwhite  <- as.numeric(data$haircolr == 5)
-data$hairbald   <- as.numeric(data$haircolr == 7)
-data$hairsandy  <- as.numeric(data$haircolr == 8)
-data$hairsap    <- as.numeric(data$haircolr == 9)
-data$hairdyed   <- as.numeric(data$haircolr == 10)
-# there is no 11 in the dataset
-
-data$eyeblack    <- as.numeric(data$eyecolor == 1)
-data$eyebrown    <- as.numeric(data$eyecolor == 2)
-data$eyeblue     <- as.numeric(data$eyecolor == 3)
-data$eyegreen    <- as.numeric(data$eyecolor == 4)
-data$eyehazel    <- as.numeric(data$eyecolor == 5)
-data$eyegray     <- as.numeric(data$eyecolor == 6)
-data$eyemaroon   <- as.numeric(data$eyecolor == 7)
-data$eyediff     <- as.numeric(data$eyecolor == 8)
+#### change "haircolr", "eyecolor", "build" to binary
+###data$hairblack  <- as.numeric(data$haircolr == 1)
+###data$hairbrown  <- as.numeric(data$haircolr == 2)
+###data$hairblond  <- as.numeric(data$haircolr == 3)
+###data$hairred    <- as.numeric(data$haircolr == 4)
+#### there is no 6 in the datset, and 5 has no coding in the code book
+#### so we'll assume they messed up and that 5 is white
+###data$hairwhite  <- as.numeric(data$haircolr == 5)
+###data$hairbald   <- as.numeric(data$haircolr == 7)
+###data$hairsandy  <- as.numeric(data$haircolr == 8)
+###data$hairsap    <- as.numeric(data$haircolr == 9)
+###data$hairdyed   <- as.numeric(data$haircolr == 10)
+#### there is no 11 in the dataset
+###
+###data$eyeblack    <- as.numeric(data$eyecolor == 1)
+###data$eyebrown    <- as.numeric(data$eyecolor == 2)
+###data$eyeblue     <- as.numeric(data$eyecolor == 3)
+###data$eyegreen    <- as.numeric(data$eyecolor == 4)
+###data$eyehazel    <- as.numeric(data$eyecolor == 5)
+###data$eyegray     <- as.numeric(data$eyecolor == 6)
+###data$eyemaroon   <- as.numeric(data$eyecolor == 7)
+###data$eyediff     <- as.numeric(data$eyecolor == 8)
 
 data$buildheavy  <- as.numeric(data$build == 1)
 data$buildmusc   <- as.numeric(data$build == 2)
@@ -129,11 +136,12 @@ data$aspi      <- as.numeric(data$race == "AsianPacI")
 data$naam      <- as.numeric(data$race == "NativeAm")
 
 
-# do same with gender
-data$female <- as.numeric(data$sex == "Female")
-data$male   <- as.numeric(data$sex == "Male")
+# just limit to males
+data <- data[data$sex == "Male",]
+#data$female <- as.numeric(data$sex == "Female")
+#data$male   <- as.numeric(data$sex == "Male")
 
-sens <- c("black", "blackhisp", "hisp", "white", "aspi", "naam", "female", "male")
+sens <- c("black", "blackhisp", "hisp", "white", "aspi", "naam") #, "female", "male")
 
 
 library(rstan)
@@ -142,9 +150,9 @@ stop_stan_dat2 <- list(N = n, Ds = length(sens), se = data.matrix(data[,sens]),
                              Da = length(app),  ap = data.matrix(data[,app]),
                              ar = data[,arst],
                              sf1= data[,c("searched")], sf2 = data[,c("frisked")],
-                             we = data[,c("weapon")], fo = data[,c("force")], summ = data[,c("sumissue")]
+                             we = data[,c("weapon")], fo = data[,c("force")], summ = data[,c("sumissue")])
                              #Do = length(fo),   fo = data[,fo]
-                     )
+                     #)
                 
 fit2 <- stan(file = 'stopandfrisk.stan', data = stop_stan_dat2, iter = 2000, chains = 1, verbose = TRUE)
 
@@ -187,30 +195,30 @@ output <- data.frame(black = data$black,
                      white = data$white,
                      aspi = data$aspi,
                      naam = data$naam,
-                     male = data$male,
-                     female = data$female,
-                     #sex = data$sex,
+                     #male = data$male,
+                     #female = data$female,
+                     sex = data$sex,
                      #race = data$race,
                      age = data$age, 
                      height = data$height, 
                      weight = data$weight,
-                     hairblack  = data$hairblack,
-                     hairbrown  = data$hairbrown,
-                     hairblond  = data$hairblond,
-                     hairred    = data$hairred  ,
-                     hairwhite  = data$hairwhite,
-                     hairbald   = data$hairbald ,
-                     hairsandy  = data$hairsandy,
-                     hairsap    = data$hairsap  ,
-                     hairdyed   = data$hairdyed ,
-                     eyeblack   = data$eyeblack ,
-                     eyebrown   = data$eyebrown ,
-                     eyeblue    = data$eyeblue  ,
-                     eyegreen   = data$eyegreen ,
-                     eyehazel   = data$eyehazel ,
-                     eyegray    = data$eyegray  ,
-                     eyemaroon  = data$eyemaroon,
-                     eyediff    = data$eyediff  ,
+                     #hairblack  = data$hairblack,
+                     #hairbrown  = data$hairbrown,
+                     #hairblond  = data$hairblond,
+                     #hairred    = data$hairred  ,
+                     #hairwhite  = data$hairwhite,
+                     #hairbald   = data$hairbald ,
+                     #hairsandy  = data$hairsandy,
+                     #hairsap    = data$hairsap  ,
+                     #hairdyed   = data$hairdyed ,
+                     #eyeblack   = data$eyeblack ,
+                     #eyebrown   = data$eyebrown ,
+                     #eyeblue    = data$eyeblue  ,
+                     #eyegreen   = data$eyegreen ,
+                     #eyehazel   = data$eyehazel ,
+                     #eyegray    = data$eyegray  ,
+                     #eyemaroon  = data$eyemaroon,
+                     #eyediff    = data$eyediff  ,
                      buildheavy = data$buildheavy ,
                      buildmusc  = data$buildmusc  ,
                      buildmedium= data$buildmedium,

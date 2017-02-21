@@ -2,7 +2,7 @@
 In this section we evaluate our framework for modeling fairness. We test our approach on two practical problems in which fairness must be enforced. For each problem we construct causal models, and make explicit how unfairness may affect observed and unobserved variables in the world. Given these models we are able to (a) derive counterfactually fair predictors and (b) predict latent variables such as a person's `criminality' (which may be useful for predicting crime) as well as their `perceived criminality' (which may be due to prejudices based on race and gender). Additionally, we can analyze how realistic our models are by comparing our observations with data generated from the model. We consider two real-world problems, the first is \emph{fair prediction of success in law school} and the second is \emph{separating actual and perceived criminality in stop-and-frisk data}.
 
 \subsection{Law school success}
-Between the years of 1991-1996 the Law School Admission Council counducted a survey following students across 163 law schools in the United States \cite{wightman1998lsac}. The survey was designed to assess `the law school experience of minority students, as well as their ultimate entry into the profession'. The survey contains students features before entering law school (e.g., their entrance exam (LSAT) scores and their undergraduate grade-point average (GPA)), during law school (e.g., their average grade of their first-year of law school (FYA)), and after (e.g., whether students passed the final examination, the `bar exam' (P)). 
+Between the years of 1991-1996 the Law School Admission Council counducted a survey following students across 163 law schools in the United States \cite{wightman1998lsac}. The survey was designed to assess `the law school experience of minority students, as well as their ultimate entry into the profession'. The survey contains students' features before entering law school (e.g., their entrance exam (LSAT) scores and their undergraduate grade-point average (GPA)), during law school (e.g., their average grade of their first-year of law school (FYA)), and after (e.g., whether students passed the final examination, the `bar exam' (P)). 
 
 Given this data a law school may wish to predict whether a law student will pass the final bar exam given information about their performance during and before law school. The school would also like to make sure these predictions are not biased by an individual's race and gender. However, we may be worried that our observed information about students, the LSAT, GPA, and FYA scores, are biased due to historical reasons by race and gender. Our approach will be to model these interactions as well as a latent variable that is counterfactually fair. We will then be able to use this latent variable as a feature for prediction.
 
@@ -57,6 +57,8 @@ fair  &  0.562 & 0.216 \\
 
 
 \subsection{True vs. Perceived Criminality}
+Every year since 2002, the New York Police Department (NYPD) has recorded information about every time a police officer has stopped someone. The officer records information such as if they searched or frisked the individual, whether a weapon was found, the individual's appearance, whether force was used, etc. We look at this data collected during 2014 for our analysis.
+
 \begin{figure*}[th!]
 \begin{center}
 \vspace{-2ex}
@@ -71,7 +73,7 @@ fair  &  0.562 & 0.216 \\
 \begin{figure}[th]
 \begin{center}
 \vspace{-1ex}
-\centerline{\includegraphics[width=\columnwidth]{stop_and_frisk_model2.pdf}}
+\centerline{\includegraphics[width=\columnwidth]{stop_and_frisk_model3.pdf}}
 \vspace{-2ex}
 \caption{A causal model for the stop and frisk dataset.\label{figure.stop_and_frisk}}
 \vspace{-2ex}
