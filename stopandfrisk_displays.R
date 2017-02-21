@@ -22,7 +22,7 @@ df2 <- melt(df[,c("race", "criminality", "perception")])
 
 ggplot(df2, aes(race,  value)) + geom_boxplot() +
   facet_wrap(~variable) + ylab("Estimated latent factor") +
-  ggtitle("Results for stop and frisk example") + xlab("Race")
+  ggtitle("Results for stop and frisk example") + xlab("Race") +
   theme(plot.title = element_text(hjust = 0.5))
 
 ggsave("stopandfrisk_output.pdf", width = 8, height = 5)
