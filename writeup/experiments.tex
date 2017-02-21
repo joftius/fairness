@@ -1,4 +1,14 @@
-%!TEX root=ricardo_draft.tex
+% !TEX root=ricardo_draft.tex
+\begin{figure}[th]
+\begin{center}
+\vspace{-1ex}
+\centerline{\includegraphics[width=\columnwidth]{stopandfrisk_output.pdf}}
+\vspace{-2ex}
+\caption{Distributions of estimated latent perception and criminality scores for the stop and frisk dataset.\label{figure.stop_and_frisk_output}}
+\vspace{-2ex}
+\end{center}
+\end{figure}
+
 In this section we evaluate our framework for modeling fairness. We test our approach on two practical problems in which fairness must be enforced. For each problem we construct causal models, and make explicit how unfairness may affect observed and unobserved variables in the world. Given these models we are able to (a) derive counterfactually fair predictors and (b) predict latent variables such as a person's `criminality' (which may be useful for predicting crime) as well as their `perceived criminality' (which may be due to prejudices based on race and gender). Additionally, we can analyze how realistic our models are by comparing our observations with data generated from the model. We consider two real-world problems, the first is \emph{fair prediction of success in law school} and the second is \emph{separating actual and perceived criminality in stop-and-frisk data}.
 
 \subsection{Law school success}
@@ -80,14 +90,9 @@ Every year since 2002, the New York Police Department (NYPD) has recorded inform
 \end{center}
 \end{figure}
 
-\begin{figure}[th]
-\begin{center}
-\vspace{-1ex}
-\centerline{\includegraphics[width=\columnwidth]{stopandfrisk_output.pdf}}
-\vspace{-2ex}
-\caption{Distributions of estimated latent perception and criminality scores for the stop and frisk dataset.\label{figure.stop_and_frisk_output}}
-\vspace{-2ex}
-\end{center}
-\end{figure}
 
 \subsection{Model criticism}
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "ricardo_draft"
+%%% End:
