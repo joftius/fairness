@@ -2,10 +2,10 @@
 We begin by describing the problem of fair prediction and introduce three of the most popular definitions developed for this task.  We then give background on causal modeling which will act as our `tool-kit' for modeling and defining fairness.
 
 \subsection{Fairness}
-Let's imagine a scenario in which predictions must be fair. For instance, imagine a university in the United States (US) would like to know how successful an applicant is going to be after graduation, call this $Y$, given their current incoming features $X$ such as test scores, grade-point average (GPA). To predict success a modeler is given a dataset of $n$ applications with features $\{X^{(1)}, \ldots, X^{(n)} \}$ and measures of graduation success $\{Y^{(1)}, \ldots, Y^{(n)}\}$. However, historically  student admission \cite{kane1998racial,kidder2000portia} in universities in the US suffered from racial and gender biases. Thus, in addition we are given demographic and gender information for each individual $\{A^{(1)}, \ldots, A^{(n)}\}$ that we would like to use to ensure our model is fair.
+Let's imagine a scenario in which predictions must be fair. For instance, imagine a university in the United States (US) would like to know how successful an applicant is going to be after graduation, call this $Y$, given their current incoming features $X$ such as test scores, grade-point average (GPA). To predict success a modeler is given a dataset of $n$ applications with features $\{X^{(1)}, \ldots, X^{(n)} \}$ and measures of graduation success $\{Y^{(1)}, \ldots, Y^{(n)}\}$. However, historically  student admission \cite{kane1998racial,kidder2000portia} in universities in the US suffered from racial and gender biases. Thus, in addition we are given demographic and gender information for each individual $\{A^{(1)}, \ldots, A^{(n)}\}$ that we will use to ensure our model is fair.
 
-What does it mean for a model to be fair? To answer this there has
-been a wealth of recent work aimed at defining fairness. A few popular
+What does it mean for a model to be fair?  There has
+been a wealth of recent works aimed at answering this. A few popular
 definitions are (a) Fairness Through Unawareness
 (FTU)~\citep{dwork2012fairness,grgiccase}, (b) Demographic Parity (DP)
 \citep{kleinberg2016inherent}, (c) Equal Opportunity (EO)
@@ -13,18 +13,22 @@ definitions are (a) Fairness Through Unawareness
 are defined as follows:
 
 \begin{define}[Fairness Through Unawareness (FTU)]
-An algorithm is fair so long as the sensitive attribute $A$ is not explicitly used in the decision-making process. Formally, any mapping $\hat{Y}: X \rightarrow Y$ satisfies this definition.
+  An algorithm is fair so long as the sensitive attribute $A$ is not
+  explicitly used in the decision-making process. Any mapping
+  $\hat{Y}: X \rightarrow Y$ that excludes $A$ (or other attributes
+  labelled as unfair, see \citet{grgiccase}) satisfies this
+  definition.
 \end{define}
 
 \begin{define}[Demographic Parity (DP)]
-An algorithm is fair if its predictions are independent of the sensitive attributes $A$ across the population. Formally, a prediction $\hat{Y}$ satisfies this definition if, 
+An algorithm is fair if its predictions are independent of the sensitive attributes $A$ across the population. A prediction $\hat{Y}$ satisfies this definition if, 
 \begin{align}
 P(\hat{Y} | A = 0) = P(\hat{Y} | A = 1). \nonumber
 \end{align}
 \end{define}
 
 \begin{define}[Equal Opportunity (EO)]
-An algorithm is fair if it is equally accurate for every value of the sensitive attribute $A$. Formally, a prediction $\hat{Y}$ satisfies this if,
+An algorithm is fair if it is equally accurate for each value of the sensitive attribute $A$. A prediction $\hat{Y}$ satisfies this if,
 \begin{align}
 P(\hat{Y}=1 | A=0,Y=1) = P(\hat{Y}=1 | A=1,Y=1). \nonumber
 \end{align}
@@ -32,7 +36,7 @@ P(\hat{Y}=1 | A=0,Y=1) = P(\hat{Y}=1 | A=1,Y=1). \nonumber
 
 \begin{define}[Individual Fairness (IF)]
   An algorithm is fair if it give similar predictions to similar
-  individuals. Formally, if individuals $i$ and $j$ are similar appart from their protected attributes $A_i$, $A_j$ then
+  individuals. Formally, if individuals $i$ and $j$ are similar apart from their protected attributes $A_i$, $A_j$ then
 \begin{align}
   \hat{Y}(X^{(i)}, A^{(i)}) \approx \hat{Y}(X^{(j)}, A^{(j)}).\nonumber
 \end{align}

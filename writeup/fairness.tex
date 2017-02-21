@@ -53,17 +53,16 @@
 %respect to a protected attribute $A$ if
 Given a causal model $(U, V, F)$, let $A$ be a set of protected
 attributes, $\hat Y$ a variable of interest which we will be the basis for
-any decision making, and $W$ a set of other measurements such that $A
-\cup \{\hat Y\} \cup W \subseteq V$. We say $\hat Y$ is {\bf
-  counterfactually fair} if under any context $W = w$ and $A = a$,
-\begin{equation}
+any decision making, and $W$ the set of complementary measurements such that $A
+\cup \{\hat Y\} \cup W = V$. We say $\hat Y$ is {\bf
+  counterfactually fair} if under any context uniquely defined by $W = w$ and $A = a$,
+\begin{align}
   \label{eq:cf_definition}
-\begin{array}{c}
-  P(\hat Y_{A \leftarrow a}(U) = y\ |\ W = w, A = a)  =\\ 
-  P(\hat Y_{A \leftarrow a'}(U) = y\ |\ W = w, A = a), 
-\end{array}
-\end{equation}
-\noindent for all $y$ and for any value $a'$ attainable by $A$. Simply put,
+  &P(\hat Y_{A \leftarrow a\ }(U) = y\ |\ W = w, A = a)  =\nonumber\\ 
+  &P(\hat Y_{A \leftarrow a'}(U) = y\ |\ W = w, A = a), 
+\end{align}
+%
+for all $y$ and for any value $a'$ attainable by $A$. Simply put,
 the statement above captures the idea that any decision based on the
 conditional distribution of $\hat Y$ would have been the same had $A$ been
 different, given what has actually happened in the actual world.
@@ -237,8 +236,9 @@ causal structure of the world\footnote{The notion of ``closest world''
 \end{figure*}
 
 \subsection{Examples}
-To get an intuition for counterfactual fairness we will consider three real-world fair prediction scenarios: 1. \textbf{insurance pricing}, 2. \textbf{crime prediction}, 3. \textbf{college admissions}. Each of these correspond to the three causal graphs in Figure~\ref{figure.simple_models}, we describe how below.
-
+To give an intuition for counterfactual fairness we will consider three % real-world
+fair prediction scenarios: 1. \textbf{insurance pricing}, 2. \textbf{crime prediction}, 3. \textbf{college admissions}. Each of these correspond to the three causal graphs in Figure~\ref{figure.simple_models}, and are discussed below.
+%
 \paragraph{Scenario 1: The Red Car.}
 Imagine a car insurance company wishes to price insurance for car owners by
 predicting their accident rate $Y$. They assume there is an
@@ -248,11 +248,11 @@ variable $X$). Moreover, they believe that individuals belonging to a
 certain race $A$ are more likely to drive red cars. However, these individuals are no more likely to be aggressive or to get in accidents than any one else. We show this scenario in Figure~\ref{figure.simple_models} (\emph{Left}).
 
 Thus, using the red car feature $X$ to predict accident likelihood $Y$ would seem to be an unfair prediction because it may charge individual's of a certain race more than others. Counterfactual fairness agrees with this. 
-
+%
 \begin{lem}
 The predictor $\hat{Y}(X)$ is not counterfactually fair for the model in Figure~\ref{figure.simple_models} (\emph{Left}).
 \end{lem}
-
+%
 \begin{proof}
 For simplicity, let's imagine that the equations described by the model in Figure~\ref{figure.simple_models} (\emph{Left}) are deterministic and linear:
 \begin{align}
@@ -267,8 +267,8 @@ where the coefficients $\alpha,\beta,\gamma$ are given (in practice we will esti
 In this deterministic case we achieve counterfactual fairness only if the predicted value $\hat{Y}(X)$ is identical before and after we change $A$. However, note that changing $A$ causes $X$ to change. Thus $\hat{Y}(X)$ must be different and so our model based on using $X$ to predict $Y$ is not counterfactually fair.
 \end{proof}
 Note that the above proof is without loss of generality: any model constructed using $X$ alone will not be counterfactually fair as changing $A$ will always have an influence on $X$.
-
-
+%
+%
 \paragraph{Scenario 2: High Crime Regions.} 
 A local police precinct is wants to know how likely a given house is to be broken into, $Y$.They believe this likelihood depends on many unobserved factors
 ($U$) but also upon the neighborhood the house lies in ($X$). Neighborhoods, however, are often strongly correlated with
