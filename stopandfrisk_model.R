@@ -69,8 +69,6 @@ data$latitude  <- new_coords$y
 
 
 
-n <- nrow(data)
-d <- ncol(data)
 
 # we'll z-score age & height & weight
 age_m <- mean(data$age)
@@ -142,6 +140,8 @@ data <- data[data$sex == "Male",]
 #data$male   <- as.numeric(data$sex == "Male")
 
 sens <- c("black", "blackhisp", "hisp", "white", "aspi", "naam") #, "female", "male")
+n <- nrow(data)
+d <- ncol(data)
 
 
 library(rstan)
