@@ -276,7 +276,8 @@ F1_UNA
   
 
 
-# we'll try computing counterfactuals!
+# we'll try computing counterfactuals!!!!!!
+# -----------------------------------------
 # 1.  Estimate the parameters by taking the posterior expected value
 G0 <- mean(la_law$g0)
 ETA_U_G <- mean(la_law$eta_u_g)
@@ -303,9 +304,9 @@ SIGMA_G <- mean(la_law$sigma_g)
 ATR = data.matrix(lawTrain[,sense_cols])
 ATE = data.matrix(lawTest[,sense_cols])
 ATE_swap <- ATE
-temp <- ATE_swap[,9]
-ATE_swap[,9] <- ATE_swap[,10]
-ATE_swap[,10] <- temp
+temp <- ATE_swap[,8] # white
+ATE_swap[,8] <- ATE_swap[,3] # black
+ATE_swap[,3] <- temp
 
 set.seed(0)
 gpa_rand_tr <- rnorm(n, mean=0, sd=SIGMA_G)
@@ -427,7 +428,216 @@ write.csv(outSampTe, file = "law_school_sampled_test.csv", row.names = TRUE)
 write.csv(outSampTeSwap, file = "law_school_sampled_swap_test.csv", row.names = TRUE)
 
 
+# only white vs. black
+outSamp <- outSamp[outSamp$black==1 | outSamp$white==1,]
+outSampTe <- outSampTe[outSampTe$black==1 | outSampTe$white==1,]
+outSampTeSwap <- outSampTeSwap[outSampTeSwap$black==1 | outSampTeSwap$white==1,]
+
+outSamp$bar_pass <- NULL
+outSamp$amerind <- NULL
+outSamp$asian <- NULL
+outSamp$hisp <- NULL
+outSamp$mexican <- NULL
+outSamp$other <- NULL
+outSamp$puerto <- NULL
+
+outSampTeSwap$bar_pass <- NULL
+outSampTeSwap$amerind <- NULL
+outSampTeSwap$asian <- NULL
+outSampTeSwap$hisp <- NULL
+outSampTeSwap$mexican <- NULL
+outSampTeSwap$other <- NULL
+outSampTeSwap$puerto <- NULL
+
+outSampTe$bar_pass <- NULL
+outSampTe$amerind <- NULL
+outSampTe$asian <- NULL
+outSampTe$hisp <- NULL
+outSampTe$mexican <- NULL
+outSampTe$other <- NULL
+outSampTe$puerto <- NULL
+
+
+
+write.csv(outSamp, file = "law_school_sampled_train.csv", row.names = TRUE)
+write.csv(outSampTe, file = "law_school_sampled_test.csv", row.names = TRUE)
+write.csv(outSampTeSwap, file = "law_school_sampled_swap_test.csv", row.names = TRUE)
+
+
+
 # fit unfair classifier to sampled data
+model_u_samp <- lm(ZFYA ~ UGPA + LSAT + black + white + male + female + 1, data=outSamp) #,family=binomial(link='logit'), data=outSamp)
+pred_u_samp_te   <- predict(model_u_samp, newdata=outSampTe)#, type="response")
+pred_u_samp_swap <- predict(model_u_samp, newdata=outSampTeSwap)#, type="response")
+#pred_u_samp_te_t <- function(t) ifelse(pred_u_samp_te > t , 1,0)
+#pred_u_samp_samp_t <- function(t) ifelse(pred_u_samp_swap > t , 1,0)
+
+#outSamp$race <- factor(as.matrix(outSamp[,5:12]) %*% 1:8, labels = c("amerind", "asian", "black", "hisp", "mexican", "other", "puerto", "white"))
+outSampTe$race <- factor(as.matrix(outSampTe[,c("black","white")]) %*% 1:2, labels = c("black", "white"))
+outSampTeSwap$race <- factor(as.matrix(outSampTeSwap[,c("black","white")]) %*% 1:2, labels = c("black", "white"))
+
+
+outSampTe$pred <- pred_u_samp_te
+outSampTe$type <- 0
+
+
+outSampTeSwap$pred <- pred_u_samp_swap
+outSampTeSwap$type <- 1
+
+total <- rbind(outSampTe, outSampTeSwap)
+total$type <- factor(total$type, labels=c("original", "swapped"))
+#total$type <- fct_recode(factor(total$type), Original = "0", Swapped = "1")
+
+ggplot(total, aes(pred, linetype = type)) + geom_density() + theme_bw()
+
+
+
+###outSampTe$race <- NULL
+###outSampTe$bar_pass <- NULL
+###outSampTe$pred <- NULL
+###outSampTe$data <- NULL
+###outSampTe$type <- NULL
+###outSampTe$pred_unaware <- NULL
+###outSampTeSwap$race <- NULL
+###outSampTeSwap$bar_pass <- NULL
+###outSampTeSwap$pred <- NULL
+###outSampTeSwap$data <- NULL
+###outSampTeSwap$type <- NULL
+###outSampTeSwap$pred_unaware <- NULL
+
+# Is the unaware model counterfactually fair?
+model_u_unaware <- lm(ZFYA ~ UGPA + LSAT + male + female + 1, data=outSamp)
+pred_u_unaware   <- predict(model_u_unaware, newdata=outSampTe)#, type="response")
+pred_u_unaware_swap <- predict(model_u_unaware, newdata=outSampTeSwap)#, type="response")
+
+outSampTe$pred_unaware <- pred_u_unaware
+outSampTe$type <- 0
+outSampTeSwap$pred_unaware <- pred_u_unaware_swap
+outSampTeSwap$type <- 1
+
+total <- rbind(outSampTe, outSampTeSwap)
+total$type <- factor(total$type, labels=c("original", "swapped"))
+
+ggplot(total, aes(pred_unaware, linetype = type)) + geom_density() + theme_bw()
+
+
+
+# What about if we fit a stan model to the sampled data and predict ZFYA??????
+
+library(rstan)
+
+n_samp <- nrow(outSamp)
+ne_samp<- nrow(outSampTe)
+sense_cols_samp <- c("black","white","female","male")
+k_samp = length(sense_cols_samp)
+
+law_stan_samp_dat <- list(N = n_samp, K = k_samp, a = data.matrix(outSamp[,sense_cols_samp]), 
+                     ugpa = outSamp[,c("UGPA")], lsat = outSamp[,c("LSAT")],
+                     N_TE = ne_samp, a_TE = data.matrix(outSampTe[,sense_cols_samp]),
+                     ugpa_TE = outSampTe[,c("UGPA")], lsat_TE = outSampTe[,c("LSAT")])
+                     
+
+fit_law_samp_te <- stan(file = 'law_school_on_samp.stan', data = law_stan_samp_dat, iter = 2000, chains = 1, verbose = TRUE)
+# Extract information
+
+la_law_samp_te <- extract(fit_law_samp_te, permuted = TRUE)
+
+
+
+ne_samp_swap<- nrow(outSampTeSwap)
+law_stan_samp_swap_dat <- list(N = n_samp, K = k_samp, a = data.matrix(outSamp[,sense_cols_samp]), 
+                          ugpa = outSamp[,c("UGPA")], lsat = outSamp[,c("LSAT")],
+                          N_TE = ne_samp_swap, a_TE = data.matrix(outSampTeSwap[,sense_cols_samp]),
+                          ugpa_TE = outSampTeSwap[,c("UGPA")], lsat_TE = outSampTeSwap[,c("LSAT")])
+
+
+fit_law_samp_swap <- stan(file = 'law_school_on_samp.stan', data = law_stan_samp_swap_dat, iter = 2000, chains = 1, verbose = TRUE)
+la_law_samp_swap <- extract(fit_law_samp_swap, permuted = TRUE)
+
+
+
+
+
+
+
+
+
+
+
+
+# VAE #
+# --- #
+vae_train_data <- read.csv("vae_fix_generated_law_train_samp_beta100.0.csv", header = FALSE, strip.white = TRUE)
+vae_test_data  <- read.csv("vae_fix_generated_law_test_samp_beta100.0.csv", header = FALSE, strip.white = TRUE)
+
+vae_test_swap <- vae_test_data
+vae_test_swap$V2 <- vae_test_swap$V3
+vae_test_swap$V3 <- NULL
+vae_test_data$V3 <- NULL
+
+model_vae <- lm(V1 ~ V2 + 1, data=vae_train_data)
+#pred_u_unaware   <- predict(model_u_unaware, newdata=outSampTe)#, type="response")
+#pred_u_unaware_swap <- predict(model_u_unaware, newdata=outSampTeSwap)#, type="response")
+#outSampTe$pred_unaware <- pred_u_unaware
+#outSampTe$type <- 0
+#outSampTeSwap$pred_unaware <- pred_u_unaware_swap
+#outSampTeSwap$type <- 1
+#total <- rbind(outSampTe, outSampTeSwap)
+#total$type <- factor(total$type, labels=c("original", "swapped"))
+#ggplot(total, aes(pred_unaware, linetype = type)) + geom_density() + theme_bw()
+
+
+
+predict_and_fair <- function(model, dataTest, dataSwap) {
+  pred_te   <- predict(model, newdata=dataTest)#, type="response")
+  pred_swap <- predict(model, newdata=dataSwap)#, type="response")
+  
+  dataTest$pred <- pred_te
+  dataTest$type <- 0
+  
+  dataSwap$pred <- pred_swap
+  dataSwap$type <- 1
+  
+  total <- rbind(dataTest, dataSwap)
+  total$type <- factor(total$type, labels=c("original", "swapped"))
+  
+  p <- ggplot(total, aes(pred, linetype = type)) + geom_density() + theme_bw()
+  rmse_te <- sqrt( sum( (dataTest$pred - dataTest$V1)^2 ) / nrow(dataTest) )
+  return(list("plot"=p,rmse_te="rmse_te"))
+}
+
+res = predict_and_fair(model_vae, vae_test_data, vae_test_swap)
+res$rmse_te
+res$p
+
+
+
+
+
+
+
+######## DEPRICATED CODE BELOW ##########
+
+
+
+
+
+
+
+
+
+
+
+
+ggplot(outSampTe, aes(race, pred)) + geom_boxplot()
+ggplot(outSampTeSwap, aes(race, pred)) + geom_boxplot()
+
+
+
+
+ggplot(outSampTe, aes(pred)) + geom_density()
+ggplot(outSampTeSwap, aes(pred)) + geom_density()
+
 
 
 model_u_samp <- glm(bar_pass ~ . + 1,family=binomial(link='logit'), data=outSamp)
@@ -439,8 +649,10 @@ pred_u_samp_samp_t <- function(t) ifelse(pred_u_samp_swap > t , 1,0)
 
 
 
+
+
 D <- data.frame(pred = pred_u_samp_te_t(0.5), prob=pred_u_samp_te)
-D2<- data.frame(pred = pred_u_samp_samp_t(0.5), prob=pred_u_samp_swap, diff=pred_u_samp_te-pred_u_samp_swap)
+D2<- data.frame(pred = pred_u_samp_samp_t(0.5), prob=pred_u_samp_swap)
 ppp <- pred_u_samp_te
 qqq <- pred_u_samp_swap
 M <- data.frame(ppp = ppp[lawSampleTe$male == 1], qqq=qqq[lawSampleTe$male == 1])
@@ -462,6 +674,7 @@ lawSampleTe$black == 1
 
 lawSampleTe$male == 1
 
+data <- data[data$sex == "Male",]
 
 # fit unaware classifier to sampled data
 

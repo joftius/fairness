@@ -163,8 +163,8 @@ fit2 <- stan(file = 'stopandfrisk.stan', data = stop_stan_dat2, iter = 2000, cha
 # I'm going to negate everything associated with criminality so higher criminality 
 # means more crimial
 la <- extract(fit2, permuted = TRUE)
-c <- colMeans(-la$c)
-p <- colMeans(la$p)
+c <- -colMeans(la$c)
+p <- -colMeans(la$p)
 # Predict Y
 
 # Here's how being each race helps/hurts perception
@@ -172,15 +172,18 @@ colMeans(la$w_s_p)
 colMeans(la$w_ap_p)
 
 # check these to see if perception/criminality variable is neg or pos
-mean(-la$w_c_ar)
-mean(-la$w_c_sf1)
-mean(-la$w_c_sf2)
-mean(-la$w_c_we)
-mean(-la$w_c_fo)
+mean(la$w_c_ar)
+mean(la$w_c_sf1)
+mean(la$w_c_sf2)
+mean(la$w_c_we)
+mean(la$w_c_fo)
 mean(la$w_c_summ)
+mean(la$w_p_ar)
 mean(la$w_p_sf1)
 mean(la$w_p_sf2)
+mean(la$w_p_we)
 mean(la$w_p_fo)
+mean(la$w_p_summ)
 # in this case they are both pos
 
 
@@ -240,7 +243,7 @@ output <- data.frame(black = data$black,
                      perception = p)
 
 
-write.csv(output, file = "stopandfrisk_stan_results_force.csv", row.names = TRUE)
+write.csv(output, file = "stopandfrisk_stan_results_full.csv", row.names = TRUE)
 
 data$criminality <- c
 data$perception  <- p
