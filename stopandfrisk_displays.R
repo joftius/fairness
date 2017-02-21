@@ -25,7 +25,7 @@ ggplot(df2, aes(race,  value)) + geom_boxplot() +
   ggtitle("Results for stop and frisk example") + xlab("Race") +
   theme(plot.title = element_text(hjust = 0.5))
 
-ggsave("stopandfrisk_output.pdf", width = 8, height = 5)
+ggsave("writeup/stopandfrisk_output.pdf", width = 8, height = 5)
 
 df2 <- df %>% filter(race != "AsPI", race != "NaAm") #%>% mutate(race = race == "White")
 df2 %>% group_by(race) %>% summarise(count = n())
