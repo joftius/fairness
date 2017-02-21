@@ -1,14 +1,31 @@
 %!TEX root=ricardo_draft.tex
 % ml is now everywhere
-Machine learning is now used in fields as diverse as credit scoring (CITE), crime prediction (CITE), and loan assessment (CITE). As machine learning enters these new areas it is necessary for the modeler to think beyond the simple objective of maximizing prediction accuracy.
+Machine learning has spred to fields as diverse as credit scoring (CITE), crime prediction (CITE), and loan assessment (CITE). As machine learning enters these new areas it is necessary for the modeler to think beyond the simple objective of maximizing prediction accuracy.
 
 % in these new ml fields, we cannot discriminate
 % discrimination can happen in multiple ways
 % - direct discrimination
-In particular, for many of these new applications, it is crucial to consider whether the predictions of a machine learning model are \emph{fair}. For instance, imagine a bank wishes to train a machine learning model to predict whether or not an individual should be given a loan to buy a house. The bank wishes to use historical lending data on whether or not a loan was paid back, along with personal information on individuals. If the bank simply tries to learn a model that accurately predicts who to loan to solely based on whether the loan will be paid back, it may unjustly favor giving loans to applicants of a particular demographic group, due to historical and present prejudices. The Obama Administration released a report that precisely describes this, and urged machine learning practicioners to analyze ``how technologies can deliberately or inadvertently perpetuate, exacerbate, or mask discrimination"\footnote{https://obamawhitehouse.archives.gov/blog/2016/05/04/big-risks-big-opportunities-intersection-big-data-and-civil-rights}.
+In particular, for many of these new applications, it is crucial to
+consider whether the predictions of a machine learning model are
+\emph{fair}. For instance, imagine a bank wishes to train a machine
+learning model to predict whether or not an individual should be given
+a loan to buy a house. The bank wishes to use historical lending data
+on whether or not a loan was paid back, along with personal
+information on individuals. If the bank simply tries to learn a model
+that accurately predicts who to loan to solely based on whether the
+loan will be paid back, it may unjustly favor giving loans to
+applicants of a particular demographic group, due to historical and
+present prejudices. The Obama Administration released a report that
+precisely describes this, and urged machine learning practicioners to
+analyze ``how technologies can deliberately or inadvertently
+perpetuate, exacerbate, or mask
+discrimination"\footnote{https://obamawhitehouse.archives.gov/blog/2016/05/04/big-risks-big-opportunities-intersection-big-data-and-civil-rights}.
 
-As a result, there has been immense interest recently in designing machine learning algorithms that make fair predictions. (CITE A MILLION PAPERS). In large part each work focuses on formalizing fairness into a concrete definition that can be tested, and for which algorithms can be developed. By defining fairness concretely, one can design specific algorithms to satisfy such definitions. 
-
+As a result, there has been immense interest recently in designing
+machine learning algorithms that make fair
+predictions~\cite{hardt2016equality,dwork2012fairness,joseph2016rawlsian,kamishima2011fairness,zliobaite2015survey,zafar2016fairness,zafar2015learning,grgiccase,kleinberg2016inherent,calders2010three,kamiran2012data,bolukbasi2016man,kamiran2009classifying,zemel2013learning,louizos2015variational}. Most
+of these works focus on formalizing fairness into a numeric testable
+definition, and which can be satisfied by bespoke algorithms.
 
 
 %  This could be due to many factors that are observed and unobserved in the features of a given dataset such as:
