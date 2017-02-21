@@ -85,14 +85,14 @@ recorded decisions $\hat Y$ with information $Y$ on which we should ideally
 base our decision making, a difference which we clarify in the
 sequel. We argue that our framing makes the connection to other
 existing machine learning methods more explicit, as we will discuss in
-Section ?. Our evidence for the background variables $U$ should come from
+Section \ref{sec:methods}. Our evidence for the background variables $U$ should come from
 $A$ and $W$ only, because in many setups we want to predict some $Y$
 using $\hat Y$, the former which might not be available at any point
 in our inference.
 
 \subsection{Implications}
 %
-As discussed by \cite{halpern:16}, it is futile to prove whether a
+As discussed by \citet{halpern:16}, it is futile to prove whether a
 particular counterfactual definition is the ``correct'' one to satisfy
 socially constructed concepts such as blame and responsibility. The
 same applies to fairness. Instead, we shall illustrate the
@@ -181,8 +181,12 @@ mechanism gives a different posterior distribution for $U$ than the
 within-individual distribution\footnote{For example, if $w$ is a
   common outcome under $do(A = a)$ and $P(U)$, but rare under $do(A =
   a')$ and $P(U)$.} of the original individual, which is the one we care about in our
-definition. Hence, the inequality $P(\hat Y = y\ |\ do(A = a), W = w)
-\neq P(\hat Y = y\ |\ do(A = a'), W = w)$ should not be a matter of
+definition. Hence, the inequality
+\begin{align}
+  P(\hat Y = y\ |\ do(A = a), W = w)
+  \neq P(\hat Y = y\ |\ do(A = a'), W = w)
+\end{align}
+should not be a matter of
 concern for a criterion defined for individual level differences.
 
 Notice that it is {\it still} the case that we can build predictive
