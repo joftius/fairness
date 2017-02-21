@@ -57,25 +57,27 @@ and only if $X \in pa_i \cup U_{pa_i}$. By definition, $\mathcal G$ is
 acyclic.
 
 The model is causal in the sense that, for a given probability model
-$p(U)$ for the background variables, it entails the distribution of a
-subset of $V$ given an {\bf intervention} in another subset of $V$.
-The operational meaning of an intervention on $V_i$ at value $v$ is
-the substitution of the equation $V_i = f_i(pa_i, U_{pa_i})$ with the
-equation $V_i = v$. This captures the idea of an agent modifying a
-system while being external to it. For instance, this can happen as a
-randomized controlled trial that overrides the value of $V_i$ with a
-treatment that sets it at $v$, a value chosen at random independently
-of any other causes of the system. Pearl's do-calculus
-\citep{pearl:00} provides a way of identifying features of 
-interventional distributions, when possible, using only (estimates of) the joint
-distribution of $V$ and the causal DAG.
+$p(U)$ for the background variables, it gives the distribution of a
+subset of $V$ given an {\bf intervention} in another complementary
+subset of $V$.  The operational meaning of an intervention on $V_i$ at
+value $v$ is the substitution of the equation
+$V_i = f_i(pa_i, U_{pa_i})$ with the equation $V_i = v$. This captures
+the idea of an agent, external to the system, modifying it. For
+instance, this may happen in a randomized controlled trial which
+overrides the value of $V_i$ with a treatment that sets it at $v$, a
+value chosen at random and independently of any other causes of the
+system. The do-calculus of \citet{pearl:00} provides a way to identify
+features of interventional distributions %, where possible,
+using only estimates of the joint distribution of $V$ and knowledge of
+the causal DAG.
 
-Compared to independence constraints given by a DAG, the full
+Compared to the independence constraints given by a DAG, the full
 specification of $F$ requires much stronger assumptions but also leads
-to much more specific claims. In particular, it allows for the
-calculation of {\bf counterfactual} quantities. Without going into a
-detailed coverage of the topic, consider the following counterfactual
-statement, ``the value of $Y$ had $X$ been $x$'', for two endogenous
+to much stronger claims. In particular, it allows for the
+calculation of {\bf counterfactual} quantities. % Without going into a
+% detailed coverage of the topic
+In brief, consider the following counterfactual
+statement, ``the value of $Y$ if $X$ had taken value $x$'', for two endogenous
 variables $X$ and $Y$ in a causal model. By assumption, the state of
 any endogenous variable is fully determined by
 the background variables and structural equations. The counterfactual is
@@ -87,14 +89,14 @@ Counterfactual inference, as specified by a causal model $(U, V, F)$,
 is the computation of probabilities $P(Y_{X \leftarrow x}(U)\ |\ W =
 w)$, where $W$, $X$ and $Y$ are subsets of $V$. Inference proceeds in
 three steps, as explained in more detail in Chapter 4 of
-\cite{pearl:16}:
+\citet{pearl:16}:
 \begin{enumerate}
 \item Abduction: for a given prior on $U$, compute the posterior
   distribution of $U$ given the evidence $W = w$;
-\item Action: substitute the equations for $X$ with the interventional values $x$, resulting
-     in the modified set of equations $F_x$;
-\item Prediction: compute the implied distribution on the remaining elements of $V$
-     using $F_x$ and the posterior $P(U\ | W = w)$.
+\item Action: substitute the equations for $X$ with the interventional
+  values $x$, resulting in the modified set of equations $F_x$;
+\item Prediction: compute the implied distribution on the remaining
+  elements of $V$ using $F_x$ and the posterior $P(U\ | W = w)$.
 \end{enumerate}
 
 
