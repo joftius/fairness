@@ -91,7 +91,7 @@ using $\hat Y$, the former which might not be available at any point
 in our inference.
 
 \subsection{Implications}
-
+%
 As discussed by \cite{halpern:16}, it is futile to prove whether a
 particular counterfactual definition is the ``correct'' one to satisfy
 socially constructed concepts such as blame and responsibility. The
@@ -101,7 +101,7 @@ compromises it raises.
 
 First, we should make explicit the difference between $\hat Y$, the
 variable which we base on or define our decisions, and $Y$, the variable which
-ideally we would like to use to perform ecisions but which is
+ideally we would like to use to perform decisions but which is
 generated in a world that is potentially unfair. $Y$, for instance,
 could be an indicator of whether a client will default on a loan in
 the future, while $\hat Y$ is the actual decision of giving the
@@ -125,14 +125,14 @@ In the actual world as postulated by this example, it is a matter of
 fact that race is a cause of defaulting, even if mediated by other
 variables. The counterfactual fairness principle however forbids us
 from using $Y$: using the twin network construction of
-\cite{pearl:00}, we show in Figure \ref{fig:ex1}(c) that $Y_a$ and
+\citet{pearl:00}, we show in Figure \ref{fig:ex1}(c) that $Y_a$ and
 $Y_{a'}$ are not in general identically distributed\footnote{We assume
   that function $f_Y(A, U)$ is not pathological, that is, it will give
   different outcomes for different values of $A$ other things being
   equal. Moreover, we assume interventions in $A$ are well defined.
   For instance, ``race'' here could be formulated as ``race
   perception'', which can be due to, for instance, to
-  racially-associated names in a CV or loan application.}  given the
+  racially-associated names in a C.V. or loan application.}  given the
 background variables.
 
 In contrast, any function of variables which are not descendants of
@@ -304,7 +304,7 @@ A university wants to know if a student is likely to be successful after they gr
 % \item something analogous to the red car example: $A$ is not a cause of
 %   $Y$ but might indirectly bias the result even without using $A$ as a predictor;
 % \item something with selection bias, maybe a toy version of COMPAS;
-% \item something where an unfair judgement (say, credit score) that can be potentially
+% \item something where an unfair judgment (say, credit score) that can be potentially
 %   considered as a target variable, and an
 %   ``objective target'' (say, defaulting on a loan) are present, and
 %   what the recommendation is
