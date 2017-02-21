@@ -25,7 +25,10 @@ P(\hat{Y}=1 | A=0,Y=1) = P(\hat{Y}=1 | A=1,Y=1). \nonumber
 \end{define}
 
 \begin{define}[Individual Fairness (IF)]
-An algorithm is fair if it give similar predictions to similar individuals. Formally, if individuals $i$ and $j$ are similar then $\hat{Y}(X^{(i)}, A^{(i)}) \approx \hat{Y}(X^{(j)}, A^{(j)})$.
+  An algorithm is fair if it give similar predictions to similar individuals. Formally, if individuals $i$ and $j$ are similar then
+\begin{align}
+  \hat{Y}(X^{(i)}, A^{(i)}) \approx \hat{Y}(X^{(j)}, A^{(j)}).\nonumber
+\end{align}
 \end{define}
 
 
@@ -48,9 +51,9 @@ that $V_i = f_i(pa_i, U_{pa_i})$, $pa_i \subseteq V \backslash
 
 The notation ``$pa_i$'' is motivated by the extra assumption that the
 model factorizes according to a directed acyclic graph (DAG). That is,
-define a directed graph $\mathcal G$ where each node corresponds to an
-element of $U \cup V$, and each edge $V_i \leftarrow X$ is added if
-and only if $X \in pa_i \cup U_{pa_i}$. We assume $\mathcal G$ is
+define a directed graph ${\mathcal G}=(U \cup V, \mathcal E )$ where each node corresponds to an
+element of $U \cup V$, and each directed edge $V_i \leftarrow X$ is added if
+and only if $X \in pa_i \cup U_{pa_i}$. By definition, $\mathcal G$ is
 acyclic.
 
 The model is causal in the sense that, for a given probability model
