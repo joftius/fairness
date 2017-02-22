@@ -53,8 +53,7 @@
 %respect to a protected attribute $A$ if
 Given a causal model $(U, V, F)$, let $A$ be a set of protected
 attributes, $\hat Y$ a variable of interest which we will be the basis for
-any decision making, and $W$ the set of complementary measurements such that $A
-\cup \{\hat Y\} \cup W = V$. We say $\hat Y$ is {\bf
+any decision making, and $W$ the set of complementary measurements such that $W= V \setminus ( A \cup \{\hat Y\})$. We say $\hat Y$ is {\bf
   counterfactually fair} if under any context uniquely defined by $W = w$ and $A = a$,
 \begin{align}
   \label{eq:cf_definition}
@@ -63,7 +62,7 @@ any decision making, and $W$ the set of complementary measurements such that $A
 \end{align}
 %
 for all $y$ and for any value $a'$ attainable by $A$. Simply put,
-the statement above captures the idea that any decision based on the
+the above statement captures the idea that any decision based on the
 conditional distribution of $\hat Y$ would have been the same had $A$ been
 different, given what has actually happened in the actual world.
 We can also see $\hat Y$ as satisfying ``counterfactual exchangeability''
@@ -82,11 +81,11 @@ factual\footnote{The result is an expression called the ``the
   $\hat Y$ with some probability.}. That example also conflates
 recorded decisions $\hat Y$ with information $Y$ on which we should ideally
 base our decision making, a difference which we clarify in the
-sequel. We argue that our framing makes the connection to other
+sequel.  Our framing makes the connection to other
 existing machine learning methods more explicit, as we will discuss in
-Section \ref{sec:methods}. Our evidence for the background variables $U$ should come from
-$A$ and $W$ only, because in many setups we want to predict some $Y$
-using $\hat Y$, the former which might not be available at any point
+Section \ref{sec:methods}.  Evidence for the background variables $U$ should come from
+$A$ and $W$ only, because in many setups we wish to predict some $Y$
+as $\hat Y$, where   $Y$ is unavailable at any point
 in our inference.
 
 \subsection{Implications}
