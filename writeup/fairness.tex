@@ -53,39 +53,21 @@
 %respect to a protected attribute $A$ if
 Given a causal model $(U, V, F)$, let $A$ be a set of protected
 attributes, $\hat Y$ a variable of interest which we will be the basis for
-<<<<<<< HEAD
-any decision making, and $W$ the set of complementary measurements such that $A
-\cup \{\hat Y\} \cup W = V$.
+
+any decision making, and $W$ the set of complementary measurements such that
+$W= V \setminus ( A \cup \{\hat Y\})$.
 \begin{define}[Counterfactual fairness]
 We say $\hat Y$ is {\bf counterfactually fair}
 if under any context uniquely defined by $W = w$ and $A = a$,
-||||||| merged common ancestors
-any decision making, and $W$ the set of complementary measurements such that $A
-\cup \{\hat Y\} \cup W = V$. We say $\hat Y$ is {\bf
-  counterfactually fair} if under any context uniquely defined by $W = w$ and $A = a$,
-=======
-any decision making, and $W$ the set of complementary measurements such that $W= V \setminus ( A \cup \{\hat Y\})$. We say $\hat Y$ is {\bf
-  counterfactually fair} if under any context uniquely defined by $W = w$ and $A = a$,
->>>>>>> 67f87bda1a77f7a52b312133113c164ad4fc378c
 \begin{align}
   \label{eq:cf_definition}
   &P(\hat Y_{A \leftarrow a\ }(U) = y\ |\ W = w, A = a)  =\nonumber\\ 
   &P(\hat Y_{A \leftarrow a'}(U) = y\ |\ W = w, A = a), 
 \end{align}
-<<<<<<< HEAD
 for all $y$ and for any value $a'$ attainable by $A$.
 \end{define}
 Simply put,
 the statement above captures the idea that any decision based on the
-||||||| merged common ancestors
-%
-for all $y$ and for any value $a'$ attainable by $A$. Simply put,
-the statement above captures the idea that any decision based on the
-=======
-%
-for all $y$ and for any value $a'$ attainable by $A$. Simply put,
-the above statement captures the idea that any decision based on the
->>>>>>> 67f87bda1a77f7a52b312133113c164ad4fc378c
 conditional distribution of $\hat Y$ would have been the same had $A$ been
 different, given what has actually happened in the world.
 We can also see $\hat Y$ as satisfying ``counterfactual exchangeability''
@@ -128,28 +110,14 @@ $A$ in the causal graph.
 
 \subsection{Implications}
 %
-<<<<<<< HEAD
+
+
 As discussed by \citet{halpern:16}, it is not productive to debate
 whether a particular counterfactual definition is the ``correct'' one
 to satisfy socially constructed concepts such as blame and responsibility.
 The same applies to fairness. Instead, we discuss the
 implications of definition \eqref{eq:cf_definition} and some choices
 that arise in its application.
-||||||| merged common ancestors
-As discussed by \citet{halpern:16}, it is futile to prove whether a
-particular counterfactual definition is the ``correct'' one to satisfy
-socially constructed concepts such as blame and responsibility. The
-same applies to fairness. Instead, we shall illustrate the
-implications of definition (\ref{eq:cf_definition}) and which
-compromises it raises.
-=======
-As discussed by \citet{halpern:16}, it is futile to argue if a
-particular counterfactual definition is the ``correct'' one to satisfy
-socially constructed concepts such as blame and responsibility. The
-same applies to fairness. Instead, we shall illustrate the
-implications of definition (\ref{eq:cf_definition}) and which
-compromises it raises.
->>>>>>> 67f87bda1a77f7a52b312133113c164ad4fc378c
 
 First, we should make explicit the difference between $\hat Y$, the
 variable which we use for fair decisions, and $Y$, the variable which
