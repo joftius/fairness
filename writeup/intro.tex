@@ -9,7 +9,7 @@ accuracy, and to consider the social impact of their work.
 % in these new ml fields, we cannot discriminate
 % discrimination can happen in multiple ways
 % - direct discrimination
-In particular, for many of these new applications, it is crucial to
+For many of these new applications, it is crucial to
 consider whether the predictions of a machine learning model are
 \emph{fair}. For instance, imagine a bank wishes to train a machine
 learning model to predict whether or not an individual should be given
@@ -20,12 +20,12 @@ that accurately predicts who to loan to solely based on whether the
 loan will be paid back, it may unjustly favor giving loans to
 applicants of a particular demographic group, due to historical and
 present prejudices. The Obama Administration released a report that
-precisely describes this, and urged machine learning practitioners to
+describes precisely this, and urged machine learning practitioners to
 analyze ``how technologies can deliberately or inadvertently
 perpetuate, exacerbate, or mask
 discrimination"\footnote{https://obamawhitehouse.archives.gov/blog/2016/05/04/big-risks-big-opportunities-intersection-big-data-and-civil-rights}.
 
-As a result, there has been immense interest recently in designing
+As a result, there has been immense recent interest in designing
 machine learning algorithms that make fair
 predictions~\cite{hardt2016equality,dwork2012fairness,joseph2016rawlsian,kamishima2011fairness,zliobaite2015survey,zafar2016fairness,zafar2015learning,grgiccase,kleinberg2016inherent,calders2010three,kamiran2012data,bolukbasi2016man,kamiran2009classifying,zemel2013learning,louizos2015variational}. Most
 of these works focus on formalizing fairness into a numeric testable
@@ -56,16 +56,27 @@ definitions of fairness can actually \emph{increase discrimination}.
 % We don't want to see if every definition is counterfactually fair because then we're like everyone else, saying our definition is best
 % 
 
-In this work, we describe how techniques from causal inference can formalize questions of fair prediction. Specifically, we
+% In this work,
+We describe how techniques from causal inference can formalize questions of fair prediction. Specifically, we
 % develop a technique to
 leverage the causal framework of 
-\citep{pearl2009causal} to model the relationship between the sensitive
+\citet{pearl2009causal} to model the relationship between the sensitive
 attribute and data. Our contributions are as follows:
 \begin{enumerate}
     \item We model questions of fairness within a causal framework. This allows us to directly model \emph{how} unfairness affects the data at hand.
+<<<<<<< HEAD
     \item We introduce \emph{counterfactual fairness}, which enforces that a distribution over possible predictions for an individual should remain unchanged, in a world where an individual's sensitive attribute had been different from birth.
     \item We analyze how enforcing existing definitions of fairness for different data may correspond or be in conflict with counterfactual fairness. In particular, we show that depending on the underlying state of the world some definitions of fairness may be inappropriate.
     \item We devise techniques learning predictors that are counterfactually fair and demonstrate their use in several examples.
+||||||| merged common ancestors
+    \item We introduce \emph{counterfactual fairness}, which enforces that a distribution over possible predictions for an individual should remain unchanged, in a world where an individual's sensitive attribute had been different from birth.
+    \item We analyze how enforcing existing definitions of fairness for different data may or may not lead to fair predictions.
+    \item We devise techniques learning predictors that are counterfactually fair.
+=======
+    \item We introduce \emph{counterfactual fairness}, which enforces that a distribution over possible predictions for an individual should remain unchanged, from a world where an individual's sensitive attribute has been different from birth.
+    \item We analyze how enforcing existing definitions of fairness for different data may or may not lead to fair predictions.
+    \item We devise techniques learning predictors that are counterfactually fair.
+>>>>>>> 67f87bda1a77f7a52b312133113c164ad4fc378c
 \end{enumerate}
 %We demonstrate that by explicitly representing fairness within a causal model it becomes easy to critique different definitions of fairness as well the prediction methods that aim to accomplish these notions of fairness.
 

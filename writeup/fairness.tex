@@ -53,20 +53,39 @@
 %respect to a protected attribute $A$ if
 Given a causal model $(U, V, F)$, let $A$ be a set of protected
 attributes, $\hat Y$ a variable of interest which we will be the basis for
+<<<<<<< HEAD
 any decision making, and $W$ the set of complementary measurements such that $A
 \cup \{\hat Y\} \cup W = V$.
 \begin{define}[Counterfactual fairness]
 We say $\hat Y$ is {\bf counterfactually fair}
 if under any context uniquely defined by $W = w$ and $A = a$,
+||||||| merged common ancestors
+any decision making, and $W$ the set of complementary measurements such that $A
+\cup \{\hat Y\} \cup W = V$. We say $\hat Y$ is {\bf
+  counterfactually fair} if under any context uniquely defined by $W = w$ and $A = a$,
+=======
+any decision making, and $W$ the set of complementary measurements such that $W= V \setminus ( A \cup \{\hat Y\})$. We say $\hat Y$ is {\bf
+  counterfactually fair} if under any context uniquely defined by $W = w$ and $A = a$,
+>>>>>>> 67f87bda1a77f7a52b312133113c164ad4fc378c
 \begin{align}
   \label{eq:cf_definition}
   &P(\hat Y_{A \leftarrow a\ }(U) = y\ |\ W = w, A = a)  =\nonumber\\ 
   &P(\hat Y_{A \leftarrow a'}(U) = y\ |\ W = w, A = a), 
 \end{align}
+<<<<<<< HEAD
 for all $y$ and for any value $a'$ attainable by $A$.
 \end{define}
 Simply put,
 the statement above captures the idea that any decision based on the
+||||||| merged common ancestors
+%
+for all $y$ and for any value $a'$ attainable by $A$. Simply put,
+the statement above captures the idea that any decision based on the
+=======
+%
+for all $y$ and for any value $a'$ attainable by $A$. Simply put,
+the above statement captures the idea that any decision based on the
+>>>>>>> 67f87bda1a77f7a52b312133113c164ad4fc378c
 conditional distribution of $\hat Y$ would have been the same had $A$ been
 different, given what has actually happened in the world.
 We can also see $\hat Y$ as satisfying ``counterfactual exchangeability''
@@ -85,11 +104,11 @@ factual\footnote{The result is an expression called the ``the
   $\hat Y$ with some probability.}. That example also conflates
 recorded decisions $\hat Y$ with information $Y$ on which we should ideally
 base our decision making, a difference which we clarify in the
-sequel. We argue that our framing makes the connection to other
+sequel.  Our framing makes the connection to other
 existing machine learning methods more explicit, as we will discuss in
-Section \ref{sec:methods}. Our evidence for the background variables $U$ should come from
-$A$ and $W$ only, because in many setups we want to predict some $Y$
-using $\hat Y$, the former which might not be available at any point
+Section \ref{sec:methods}.  Evidence for the background variables $U$ should come from
+$A$ and $W$ only, because in many setups we wish to predict some $Y$
+as $\hat Y$, where   $Y$ is unavailable at any point
 in our inference.
 
 We also emphasize that counterfactual fairness is an individual-level
@@ -109,12 +128,28 @@ $A$ in the causal graph.
 
 \subsection{Implications}
 %
+<<<<<<< HEAD
 As discussed by \citet{halpern:16}, it is not productive to debate
 whether a particular counterfactual definition is the ``correct'' one
 to satisfy socially constructed concepts such as blame and responsibility.
 The same applies to fairness. Instead, we discuss the
 implications of definition \eqref{eq:cf_definition} and some choices
 that arise in its application.
+||||||| merged common ancestors
+As discussed by \citet{halpern:16}, it is futile to prove whether a
+particular counterfactual definition is the ``correct'' one to satisfy
+socially constructed concepts such as blame and responsibility. The
+same applies to fairness. Instead, we shall illustrate the
+implications of definition (\ref{eq:cf_definition}) and which
+compromises it raises.
+=======
+As discussed by \citet{halpern:16}, it is futile to argue if a
+particular counterfactual definition is the ``correct'' one to satisfy
+socially constructed concepts such as blame and responsibility. The
+same applies to fairness. Instead, we shall illustrate the
+implications of definition (\ref{eq:cf_definition}) and which
+compromises it raises.
+>>>>>>> 67f87bda1a77f7a52b312133113c164ad4fc378c
 
 First, we should make explicit the difference between $\hat Y$, the
 variable which we use for fair decisions, and $Y$, the variable which
@@ -269,28 +304,28 @@ causal structure of the world\footnote{The notion of ``closest world''
 
 \subsection{Examples}
 To give an intuition for counterfactual fairness we will consider three % real-world
-fair prediction scenarios: 1. \textbf{insurance pricing}, 2. \textbf{crime prediction}, 3. \textbf{college admissions}. Each of these correspond to the three causal graphs in Figure~\ref{figure.simple_models}, and are discussed below.
+fair prediction scenarios: \textbf{insurance pricing}; \textbf{crime prediction}; \textbf{college admissions}. Each of these correspond to one of the three causal graphs in Figure~\ref{figure.simple_models}, and are discussed below.
 %
 \paragraph{Scenario 1: The Red Car.}
 Imagine a car insurance company wishes to price insurance for car owners by
 predicting their accident rate $Y$. They assume there is an
 unobserved factor corresponding to aggressive driving $U$, that (a) causes
 drivers to be more likely have an accident, and (b) causes individuals to prefer red cars (the observed
-variable $X$). Moreover, they believe that individuals belonging to a
+variable $X$). Moreover, individuals belonging to a
 certain race $A$ are more likely to drive red cars. However, these individuals are no more likely to be aggressive or to get in accidents than any one else. We show this scenario in Figure~\ref{figure.simple_models} (\emph{Left}).
 
-Thus, using the red car feature $X$ to predict accident likelihood $Y$ would seem to be an unfair prediction because it may charge individual's of a certain race more than others. Counterfactual fairness agrees with this. 
+Thus, using the red car feature $X$ to predict accident likelihood $Y$ would seem to be an unfair prediction because it may charge individual's of a certain race more than others, even though {\em no race is more likely to have an accident}. Counterfactual fairness agrees with this notion. 
 %
 \begin{lem}
 The predictor $\hat{Y}(X)$ is not counterfactually fair for the model in Figure~\ref{figure.simple_models} (\emph{Left}).
 \end{lem}
 %
 \begin{proof}
-For simplicity, let's imagine that the equations described by the model in Figure~\ref{figure.simple_models} (\emph{Left}) are deterministic and linear:
+For simplicity, consider the case where the equations described by the model in Figure~\ref{figure.simple_models} (\emph{Left}) are deterministic and linear:
 \begin{align}
 X = \alpha A + \beta U, \;\;\;\; Y = \gamma U \nonumber
 \end{align}
-where the coefficients $\alpha,\beta,\gamma$ are given (in practice we will estimate these). We can test whether a predictor $\hat{Y}(X)$ is counterfactually-fair using the procedure described in Section~\ref{subsec:cmc}:
+where the coefficients $\alpha,\beta,\gamma$ are given (in practice these are estimated), and by assumption $\alpha \neq 0$. We can test whether a predictor $\hat{Y}(X)$ is counterfactually-fair using the procedure described in Section~\ref{subsec:cmc}:
 \begin{itemize}
 \item Compute $U$ given observations of $X,Y,A$, by solving for $U$.
 \item Substitute the equations involving $A$ with an interventional value $a'$ (i.e., this says: `what happens if the race of an individual were changed')
@@ -298,13 +333,13 @@ where the coefficients $\alpha,\beta,\gamma$ are given (in practice we will esti
 \end{itemize}
 In this deterministic case we achieve counterfactual fairness only if the predicted value $\hat{Y}(X)$ is identical before and after we change $A$. However, note that changing $A$ causes $X$ to change. Thus $\hat{Y}(X)$ must be different and so our model based on using $X$ to predict $Y$ is not counterfactually fair.
 \end{proof}
-Note that the above proof is without loss of generality: any model constructed using $X$ alone will not be counterfactually fair as changing $A$ will always have an influence on $X$.
+The above result holds in a more general case: any non-constant estimator that depends only on a single $X$ can not be counterfactually fair as changing $A$ always alters $X$.
 %
 %
 \paragraph{Scenario 2: High Crime Regions.} 
-A local police precinct is wants to know how likely a given house is to be broken into, $Y$.They believe this likelihood depends on many unobserved factors
-($U$) but also upon the neighborhood the house lies in ($X$). Neighborhoods, however, are often strongly correlated with
-race $A$. We show this scenario in Figure~\ref{figure.simple_models} (\emph{Center}).
+A local police precinct is wants to know how likely a given house is to be broken into, $Y$. This likelihood depends on many unobserved factors
+($U$) but also upon the neighborhood the house lies in ($X$). However, different ethnic groups are more likely to live in particular neighbourhoods, and so neighbourhood is often strongly correlated with the 
+race $A$ of the house occupier. We show this scenario in Figure~\ref{figure.simple_models} (\emph{Center}).
 
 
 % In such a scenario, although the likelihood of a particular
@@ -313,7 +348,7 @@ race $A$. We show this scenario in Figure~\ref{figure.simple_models} (\emph{Cent
 % counterfactually fair.
 
 \paragraph{Scenario 3: University Success.}
-A university wants to know if a student is likely to be successful after they graduate $Y$. They have information such as incoming grade point average (GPA), advanced placement (AP) exams results, and other academic features $X$. The university believes however, that an individual's gender may influence these features as well as their post-graduation success $Y$ due to discrimination. So instead, they would like to model an individual's latent talent $U$ which causes $X$ and $Y$. We show this scenario in Figure~\ref{figure.simple_models} (\emph{Right}).
+A university wants to know if a student is likely to be successful after they graduate $Y$. They have information such as incoming grade point average (GPA), advanced placement (AP) exams results, and other academic features $X$. The university believes however, that an individual's gender may influence these features as well as their post-graduation success $Y$ due to social discrimination. Instead, they would like to model an individual's latent talent $U$ which causes $X$ and $Y$. We show this scenario in Figure~\ref{figure.simple_models} (\emph{Right}).
 
 %  The world on the right shows $Y'$ a
 % causally fair variable that doesn't depend on $A$ being directly
