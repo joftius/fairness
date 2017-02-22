@@ -54,18 +54,21 @@
 Given a causal model $(U, V, F)$, let $A$ be a set of protected
 attributes, $\hat Y$ a variable of interest which we will be the basis for
 any decision making, and $W$ the set of complementary measurements such that $A
-\cup \{\hat Y\} \cup W = V$. We say $\hat Y$ is {\bf
-  counterfactually fair} if under any context uniquely defined by $W = w$ and $A = a$,
+\cup \{\hat Y\} \cup W = V$.
+\begin{define}[Counterfactual fairness]
+We say $\hat Y$ is {\bf counterfactually fair}
+if under any context uniquely defined by $W = w$ and $A = a$,
 \begin{align}
   \label{eq:cf_definition}
   &P(\hat Y_{A \leftarrow a\ }(U) = y\ |\ W = w, A = a)  =\nonumber\\ 
   &P(\hat Y_{A \leftarrow a'}(U) = y\ |\ W = w, A = a), 
 \end{align}
-%
-for all $y$ and for any value $a'$ attainable by $A$. Simply put,
+for all $y$ and for any value $a'$ attainable by $A$.
+\end{define}
+Simply put,
 the statement above captures the idea that any decision based on the
 conditional distribution of $\hat Y$ would have been the same had $A$ been
-different, given what has actually happened in the actual world.
+different, given what has actually happened in the world.
 We can also see $\hat Y$ as satisfying ``counterfactual exchangeability''
 under this model.
 %This definition substantially differs from Fairness Through
@@ -89,39 +92,54 @@ $A$ and $W$ only, because in many setups we want to predict some $Y$
 using $\hat Y$, the former which might not be available at any point
 in our inference.
 
+We also emphasize that counterfactual fairness is an individual-level
+definition. This is different from the notion of ``causal independence''
+as discussed in Section 4.3.1 of \cite{pearl:16}. Causal independence
+% requires
+% \begin{align}
+%   &P(\hat Y = y\ |\ do(A = a), W = w) =\nonumber\\ 
+%   &P(\hat Y = y\ |\ do(A = a'), W = w),
+% \end{align}
+% which
+entails comparing different units that happen to share the
+same ``treatment'' and coincide on values of $W$, while
+counterfactual fairness concerns the variation possible within an
+individual depending on their value of $a$ and the descendents of
+$A$ in the causal graph.
+
 \subsection{Implications}
 %
-As discussed by \citet{halpern:16}, it is futile to prove whether a
-particular counterfactual definition is the ``correct'' one to satisfy
-socially constructed concepts such as blame and responsibility. The
-same applies to fairness. Instead, we shall illustrate the
-implications of definition (\ref{eq:cf_definition}) and which
-compromises it raises.
+As discussed by \citet{halpern:16}, it is not productive to debate
+whether a particular counterfactual definition is the ``correct'' one
+to satisfy socially constructed concepts such as blame and responsibility.
+The same applies to fairness. Instead, we discuss the
+implications of definition \eqref{eq:cf_definition} and some choices
+that arise in its application.
 
 First, we should make explicit the difference between $\hat Y$, the
-variable which we base on or define our decisions, and $Y$, the variable which
+variable which we use for fair decisions, and $Y$, the variable which
 ideally we would like to use to perform decisions but which is
-generated in a world that is potentially unfair. $Y$, for instance,
-could be an indicator of whether a client will default on a loan in
-the future, while $\hat Y$ is the actual decision of giving the
+generated in an unfair world. For instance, $Y$
+could be an indicator of whether a client defaults on a loan, while
+$\hat Y$ is the actual decision of giving the
 loan. Consider the DAG $A \rightarrow Y$ for a causal model where $V =
 \{A, Y\}$, and in Figure \ref{fig:ex1}(a) the DAG with explicit
 inclusion of set $U$ and assumptions about independence of background
 variables. Assume $Y$ is an objectively ideal measure to be used in
-decision making, such as a binary indicator that the individual will
-default on a loan. In this setup, we postulate that the mechanism
+decision making, such as a binary indicator that the individual
+defaults on a loan. In this setup, we postulate that the mechanism
 $f_Y(A, U)$ is unfair, with the arrow $A \rightarrow Y$ being the
 result of a world that punishes individuals in a way that is out of
-their control: Figure \ref{fig:ex1}(b) shows a more fine-grained
+their control. Figure \ref{fig:ex1}(b) shows a more fine-grained
 theoretical model, where the path is mediated by a measure of
 whether the person is employed, which is itself caused by
 two background factors: one representing whether the person offering jobs is
-prejudiced, and one related to their qualifications. It seems irrelevant
-to use the information about employment if this is partially the result
-of prejudice.
+prejudiced, and one related to their qualifications. Using
+the information about employment will result in unfair predictions
+if employment is partially the result of prejudice.
 
-In the actual world as postulated by this example, it is a matter of
-fact that race is a cause of defaulting, even if mediated by other
+In the world as postulated by this example 
+race is a cause of defaulting, even if mediated by other
 variables. The counterfactual fairness principle however forbids us
 from using $Y$: using the twin network construction of
 \citet{pearl:00}, we show in Figure \ref{fig:ex1}(c) that $Y_a$ and
