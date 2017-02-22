@@ -1,12 +1,69 @@
-TODO. General recipe on how to put a model together, including the practical
-issues of $U$ and $A$ being dependent due to randomness of $U$.
+\section{Methods and Assessment}
+\label{sec:methods}
 
-\subsection{Special Cases}
+Varios design choices go in the definition of $\hat Y$ and its fitting. Given a causal model, these choices include the following.
 
-Talk about linear models, including those based on PCA/ICA.
+First, $\hat Y$ is a function of $U \cup X$ even if our initial notation emphasizes its dependence on the (possibly random) $U$. This also means it can be a function of a subset of this set, and any element of $X$ which is not a descendant of $A$ can be used. If only a strict subset of $U$ is used, the causal model does not need to be fully specified: equation $V_i = f_i(pa_i, U_{pa_i})$ can be substituted by a non-deterministic conditional probabability $p(V_i\ |\ pa_i, U_{pa_i}')$, where $U_{pa_i}' \subset U_{pa_i}$ and $p(V_i\ |\ pa_i, U_{pa_i}') = \int f_i(pa_i, U_{pa_i}) d U_{pa_i}''$, where $U_{pa_i}'' \equiv U_{pa_i} \backslash U_{pa_i}'$. This marginalization has implications in modeling, as discussed in the next section.
 
-\subsection{Criticisms}
-{}
-TODO. Criticism on difficulty of untestability of assumptions.
-More on assumptions used by other methods, including causal
-estimation methods based on additive error models.
+Second, $\hat Y(U)$ is to be understood as a parameterized function $g_\theta(U, X)$ where $\theta$ is learned by minimizing (empirical version of) the expected loss $E[l(Y, g_\theta(U, X))\ | X,
+  A]$, where the expectation is over $A \cup X \cup U \cup \{Y\}$. For instance, $l(Y, g_\theta(U, X)) = (Y - g_\theta(U, X))^2$, or the log-loss for Bernoulli classification.  In practice, the distribution of $A \cup X \cup \{Y\}$ can be the empirical distribution as given by some training data, while $p(U\ |\ X, A)$ comes from the estimated causal model fit to the same training data. Markov chain Monte Carlo (MCMC) may be necessary to generate samples from this conditional, which means every training data point is replaced by a set of data points sharing the same $A \cup X \cup \{Y\}$ but with different replicates of $U$. Any predictor can be used as $g_\theta(U, X)$, such as random forests and neural networks.
+
+\subsection{Criticisms, and a User's Guide for Model Building}
+
+Causal modeling requires untestable assumptions. Experimental data can sometimes be used to infer causal connections, but counterfactual modeling adds another layer of complexity by requiring functional decompositions between background and endogenous variables or, equivalently, joint distributions among variables which belong to separate physical realities. Such decompositions are in general not uniquely identifiable even with experimental data, which has motivated causal modeling frameworks that avoid counterfactuals entirely unless where they are strictly necessary \citep{dawid:00}. As in several matters of law and regulation, fairness at an individual level is a counterfactual quantity and some level of counterfactual assumptions are unavoidable. As a guide for building fair predictive models, we categorize assumptions by three levels of increasing strength.
+
+\begin{itemize}
+\item[L1] Given a (set of plausible) causal DAG(s), build $\hat Y$
+  using as covariates only the observable variables which are not
+  descendants of the protected attributes $A$ in the DAG(s).This
+  requires (partial) information about the causal DAG, but no
+  assumptions about structural equations and priors over background
+  variables. Within our definition (\ref{eq:cf_definition}), here
+  $\hat Y$ cannot be a function of $U$ but is allowed to be a function
+  of any subset of $X$ that is not a descendant of $A$; \item[L2] The above might waste much information, particularly if the
+  protected attributes are typical demographic information such as
+  race, sex, gender and age, which can be parents but not children of
+  other variables in the DAG. To include information from descendants
+  of $A$, postulate background latent variables that act as latent
+  causes of observable variables, based on explicit domain knowledge
+  and learning algorithms with causal assumptions\footnote{In some
+    domains, it is actually common to build a model entirely around
+    latent constructs which have few or no observable parents nor
+    connections among observed variables \citep{bol:89}.}.  As these
+  (latent) variables are not descendants of $A$, they can be used.
+  Conditioning on descendants of $A$ will propagate information from
+  $X$ to them. The dependency of each $V_i$ on its parents can be
+  probabilistic, instead of given by a structural equation, as
+  explained in the previous section;
+\item[L3] In the above construction, the model still factorizes as a
+  general DAG model, where each node follows a non-degenerate
+  distribution given observed and latent variables. In the final level
+  of assumptions, remove all randomness from the conditional
+  distributions to obtain a full decomposition $(U, V, F)$ of the
+  model. Default assumptions, partially independent of the domain,
+  might be invoked. For instance, we can model the conditional
+  distribution $p(V_i\ |\ V_1, \dots, V_{i - 1})$ as an additive error
+  model, $V_i = f_i(V_1, \dots, V_{i - 1}) + e_i$ \citep{peters:14}. The error
+  term $e_i$, now assumed to be a summary of the other latent causes
+  of $V_i$, then becomes an input to $\hat Y$ after conditioning on
+  the observable variables. This maximizes the amount of information
+  that can be properly extracted from a causal model by the fair
+  predictor $\hat Y$.
+\end{itemize}
+
+A discussion on testing the implications of a given model is beyond the scope of this paper, as there is already a wealth of literature on the topic, with \citep{bollen:93} providing a classic account aimed at structural equation models. There are as well tools that help the (partial) discovery of causal structure \citep{sgs:00,peters:14} and latent variables \citep{silva:10b,HalpernSontag_uai13,anima:14}. The bottom line is that fairness should be the consequence of clear assumptions that need to be defended given the extent of existing available evidence, but with the understanding that there will be a subset of assumptions which cannot be tested. The ultimate validation of a counterfactual model is a matter of agreement between regulators and algorithm designers, lying outside the realm of machine learning theory and within the subject matter of the domain. The goal of counterfactual fairness is to provide a foundation for justifying particular modeling choices, which otherwise may sound arbitrary. With counterfactual fairness, assumptions are laid out in the open for criticism by regulators and society.
+
+\subsection{Special cases}
+
+Consider the graph $A \rightarrow X \rightarrow Y$. In general, if $\hat Y$ is a function of $X$ only, then $\hat Y$ will not obey demographic parity, $p(\hat Y\ |\ A = a) \neq p(\hat Y\ |\ A = a')$.  If we postulate a structural equation $X = \alpha A + e_X$, then given $A$ and $X$ we can deduce $e_X$. If $\hat Y$ is a function of $e_X$ only and if by assumption $e_X$ is independent of $A$, then the assumptions imply that $\hat Y$ will satisfy demographic parity, and that can be falsified.
+
+By way of contrast, if $e_X$ is not uniquely identifiable from the structural equation and $(A, X)$, then the distribution of $\hat Y$ will depend of the value of $A$ as we marginalize $e_X$, and demographic parity will not follow. This leads to the following Lemma:
+
+%\begin{lem}
+{\bf Lemma XX} If all background variables $U' \subseteq U$ used in the definition of $\hat Y$ are determined from $(A, W)$, and all observable variables used in the definition of $\hat Y$ are independent of $A$ given $U'$, then $\hat Y$ satisfies demographic parity. If the conditions fail, then $\hat Y$ will not satisfy demographic parity in general. 
+%\end{lem}
+  
+In one sense, definition (\ref{eq:cf_definition}) is a counterfactual demographic parity condition, which is advocated here as a substitute for the more traditional definition.
+
+We also advocate that counterfactual assumptions should underlie all approaches based on separating the sources of variation of the data into ``fair'' and ``unfair'' components. As an example, the method proposed by \cite{louizos2015variational} explains the variability in $X$ from $A$ and an independent source $U$ following the DAG $A \rightarrow X \leftarrow U$. Since $U$ and $A$ are not independent given $X$ in this directed representation, a type of ``posterior regularization'' \citep{ganchev:10} is enforced such that a posterior $p_{fair}(U\ | A, X)$ is close to the model posterior $p(U\ |\ A, X)$ while having the property $p_{fair}(U\ | A = a, X) \approx p_{fair}(U\ | A = a', X)$. But this is neither necessary nor sufficient for counterfactual fairness if the model for $X$ given $A$ and $U$ is not justified by a causal mechanism. If it is, $p(U\ |\ A, X)$ is justified as distribution which we can use to marginalize $U$ in $p(\hat Y(U)\ |\ A, X)$. No posterior regularization is necessary.  Methods which estimate the relationship between $A$, $U$ and $X$ based on penalizing dependence measures between an estimated $U$ and $A$ are relevant in estimating a causal model such as the one described by \citep{mooij:09}, but this is motivated by a model in which $U$ is deterministically inferred from $A$ and $X$ by construction. Moreover, it is unclear in \cite{louizos2015variational} how the ideal label $Y$ is causally connected to $U$ and $A$, so that the semantics of the ``unfair''
+components of $Y$ are left unexplained.
