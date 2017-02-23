@@ -64,9 +64,12 @@ We compare the RMSE of all methods for predicting FYA on a hold out dataset in T
 
 
 \paragraph{Counterfactual fairness.}
-In Figure
+We would like to empirically test whether the baseline methods are counterfactually fair. Because we do not know the true model of the data, we propose to use Figure~\ref{figure.law_school} as our model of the real world. If this describes the true world we can evaluate counterfactual fairness easily: we can simply sample from the model while fixing an individual's race/sex to particular values. By changing race/sex we can obtain the counterfactual values $\mbox{GPA}_a,\mbox{GPA}_{a'}$ where $a,a'$ are different values of race/sex (and similarly for LSAT). We compare how predictions of FYA change when using counterfactual features versus the original sampled features. Figure~\ref{figure.counterfactual} shows how the distribution of predicted FYA changes when race, sex, and both race and sex are changed (for race, as the majority of individuals have marked their race as white or black we just consider counterfactuals for this subset of individuals).
 
-\paragraph{Model validity.}
+% here describe what we see
+
+% maybe sample from model and check it out
+%\paragraph{Model validity.}
  
 
 % TODO rank top 10 students by ability or by other score in law_school.py which only considers observed features
