@@ -60,7 +60,7 @@ Causal modeling requires untestable assumptions. Experimental data can sometimes
 
 \subsection{Special cases}
 
-Consider the graph $A \rightarrow X \rightarrow Y$. In general, if $\hat Y$ is a function of $X$ only, then $\hat Y$ will not obey demographic parity, $p(\hat Y\ |\ A = a) \neq p(\hat Y\ |\ A = a')$.  If we postulate a structural equation $X = \alpha A + e_X$, then given $A$ and $X$ we can deduce $e_X$. If $\hat Y$ is a function of $e_X$ only and if by assumption $e_X$ is independent of $A$, then the assumptions imply that $\hat Y$ will satisfy demographic parity, and that can be falsified.
+Consider the graph $A \rightarrow X \rightarrow Y$ (see Figure~\ref{fig:ex1} (a)). In general, if $\hat Y$ is a function of $X$ only, then $\hat Y$ will not obey demographic parity, $p(\hat Y\ |\ A = a) \neq p(\hat Y\ |\ A = a')$.  If we postulate a structural equation $X = \alpha A + e_X$, then given $A$ and $X$ we can deduce $e_X$. If $\hat Y$ is a function of $e_X$ only and if by assumption $e_X$ is independent of $A$, then the assumptions imply that $\hat Y$ will satisfy demographic parity, and that can be falsified.
 
 By way of contrast, if $e_X$ is not uniquely identifiable from the structural equation and $(A, X)$, then the distribution of $\hat Y$ will depend of the value of $A$ as we marginalize $e_X$, and demographic parity will not follow. This leads to the following:
 
@@ -78,3 +78,8 @@ components of $Y$ are left unexplained.
 There is already a wealth of literature on the topic of testing implications of modeling assumptions, with \citep{bollen:93} providing a classic account aimed at structural equation models. There are as well tools that help the (partial) discovery of causal structure \citep{sgs:00,peters:14} and latent variables \citep{silva:10b,HalpernSontag_uai13,anima:14}.
 
 Our view is that fairness should be the consequence of clear assumptions that need to be defended given the extent of existing available evidence, but with the understanding that there will be a subset of assumptions which cannot be tested. The ultimate validation of a counterfactual model is a matter of agreement between regulators and algorithm designers, lying outside the realm of machine learning theory and within the subject matter of the domain. The goal of counterfactual fairness is to provide a foundation for justifying particular modeling choices, which otherwise may sound arbitrary. With counterfactual fairness, assumptions are laid out in the open for criticism by regulators and society.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "ricardo_draft"
+%%% End:
