@@ -291,14 +291,15 @@ For simplicity, consider the case where the equations described by the model in 
 X = \alpha A + \beta U, \;\;\;\; Y = \gamma U \nonumber
 \end{align}
 where the coefficients $\alpha,\beta,\gamma$ are given (in practice these are estimated), and by assumption $\alpha \neq 0$. We can test whether a predictor $\hat{Y}(X)$ is counterfactually-fair using the procedure described in Section~\ref{subsec:cmc}:
-\begin{itemize}
-\item Compute $U$ given observations of $X,Y,A$, by solving for $U$.
-\item Substitute the equations involving $A$ with an interventional value $a'$ (i.e., this says: `what happens if the race of an individual were changed')
-\item Compute the variables $X,Y$ with the interventional value $a'$
-\end{itemize}
-In this deterministic case we achieve counterfactual fairness only if the predicted value $\hat{Y}(X)$ is identical before and after we change $A$. However, note that changing $A$ causes $X$ to change. Thus $\hat{Y}(X)$ must be different and so our model based on using $X$ to predict $Y$ is not counterfactually fair.
+%\begin{itemize}
+{\em (i)} Compute $U$ given observations of $X,Y,A$.%, by solving for $U$. 
+{\em (ii)} Substitute the equations involving $A$ with an interventional value $a'$. 
+% (i.e., this says: `what happens if the race of an individual were changed')
+{\em (iii)} Compute the variables $X,Y$ with the interventional value $a'$.
+
+In this deterministic case we achieve counterfactual fairness only if the predicted value $\hat{Y}(X)$ is identical before and after we change $A$. However, changing $A$ changes $X$. Thus $\hat{Y}(X)$ must be different and the model  is not counterfactually fair.
 \end{proof}
-The above result holds in a more general case: any non-constant estimator that depends only on a single $X$ can not be counterfactually fair as changing $A$ always alters $X$.
+The above result holds in a more general case: any non-constant estimator that depends only on a single $X$ is not be counterfactually fair as changing $A$ always alters $X$.
 %
 %
 \paragraph{Scenario 2: High Crime Regions.} 
