@@ -51,8 +51,19 @@ Causal modeling requires untestable assumptions. Experimental data can sometimes
 
 
 \subsection{Special cases}
-
-Consider the graph $A \rightarrow X \rightarrow Y$ (see Figure~\ref{fig:ex1} (a)). In general, if $\hat Y$ is a function of $X$ only, then $\hat Y$ will not obey demographic parity, $p(\hat Y\ |\ A = a) \neq p(\hat Y\ |\ A = a')$.  If we postulate a structural equation $X = \alpha A + e_X$, then given $A$ and $X$ we can deduce $e_X$. If $\hat Y$ is a function of $e_X$ only and if by assumption $e_X$ is independent of $A$, then the assumptions imply that $\hat Y$ will satisfy demographic parity, and that can be falsified.
+%
+Consider the graph $A \rightarrow X \rightarrow Y$ (see
+Figure~\ref{fig:ex1} (a)). In general, if $\hat Y$ is a function of
+$X$ only, then $\hat Y$ will not obey demographic parity, i.e.
+\begin{align}
+  p(\hat Y\ |\ A = a) \neq p(\hat Y\ |\ A = a').\nonumber
+\end{align}
+If we postulate a
+structural equation $X = \alpha A + e_X$, then given $A$ and $X$ we
+can deduce $e_X$. If $\hat Y$ is a function of $e_X$ only and, by
+assumption, $e_X$ is independent of $A$, then the assumptions imply
+that $\hat Y$ will satisfy demographic parity, and that can be
+falsified.
 
 By way of contrast, if $e_X$ is not uniquely identifiable from the structural equation and $(A, X)$, then the distribution of $\hat Y$ will depend of the value of $A$ as we marginalize $e_X$, and demographic parity will not follow. This leads to the following:
 
