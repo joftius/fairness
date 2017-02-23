@@ -1,19 +1,88 @@
 % !TEX root=ricardo_draft.tex
 % binary classification
+In essence the primary challenge in training fair classifiers comes
+from the fact that the world itself is not fair, and as such an
+unbiased (in the technical sense) classifier trained from real-world
+data is not guaranteed to be fair (in the social sense). These causes
+of unfairness can take several forms:
+%\subsection{How data can be unfair}
+\begin{description}
+\item {\bf Historically biased distributions:} Individuals with different protected attributes $A$  may have many different attributes due to current and historic biases (e.g., racial inequality caused by things like colonialism,
+slavery, a history of discrimination in hiring and
+housing etc.). Importantly, these differences may lead to unfairness% , even
+% if you use different covariates to make predictions for each group
+.
+\item {\bf Selection unfairness:} The training data could contain selection bias. For instance, if we are using a dataset describing who paid loans back in full in order to train a loan prediction algorithm, it may be that loans were unfairly distributed. Since we can't see whether people will pay back a loan if they didn't receive one, our algorithms may be biased by this sampling.
+\item {\bf Prediction unfairness:} The learned classifier could use either protected attributes such as race or correlated attributes as features, and  learn a biased predictor.
+\end{description}
 There has been a wealth of recent work towards fair machine learning
-algorithms. In large part, these methods have focussed (and reasonably
-so) on binary classification with a binary sensitive attributes
-(CITE). A concurrent goal of these works was to construct a working
-definition of fairness (or unfairness) that could be evaluated and
+algorithms. % In large part, these methods have focused (and reasonably
+% so) on binary classification with a binary sensitive attributes
+% (CITE).
+These approaches generally constructed a working
+definition of fairness (or unfairness) that could be evaluated numerically and  then
 optimized. These include fairness through unawareness/disparate
-treatment\cite{grgiccase,zafar2016fairness}, demographic
+treatment \cite{grgiccase,zafar2016fairness}, demographic
 parity/disparate impact \cite{zafar2015learning}, individual fairness
 \cite{dwork2012fairness,zemel2013learning,louizos2015variational,joseph2016rawlsian},
 equality of opportunity/disparate
 mistreatment~\cite{hardt2016equality,zafar2016fairness}.
 
-A variety of algorithmic approaches to achieving fairness have been proposed. Most similar to our work is \cite{zemel2013learning} (I have no idea which reference we're going for here).      
+% A variety of algorithmic approaches to achieving fairness have been proposed.
+Most similar to our work is \cite{zemel2013learning} (I have no idea which reference we're going for here).
+%\begin{description}
 
+\begin{define}[Fairness Through Unawareness (FTU)]
+  An algorithm is fair so long as the sensitive attribute $A$ is not
+  explicitly used in the decision-making process. Any mapping
+  $\hat{Y}: X \rightarrow Y$ that excludes $A$ (or other attributes
+  considered  unfair, see \citet{grgiccase}) satisfies this
+  definition.
+\end{define}
+Initially proposed as a baseline method, the approach has found more favor
+recently with more general approaches such as \cite{grgiccase}.  The
+approach has a compelling simplicity, and simply constructs a
+predictor $\hat Y$ from based on a feature vector $X$ that excludes
+$A$, and in the case of \cite{grgiccase} other attributes human
+labeled as unfair.
+%
+\begin{define}[Individual Fairness (IF)]
+  An algorithm is fair if it give similar predictions to similar
+  individuals. Formally, if individuals $i$ and $j$ are similar apart
+  from their protected attributes $A_i$, $A_j$ then
+\begin{align}
+  \hat{Y}(X^{(i)}, A^{(i)}) \approx \hat{Y}(X^{(j)}, A^{(j)}).\nonumber
+\end{align}
+\end{define}
+This approach can be understood loosely as a continuous analog of
+FTU. As described in \cite{dwork2012fairness}, the
+notion of similarity must be carefully chosen and this notion of fairness
+will not correct for the historical biases described above.
+%
+\begin{define}[Demographic Parity (DP)]
+  An algorithm is fair if its predictions are independent of the
+  sensitive attributes $A$ across the population. A prediction
+  $\hat{Y}$ satisfies this definition if,
+\begin{align}
+P(\hat{Y} | A = 0) = P(\hat{Y} | A = 1). \nonumber
+\end{align}
+\end{define}
+ %       
+ % PROBLEMS: (a) It allows that we accept qualified applicants for one value of A and unqualified applicants for another value of A (which could arise naturally if we have little training data about one value of A). (b) It can seriously destroy prediction accuracy. (c) It is technically possible to use such a classifier to justify discrimination, if we pick unqualified applicants in one group. (d) Is ignorant of how data was sampled and ignores fairness with respect to subgroups or super-groups.
+%
+\begin{define}[Equal Opportunity (EO)]
+An algorithm is fair if it is equally accurate for each value of the sensitive attribute $A$. A prediction $\hat{Y}$ satisfies this if,
+\begin{align}
+P(\hat{Y}=1 | A=0,Y=1) = P(\hat{Y}=1 | A=1,Y=1). \nonumber
+\end{align}
+\end{define}
+While this method addresses  the notion of algorithmic fairness, it guarantees that any historic biases in the data, as discussed in the start of this section are preserved. As shown by \citet{kleinberg2016inherent}, EO and DP are mutually exclusive notions of fairness.
+
+% \item {'Fairness through Awareness'} (e.g., [2]) Imagine there exists a task-specific fairness distance metric d that describes how similar any pair of individuals should be for a given task (i.e., defined by $Y$). A fair prediction $\hat Y$ (where $\hat Y$ is actually a distribution in this case) ensures that the distance between distributions $\hat Y_1$ and $\hat Y_2$ for inputs $x_1$ and $x_2$ is less than or equal to the fairness distance $d(x_1,x_2)$, while minimizing some arbitrary loss function. This decouples accurate classification and fairness. PROBLEMS: A task-specific fairness distance metric usually doesn't exist. And may be painstaking to create for every task at hand.
+% \item{ 'Accurate Preferencing'} (e.g., [3]): "A learning algorithm must never 'favor' an applicant whose true quality is lower than that of another applicant." True quality is defined by a function $f_i$, one for each protected attribute value $i \in A$. This function takes as input a set of features $x$ and returns a quality score. PROBLEMS: If the distributions for different populations are historically unfair, this will not fix that. Comment: This seems like the continuous version of 3, conditional on true quality score instead of true class label.
+% Doesn't deal with unfairness sources 1 and 2
+%  \item{'The p\% rule'} (e.g., [6]): A fair classifier is one with a decision boundary such that at least p\% of a sensitive group fall on a side of the decision boundary. For example, at least p\% of any race should be predicted to be given a loan. (This is like a continuous version of demographic parity!) PROBLEMS: Can cause reverse discrimination. For example: imagine your dataset mostly consists of poor white people and rich black people and you're trying to predict who should and shouldn't get a loan. Then an algorithm that satisfies demo. parity / the p\% rule will necessarily reject black people with better income qualifications for a loan, than it accepts poor white people with worse income qualifications.
+% \end{description}
 
 
 
