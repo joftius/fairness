@@ -279,7 +279,11 @@ drivers to be more likely have an accident, and (b) causes individuals to prefer
 variable $X$). Moreover, individuals belonging to a
 certain race $A$ are more likely to drive red cars. However, these individuals are no more likely to be aggressive or to get in accidents than any one else. We show this scenario in Figure~\ref{figure.simple_models} (\emph{Left}).
 
-Thus, using the red car feature $X$ to predict accident likelihood $Y$ would seem to be an unfair prediction because it may charge individual's of a certain race more than others, even though {\em no race is more likely to have an accident}. Counterfactual fairness agrees with this notion. 
+Thus, using the red car feature $X$ to predict accident likelihood $Y$
+would seem to be an unfair prediction because it may charge
+individuals of a certain race more than others, even though {\em no
+  race is more likely to have an accident}. Counterfactual fairness
+agrees with this notion.
 %
 \begin{lem}
 The predictor $\hat{Y}(X)$ is not counterfactually fair for the model in Figure~\ref{figure.simple_models} (\emph{Left}).
@@ -303,9 +307,9 @@ The above result holds in a more general case: any non-constant estimator that d
 %
 %
 \paragraph{Scenario 2: High Crime Regions.} 
-A local police precinct is wants to know how likely a given house is to be broken into, $Y$. This likelihood depends on many unobserved factors
+A local police precinct wants to know how likely a given house is to be broken into, $Y$. This likelihood depends on many unobserved factors
 ($U$) but also upon the neighborhood the house lies in ($X$). However, different ethnic groups are more likely to live in particular neighbourhoods, and so neighbourhood and break-in rates are often strongly correlated with the 
-race $A$ of the house occupier. We show this scenario in Figure~\ref{figure.simple_models} (\emph{Center}).
+race $A$ of the house occupier. This scenario can be seen in Figure~\ref{figure.simple_models} (\emph{Center}).
 
 
 % In such a scenario, although the likelihood of a particular
