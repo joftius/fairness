@@ -35,6 +35,7 @@ social factors relating to race and gender. Our approach is to model these
 fair. We will then be able to use this latent variable as a feature
 for prediction.
 
+\paragraph{Model.}
 We propose to model the law school data as shown in
 Figure~\ref{figure.law_school}. We suspect that variables race and sex
 affect student performance (e.g. GPA, LSAT, and FYA) due to factors
@@ -54,9 +55,18 @@ causal model is a short-hand for a system of equations:
 \mbox{FYA} &\sim {\cal N}(w_{F}^K K + w_{F}^R R + w_{F}^S S, 1) \nonumber \\
 K &\sim {\cal N}(0,1) \nonumber
 \end{align}
+We will compare this model with two baselines: 1. \textbf{Full}: the standard technique of using all features, including sensitive features such as race and sex to make predictions; 2. \textbf{Unaware}: fairness through unawareness, we simply throw out any features we would like to be fair with respect to. We evaluate all methods (including our own) using linear regression; this is in accordance with our model which postulates linear interactions between all variables. %; %3. \textbf{Variational Fair Autoencoder (VFAE)} \cite{louizos2015variational}, a recent approach that works to learn a fair representation of the original data.
+% compute counterfactuals for both race and gender
 
 
+\paragraph{Accuracy.}
+We compare the RMSE of all methods for predicting FYA on a hold out dataset in Table~\ref{table.pred_law}. For our method we only use samples from the posterior of knowledge for prediction. As we believe FYA is affected by race and sex note that any model that wishes to be fair w.r.t. to these variables must necessarily lose prediction accuracy. We see this Table~\ref{table.pred_law}: the full model achieves the lowest RMSE as it is able to reconstruct additional information about FYA using race and sex. We note that our method is able to achieve nearly the same RMSE as the unaware model. This implies that our knowledge variable is nearly as good as the unfair variables GPA and LSAT at reconstructing FYA.
 
+
+\paragraph{Counterfactual fairness.}
+In Figure
+
+\paragraph{Model validity.}
  
 
 % TODO rank top 10 students by ability or by other score in law_school.py which only considers observed features

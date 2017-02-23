@@ -291,7 +291,7 @@ data$race_categ <- as.factor(data$race_categ)
 #data$white <- as.factor(data$iswhite)
 
 qmplot(longitude, latitude, data=data, maptype = "toner-background", color=race_categ, size=I(0.000001), zoom = 11, darken = .7, legend = "topleft") + 
-  scale_color_manual(values=c("#CCFF99", "#CC99FF"))
+  scale_color_manual(values=c("#CC0099", "#66FF66"))
   
 ggplot(data, aes(race_categ)) + geom_bar(fill=c("#33CC00", "#6666FF"))
 
