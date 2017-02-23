@@ -48,12 +48,11 @@
 \end{figure*}
 
 
-\subsection{Definition}
+%\subsection{Definition}
 %Formally, a variable $Y$ is said to be counterfactually fair with
 %respect to a protected attribute $A$ if
 Given a causal model $(U, V, F)$, let $A$ be a set of protected
 attributes, $\hat Y$ a variable of interest which we will be the basis for
-
 any decision making, and $W$ the set of complementary measurements such that
 $W= V \setminus ( A \cup \{\hat Y\})$.
 \begin{define}[Counterfactual fairness]
@@ -66,10 +65,10 @@ if under any context uniquely defined by $W = w$ and $A = a$,
 \end{align}
 for all $y$ and for any value $a'$ attainable by $A$.
 \end{define}
-Simply put,
-the statement above captures the idea that any decision based on the
+%Simply put,
+The above statement captures the idea that any decision based on the
 conditional distribution of $\hat Y$ would have been the same had $A$ been
-different, given what has actually happened in the world.
+different, given the full implications of $A$ having always been different.
 We can also see $\hat Y$ as satisfying ``counterfactual exchangeability''
 under this model.
 %This definition substantially differs from Fairness Through
@@ -180,7 +179,7 @@ stochastic component of it is independent of any descendant of $A$.
 % in principle it is not harmful as implied by the model.
 
 % The second and more complicated issue concerns the fact that
-There is a subtletly to address here: by abduction,
+There is a subtlety to address here: by abduction,
 $U$ will typically depend on $A$, and hence so will $\hat Y$ when
 marginalizing over $U$. This seems to disagree with the intuition that our
 fair variable should be not be caused by $A$. We discuss
@@ -308,7 +307,7 @@ The above result holds in a more general case: any non-constant estimator that d
 %
 \paragraph{Scenario 2: High Crime Regions.} 
 A local police precinct wants to know how likely a given house is to be broken into, $Y$. This likelihood depends on many unobserved factors
-($U$) but also upon the neighborhood the house lies in ($X$). However, different ethnic groups are more likely to live in particular neighbourhoods, and so neighbourhood and break-in rates are often strongly correlated with the 
+($U$) but also upon the neighborhood the house lies in ($X$). However, different ethnic groups are more likely to live in particular neighborhoods, and so neighborhood and break-in rates are often strongly correlated with the 
 race $A$ of the house occupier. This scenario can be seen in Figure~\ref{figure.simple_models} (\emph{Center}).
 
 
@@ -328,7 +327,7 @@ A university wants to know if a student is likely to be successful after they gr
 
 
 % \subsection{Examples}
-% To get an intution for what the different definitions of fairness imply, we will
+% To get an intuition for what the different definitions of fairness imply, we will
 % revisit the examples of figure \ref{figure.simple_models}.
 % begin by describing a few possible real-world scenarios. For each of these we will describe what counterfactually-fair and counterfactually-unfair predictors look like.
 
