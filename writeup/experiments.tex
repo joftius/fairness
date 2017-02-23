@@ -19,14 +19,14 @@ designed to assess `the law school experience of minority students, as
 well as their ultimate entry into the profession'. The survey contains
 students' features before entering law school including: their
 entrance exam (LSAT) scores and their undergraduate grade-point
-average (GPA); features from during law school, such as, their average
-grade of their first-year of law school (FYA)), and following Law
-School i.e. whether students passed the final examination, the `bar
-exam' (P)).
+average (GPA) and features collected during law school, including their average
+grade of their first-year of law school (FYA)). %, and following Law
+%School i.e. whether students passed the final examination, the `bar
+%exam' (P)).
 
 Given this data a law school may wish to predict whether a law student
-will pass the final bar exam from information about their performance
-during and before law school. The school would also like to make sure
+will succeed in their first year (have a high FYA) from information about their academic performance 
+before law school. The school would also like to make sure
 these predictions are not biased by an individual's race and
 gender. However, we may worry that our observed information about
 students, the LSAT, GPA, and FYA scores, are biased due to historical
@@ -35,29 +35,41 @@ social factors relating to race and gender. Our approach is to model these
 fair. We will then be able to use this latent variable as a feature
 for prediction.
 
+\paragraph{Model.}
 We propose to model the law school data as shown in
 Figure~\ref{figure.law_school}. We suspect that variables race and sex
-affect student performance (e.g. GPA, LSAT, and FGA) due to factors
+affect student performance (e.g. GPA, LSAT, and FYA) due to factors
 such as cultural norms, which assume that individuals of a certain
 race or gender are `better suited' to be lawyers. Such beliefs could
 adversely impact students who do not fit these norms. Instead we would
 like to model the latent \emph{knowledge} (K) of a student, which also
-impacts these features as well as whether the student passes their
-final bar exam (P). We can then construct a predictor $\hat{Y}$ that
-predicts P fairly using knowledge and the testing location (LOC) which
-we suspect may have an affect on P. It is easy to show that $\hat{Y}$
-is counterfactually fair, whereas a predictor that uses features GPA,
-LSAT, and FGA is not (in this case even including race and sex as
+impacts these features. We can then construct a predictor that
+predicts FYA fairly using knowledge. It is easy to show that such a predictor
+is counterfactually fair, whereas a predictor that uses features GPA and
+LSAT is not (in this case even including race and sex as
 features cannot correct this, as can be done in the linear case). The
 causal model is a short-hand for a system of equations:
 \begin{align}
-G &\sim {\cal N}(b_G + w_1 K + w_2 R + w_3 S, \sigma_G) \nonumber \\
-L &\sim \textrm{Poisson}(\exp(b_L + w_4 K + w_5 R + w_6 S)) \nonumber \\
-F &\sim {\cal N}(b_F + w_7 K + w_8 R + w_{9} S, 1) \nonumber \\
-P &\sim \textrm{Bernoulli}([1+\exp(-b_P + w_{10} K + w_{11} R + w_{12} S)]^{-1}) \nonumber \\
+\mbox{GPA} &\sim {\cal N}(b_{G} + w_{G}^K K + w_{G}^R R + w_{G}^S S, \sigma_{G}) \nonumber \\
+\mbox{LSAT} &\sim \textrm{Poisson}(\exp(b_{L} + w_{L}^K K + w_{L}^R R + w_{L}^S S)) \nonumber \\
+\mbox{FYA} &\sim {\cal N}(w_{F}^K K + w_{F}^R R + w_{F}^S S, 1) \nonumber \\
 K &\sim {\cal N}(0,1) \nonumber
 \end{align}
+We will compare this model with two baselines: 1. \textbf{Full}: the standard technique of using all features, including sensitive features such as race and sex to make predictions; 2. \textbf{Unaware}: fairness through unawareness, we simply throw out any features we would like to be fair with respect to. We evaluate all methods (including our own) using linear regression; this is in accordance with our model which postulates linear interactions between all variables. %; %3. \textbf{Variational Fair Autoencoder (VFAE)} \cite{louizos2015variational}, a recent approach that works to learn a fair representation of the original data.
+% compute counterfactuals for both race and gender
 
+
+\paragraph{Accuracy.}
+We compare the RMSE of all methods for predicting FYA on a hold out dataset in Table~\ref{table.pred_law}. For our method we only use samples from the posterior of knowledge for prediction. As we believe FYA is affected by race and sex note that any model that wishes to be fair w.r.t. to these variables must necessarily lose prediction accuracy. We see this Table~\ref{table.pred_law}: the full model achieves the lowest RMSE as it is able to reconstruct additional information about FYA using race and sex. We note that our method is able to achieve nearly the same RMSE as the unaware model. This implies that our knowledge variable is nearly as good as the unfair variables GPA and LSAT at reconstructing FYA.
+
+
+\paragraph{Counterfactual fairness.}
+We would like to empirically test whether the baseline methods are counterfactually fair. Because we do not know the true model of the data, we propose to use Figure~\ref{figure.law_school} as our model of the real world. If this describes the true world we can evaluate counterfactual fairness easily: we can simply sample from the model while fixing an individual's race/sex to particular values. By changing race/sex we can obtain the counterfactual values $\mbox{GPA}_a,\mbox{GPA}_{a'}$ where $a,a'$ are different values of race/sex (and similarly for LSAT). We compare how predictions of FYA change when using counterfactual features versus the original sampled features. Figure~\ref{figure.counterfactual} shows how the distribution of predicted FYA changes when race, sex, and both race and sex are changed (for race, as the majority of individuals have marked their race as white or black we just consider counterfactuals for this subset of individuals).
+
+% here describe what we see
+
+% maybe sample from model and check it out
+%\paragraph{Model validity.}
  
 
 % TODO rank top 10 students by ability or by other score in law_school.py which only considers observed features
@@ -75,12 +87,25 @@ K &\sim {\cal N}(0,1) \nonumber
 \begin{figure}[th]
 \begin{center}
 \vspace{-1ex}
-\centerline{\includegraphics[width=\columnwidth]{law_school_model}}
+\centerline{\includegraphics[width=0.8\columnwidth]{law_school_model}}
 \vspace{-2ex}
 \caption{A causal model for the problem of predicting law school success fairly.\label{figure.law_school}}
 \vspace{-2ex}
 \end{center}
 \end{figure}
+
+
+\begin{figure}[th]
+\begin{center}
+ \label{figure.counterfactual}
+\vspace{-1ex}
+\centerline{\includegraphics[width=\columnwidth]{counterfactual}}
+\vspace{-2ex}
+\caption{Density plots of predicted $\mbox{FYA}_a$ and $\mbox{FYA}_{a'}$.}
+\vspace{-2ex}
+\end{center}
+\end{figure}
+
 
 \begin{table}[t]
 \vspace{-2ex}
