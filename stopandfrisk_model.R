@@ -291,15 +291,17 @@ data$race_categ <- as.factor(data$race_categ)
 #data$white <- as.factor(data$iswhite)
 
 qmplot(longitude, latitude, data=data, maptype = "toner-background", color=race_categ, size=I(0.000001), zoom = 11, darken = .7, legend = "topleft") + 
-  scale_color_manual(values=c("#33CC00", "#6666FF"))
+  scale_color_manual(values=c("#CCFF99", "#CC99FF"))
   
 ggplot(data, aes(race_categ)) + geom_bar(fill=c("#33CC00", "#6666FF"))
 
 
-ggplot(data, aes(criminality)) + stat_density(position="identity",geom="line")
+#ggplot(data, aes(criminality)) + stat_density(position="identity",geom="line")
   #geom_density()
-ggplot(data, aes(perception)) + stat_density(position="identity",geom="line") # +
-  #xlim(c(-4,max(data$perception)))
+ggplot(data, aes(criminality)) + geom_density(color="#000000", fill="#000000") + 
+  guides(fill=FALSE) + theme(legend.position="none")
+ggplot(data, aes(perception)) + geom_density(color="#000000", fill="#000000") + 
+  guides(fill=FALSE) + theme(legend.position="none") #stat_density(position="identity",geom="line") # +
 
 arsum <- rep(0, length(data$arstmade)); 
 arsum[data$arstmade == 1] <- 1
