@@ -1,0 +1,169 @@
+% Use the following line _only_ if you're still using LaTeX 2.09.
+%\documentstyle[icml2017,epsf,natbib]{article}
+% If you rely on Latex2e packages, like most moden people use this:
+\documentclass{article}
+
+% use Times
+\usepackage{times}
+% For figures
+\usepackage{graphicx} % more modern
+%\usepackage{epsfig} % less modern
+\usepackage{subfigure} 
+
+% For citations
+\usepackage[sort&compress]{natbib}
+
+% For algorithms
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{amsthm,amssymb,amsopn,amsmath}
+
+% As of 2011, we use the hyperref package to produce hyperlinks in the
+% resulting PDF.  If this breaks your system, please commend out the
+% following usepackage line and replace \usepackage{icml2017} with
+% \usepackage[nohyperref]{icml2017} above.
+\usepackage{hyperref}
+
+% Packages hyperref and algorithmic misbehave sometimes.  We can fix
+% this with the following command.
+\newcommand{\theHalgorithm}{\arabic{algorithm}}
+
+% Employ the following version of the ``usepackage'' statement for
+% submitting the draft version of the paper for review.  This will set
+% the note in the first column to ``Under review.  Do not distribute.''
+\usepackage{icml2017} 
+
+% Employ this version of the ``usepackage'' statement after the paper has
+% been accepted, when creating the final version.  This will set the
+% note in the first column to ``Proceedings of the...''
+%\usepackage[accepted]{icml2017}
+\newtheorem{assumption}{Assumption}
+\newtheorem{define}{Definition}
+\newtheorem{thm}{Theorem}
+\newtheorem{lem}{Lemma}
+\newtheorem{coro}{Corollary}
+
+% The \icmltitle you define below is probably too long as a header.
+% Therefore, a short form for the running title is supplied here:
+\icmltitlerunning{Counterfactual Fairness-- Suplementary Materials}
+
+\begin{document} 
+
+\twocolumn[
+\icmltitle{Counterfactual Fairness -- Suplementary Materials}
+
+% It is OKAY to include author information, even for blind
+% submissions: the style file will automatically remove it for you
+% unless you've provided the [accepted] option to the icml2017
+% package.
+
+% list of affiliations. the first argument should be a (short)
+% identifier you will use later to specify author affiliations
+% Academic affiliations should list Department, University, City, Region, Country
+% Industry affiliations should list Company, City, Region, Country
+
+% you can specify symbols, otherwise they are numbered in order
+% ideally, you should not use this facility. affiliations will be numbered
+% in order of appearance and this is the preferred way.
+\icmlsetsymbol{equal}{}
+
+\begin{icmlauthorlist}
+\icmlauthor{Cieua Vvvvv}{goo}
+%\icmlauthor{Iaesut Saoeu}{ed}
+\end{icmlauthorlist}
+
+\icmlaffiliation{goo}{Googol ShallowMind, New London, Michigan, USA}
+\icmlaffiliation{ed}{University of Edenborrow, Edenborrow, United Kingdom}
+
+\icmlcorrespondingauthor{Cieua Vvvvv}{c.vvvvv@googol.com}
+
+% You may provide any keywords that you 
+% find helpful for describing your paper; these are used to populate 
+% the "keywords" metadata in the PDF but will not be shown in the document
+\icmlkeywords{Causality,Counterfactual,Fairness}
+
+\vskip 0.3in
+]
+
+% this must go after the closing bracket ] following \twocolumn[ ...
+
+% This command actually creates the footnote in the first column
+% listing the affiliations and the copyright notice.
+% The command takes one argument, which is text to display at the start of the footnote.
+% The \icmlEqualContribution command is standard text for equal contribution.
+% Remove it (just {}) if you do not need this facility.
+
+%\printAffiliationsAndNotice{}  % leave blank if no need to mention equal contribution
+%\printAffiliationsAndNotice{\icmlEqualContribution} % otherwise use the standard text.
+%\footnotetext{hi}
+
+\section{Extended Methods and Assessment}
+\subsection{Limitations and a Guide for Model Building}
+Causal modeling requires untestable assumptions. Experimental data can sometimes be used to infer causal connections, but counterfactual modeling adds another layer of complexity by requiring functional decompositions between background and endogenous variables or, equivalently, joint distributions among variables which belong to separate physical realities. Such decompositions are in general not uniquely identifiable even with experimental data, which has motivated causal modeling frameworks that avoid counterfactuals entirely unless where they are strictly necessary \citep{dawid:00}. As in several matters of law and regulation, fairness at an individual level is a counterfactual quantity and some level of counterfactual assumptions are unavoidable. As a guide for building fair predictive models, we categorize assumptions by three levels of increasing strength.
+%
+\begin{itemize}
+\item[L1] Given a causal DAG, build $\hat Y$
+  using as covariates only the observable variables which are not
+  descendants of the protected attributes $A$ in the DAG(s). This
+  requires partial information about the causal DAG, but no
+  assumptions about structural equations and priors over background
+  variables. Within our definition (\ref{eq:cf_definition}), here
+  $\hat Y$ cannot be a function of $U$ but is allowed to be a function
+  of any subset of $X$ that is not a descendant of $A$;
+\item[L2] The above might waste much information, particularly if the
+  protected attributes are typical demographic information such as
+  race, sex, gender and age, which can be parents but not children of
+  other variables in the DAG. To include information from descendants
+  of $A$, postulate background latent variables that act as latent
+  causes of observable variables, based on explicit domain knowledge
+  and learning algorithms with causal assumptions\footnote{In some
+    domains, it is actually common to build a model entirely around
+    latent constructs which have few or no observable parents nor
+    connections among observed variables \citep{bol:89}.}.  As these
+  (latent) variables are not descendants of $A$, they can be used.
+  Conditioning on descendants of $A$ will propagate information from
+  $X$ to them. The dependency of each $V_i$ on its parents can be
+  probabilistic, instead of given by a structural equation, as
+  explained in the previous section;
+\item[L3] In the above construction, the model still factorizes as a
+  general DAG model, where each node follows a non-degenerate
+  distribution given observed and latent variables. In the final level
+  of assumptions, remove all randomness from the conditional
+  distributions to obtain a full decomposition $(U, V, F)$ of the
+  model. Default assumptions, partially independent of the domain,
+  might be invoked. For instance, we can model the conditional
+  distribution $p(V_i\ |\ V_1, \dots, V_{i - 1})$ as an additive error
+  model, $V_i = f_i(V_1, \dots, V_{i - 1}) + e_i$ \citep{peters:14}. The error
+  term $e_i$, now assumed to be a summary of the other latent causes
+  of $V_i$, then becomes an input to $\hat Y$ after conditioning on
+  the observable variables. This maximizes the amount of information
+  that can be properly extracted from a causal model by the fair
+  predictor $\hat Y$.
+\end{itemize}
+
+\subsection{Testing assumptions}
+There is already a wealth of literature on the topic of testing implications of modeling assumptions, with \citep{bollen:93} providing a classic account aimed at structural equation models. There are as well tools that help the (partial) discovery of causal structure \citep{sgs:00,peters:14} and latent variables \citep{silva:10b,HalpernSontag_uai13,anima:14}.
+
+Our view is that fairness should be the consequence of clear assumptions that need to be defended given the extent of existing available evidence, but with the understanding that there will be a subset of assumptions which cannot be tested. The ultimate validation of a counterfactual model is a matter of agreement between regulators and algorithm designers, lying outside the realm of machine learning theory and within the subject matter of the domain. The goal of counterfactual fairness is to provide a foundation for justifying particular modeling choices, which otherwise may sound arbitrary. With counterfactual fairness, assumptions are laid out in the open for criticism by regulators and society.
+
+\bibliography{rbas,bibliography}
+\bibliographystyle{icml2017}
+
+\end{document} 
+
+
+% This document was modified from the file originally made available by
+% Pat Langley and Andrea Danyluk for ICML-2K. This version was
+% created by Lise Getoor and Tobias Scheffer, it was slightly modified  
+% from the 2010 version by Thorsten Joachims & Johannes Fuernkranz, 
+% slightly modified from the 2009 version by Kiri Wagstaff and 
+% Sam Roweis's 2008 version, which is slightly modified from 
+% Prasad Tadepalli's 2007 version which is a lightly 
+% changed version of the previous year's version by Andrew Moore, 
+% which was in turn edited from those of Kristian Kersting and 
+% Codrina Lauth. Alex Smola contributed to the algorithmic style files.  
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "ricardo_draft"
+%%% End:
