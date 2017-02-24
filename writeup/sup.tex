@@ -50,7 +50,7 @@
 \begin{document} 
 
 \twocolumn[
-\icmltitle{Counterfactual Fairness -- Suplementary Materials}
+\icmltitle{Counterfactual Fairness -- Supplementary Materials}
 
 % It is OKAY to include author information, even for blind
 % submissions: the style file will automatically remove it for you
@@ -84,7 +84,7 @@
 
 \vskip 0.3in
 ]
-
+\setcounter{section}{4}
 % this must go after the closing bracket ] following \twocolumn[ ...
 
 % This command actually creates the footnote in the first column
@@ -96,8 +96,16 @@
 %\printAffiliationsAndNotice{}  % leave blank if no need to mention equal contribution
 %\printAffiliationsAndNotice{\icmlEqualContribution} % otherwise use the standard text.
 %\footnotetext{hi}
-
+To satisfy space requirements section 5 of the original paper was condensed.
+A longer version covering more ground with greater exposition is included here.
 \section{Extended Methods and Assessment}
+\setcounter{subsection}{1} 
+Various design choices lead to the definition of $\hat Y$ and its fitting. Given a causal model, these choices include:% the following:
+
+First, $\hat Y$ is a function of $U \cup X$ even though our notation emphasizes its dependence on $U$. This also means it can be a function of a subset of this set, and any element of $X$ which is not a descendant of $A$ can be used. If only a strict subset of $U$ is used, the causal model need not be fully specified: equation $V_i = f_i(pa_i, U_{pa_i})$ can be substituted by a non-deterministic conditional probability $p(V_i\ |\ pa_i, U_{pa_i}')$, where $U_{pa_i}' \subset U_{pa_i}$ and $p(V_i\ |\ pa_i, U_{pa_i}') = \int f_i(pa_i, U_{pa_i}) d U_{pa_i}''$, where $U_{pa_i}'' \equiv U_{pa_i} \backslash U_{pa_i}'$. This marginalization has implications in modeling discussed in the next section.
+
+Second, any random variable generated independently is trivially counterfactually fair. It is tacitly understood that $\hat Y$ should be a {\it good} predictor, not something like tossing a coin. That is, $\hat Y$ is to be understood as a parameterized function $g_\theta(U, X)$ where $\theta$ is learned by minimizing (an empirical version of) the expected loss $E[l(Y, g_\theta(U, X))\ | X,
+  A]$, where the expectation is over $A \cup X \cup U \cup \{Y\}$. For instance, $l(Y, g_\theta(U, X)) = (Y - g_\theta(U, X))^2$, or the log-loss for Bernoulli classification.  In practice, the distribution of $A \cup X \cup \{Y\}$ can be the empirical distribution as given by some training data, while $p(U\ |\ X, A)$ comes from the estimated causal model fit to the same training data. Markov chain Monte Carlo (MCMC) may be necessary to generate samples from this conditional, which means every training data point is replaced by a set of data points sharing the same $A \cup X \cup \{Y\}$ but with different replicates of $U$. Any predictor can be used as $g_\theta(U, X)$ including random forests and neural networks.
 \subsection{Limitations and a Guide for Model Building}
 Causal modeling requires untestable assumptions. Experimental data can sometimes be used to infer causal connections, but counterfactual modeling adds another layer of complexity by requiring functional decompositions between background and endogenous variables or, equivalently, joint distributions among variables which belong to separate physical realities. Such decompositions are in general not uniquely identifiable even with experimental data, which has motivated causal modeling frameworks that avoid counterfactuals entirely unless where they are strictly necessary \citep{dawid:00}. As in several matters of law and regulation, fairness at an individual level is a counterfactual quantity and some level of counterfactual assumptions are unavoidable. As a guide for building fair predictive models, we categorize assumptions by three levels of increasing strength.
 %
@@ -107,7 +115,7 @@ Causal modeling requires untestable assumptions. Experimental data can sometimes
   descendants of the protected attributes $A$ in the DAG(s). This
   requires partial information about the causal DAG, but no
   assumptions about structural equations and priors over background
-  variables. Within our definition (\ref{eq:cf_definition}), here
+  variables. Within our definition (5), here
   $\hat Y$ cannot be a function of $U$ but is allowed to be a function
   of any subset of $X$ that is not a descendant of $A$;
 \item[L2] The above might waste much information, particularly if the
