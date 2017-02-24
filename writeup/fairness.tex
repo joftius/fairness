@@ -288,28 +288,50 @@ individuals of a certain race more than others, even though {\em no
 agrees with this notion.
 %
 \begin{lem}
-  Consider the structure in Figue 2 (Left).  There exist model
-classes where fitting a predictor of $Y$ to $X$ only is not counterfactually
-fair, while the same algorithm will given a fair predictor using $A$
-and $X$.
+Consider the structure in Figure~\ref{figure.simple_models}
+(left). There exist model classes and loss functions where fitting a
+predictor to $X$ only is not counterfactually fair, while the same
+algorithm will given a fair predictor using $A$ and $X$.
 \end{lem}
 %
 \begin{proof}
-For simplicity, consider the case where the equations described by the model in Figure~\ref{figure.simple_models} (\emph{Left}) are deterministic and linear:
+As in the definition, we will consider the population case, where the
+joint distribution is known. Consider the case where the equations
+described by the model in Figure~\ref{figure.simple_models}
+(\emph{Left}) are deterministic and linear:
 \begin{align}
 X = \alpha A + \beta U, \;\;\;\; Y = \gamma U \nonumber
 \end{align}
-where the coefficients $\alpha,\beta,\gamma$ are given (in practice these are estimated), and by assumption $\alpha \neq 0$. We can test whether the predictor $\hat Y(X)$
-defined by least-squares projection of $Y$ on $X$ is counterfactually-fair using the procedure described in Section~\ref{subsec:cmc}:
+and the variance of $U$ is $v_U$, the variance of $A$ is $v_A$,
+and we assume all coefficients are non-zero.
+The predictor $\hat Y(X)$ defined by least-squares
+regression of $Y$ on $X$ is given by $\hat Y(X) \equiv \lambda X$, where $\lambda =
+Cov(X, Y) / Var(X) = \beta\gamma v_U / (\alpha^2 v_A + \beta^2 v_U) \neq 0$.
+
+We can test whether a predictor $\hat{Y}$ is counterfactually fair
+using the procedure described in Section~\ref{subsec:cmc}:
 %\begin{itemize}
-{\em (i)} Compute $U$ given observations of $X,A$.%, by solving for $U$. 
-{\em (ii)} Substitute the equations involving $A$ with an interventional value $a'$. 
+{\em (i)} Compute $U$ given observations of $X,Y,A$.%, by solving for $U$.
+{\em (ii)} Substitute the equations involving $A$ with an interventional value $a'$.
 % (i.e., this says: `what happens if the race of an individual were changed')
 {\em (iii)} Compute the variables $X,Y$ with the interventional value $a'$.
 
-In this deterministic case we achieve counterfactual fairness only if the predicted value $\hat{Y}(X)$ is identical before and after we change $A$. However, changing $A$ changes $X$. Thus $\hat{Y}(X)$ must be different and the model  is not counterfactually fair.
+It is clear here that $\hat Y_a(U) = \lambda(\alpha a + \beta U) \neq
+\hat Y_{a'}(U)$. This predictor is not counterfactually fair.
+
+Consider instead doing least-squares regression of $Y$ on $X$ and $A$.
+This is known to be equivalent to first getting the residuals $R_X$ of $X$ on $A$
+and regressing $Y$ on $R$ and $A$. But $R_X = U$, and $A$ is independent of $U$
+and $Y$. Hence, $\hat Y$ in this case will be the least squares regression of
+$Y$ on $U$, resulting on $\hat Y = \gamma U$, which is counterfactually fair.
 \end{proof}
-The above result holds in a more general case: any non-constant estimator that depends only on a single $X$ is not be counterfactually fair as changing $A$ always alters $X$.
+
+The above result holds in a more general case for the structure given
+in Figure~\ref{figure.simple_models} (left): any non-constant estimator that
+depends only on $X$ is not be counterfactually fair as changing $A$ always alters $X$.
+We also point out that the method used in the proof is a special case
+of a general method to building a predictor based on information deduced
+about $U$ that will be described in the next section.
 %
 %
 \paragraph{Scenario 2: High Crime Regions.} 
