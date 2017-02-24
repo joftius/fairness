@@ -10,7 +10,7 @@
 \end{center}
 \end{figure}
 
-In this section we evaluate our framework for modeling fairness. We test our approach on two practical problems in which fairness must be enforced. For each problem we construct causal models, and make explicit how unfairness may affect observed and unobserved variables in the world. Given these models we are able to (a) derive counterfactually fair predictors and (b) predict latent variables such as a person's `criminality' (which may be useful for predicting crime) as well as their `perceived criminality' (which may be due to prejudices based on race and gender). Additionally, we can analyze how realistic our models are by comparing our observations with data generated from the model. We consider two real-world problems, the first is \emph{fair prediction of success in law school} and the second is \emph{separating actual and perceived criminality in stop-and-frisk data}.
+In this section we evaluate our framework for modeling fairness. We test our approach on two practical problems in which fairness must be enforced. For each problem we construct causal models, and make explicit how unfairness may affect observed and unobserved variables in the world. Given these models we are able to (a) derive counterfactually fair predictors and (b) predict latent variables such as a person's `criminality' (which may be useful for predicting crime) as well as their `perceived criminality' (which may be due to prejudices based on race and gender). We analyze how realistic our models are by comparing our observations with data generated from the model. We consider two real-world problems, the first is \emph{fair prediction of success in law school} and the second is \emph{separating actual and perceived criminality in stop-and-frisk data}.
 
 \subsection{Law school success}
 \label{sec:law-school-success}
@@ -30,17 +30,16 @@ Given this data a law school may wish to predict if a law student
 will succeed in their first year (have a high FYA) from information about their academic performance 
 before law school. The school would also like to make sure
 these predictions are not biased by an individual's race and
-<<<<<<< HEAD
-gender. However, the observed information about
+sex. However, the observed information about
 students, the LSAT, GPA, and FYA scores,  may be biased due to 
 social factors relating to race and gender. We explicitly model these
 ``unfair'' factors alongside a latent variable that is counterfactually
 fair.
 
 \paragraph{Counterfactually fair prediction.}
-As described in Section 5.1 there are three ways in which we can model a counterfactually fair predictor of FYA: 1. We can use any features which are not descendants of race and gender for prediction; 2. We can model latent `fair' variables which are parents of observed variables. Crucially, these variables are independent of race and gender; 3. We can model the data using an additive error model, and use the independent error terms for making predictions of FYA. These models use increasingly strong assumptions and we will demonstrate that this corresponds to a trade-off for lower predictive error.
+As described in Section 5.1 there are three ways in which we can model a counterfactually fair predictor of FYA: 1. We can use any features which are not descendants of race and gender for prediction; 2. We can model latent `fair' variables which are parents of observed variables. Crucially, these variables are independent of race and gender; 3. We can model the data using an additive error model, and use the independent error terms for making predictions of FYA. These models use increasingly strong assumptions that corresponds to a trade-off for lower predictive error.
 
-First we note that because we suspect LSAT, GPA, and FYA to all be biased by race and sex, we cannot use any observed features to construct a counterfactually fair predictor as described in method one. Instead we would need to resort to a constant predictor, such as the mean of FYA over the training set. As this model is trivial we do not consider it here. 
+First we note that because we suspect LSAT, GPA, and FYA to all be biased by race and sex, we cannot use any observed features to construct a counterfactually fair predictor as described in method one. Instead we would need to resort to a constant predictor, such as the mean of FYA over the training set. As this model is trivial we do not consider it. 
 
 Following the second approach, we postulate that a latent variable: a student's \emph{knowledge} (K), affects GPA, LSAT, and FYA scores. The causal graph corresponding to this model is shown in Figure~\ref{figure.law_school}. This model is a short-hand for a system of equations:
 
