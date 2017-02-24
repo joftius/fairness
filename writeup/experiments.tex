@@ -31,9 +31,13 @@ will succeed in their first year (have a high FYA) from information about their 
 before law school. The school would also like to make sure
 these predictions are not biased by an individual's race and
 gender. However, the observed information about
-students, the LSAT, GPA, and FYA scores,  may be biased due to historical
+students, the LSAT, GPA, and FYA scores,  may be biased due to 
 social factors relating to race and gender. We explicitly model these
 ``unfair'' factors alongside a latent variable that is counterfactually
+
+
+Our approach is to model these
+``unfair'' factors as well as a latent variable that is counterfactually
 fair. We will then be able to use this latent variable as a feature
 for prediction.
 
@@ -59,7 +63,6 @@ case). The causal model is a short-hand for a system of equations:
 K &\sim {\cal N}(0,1) \nonumber
 \end{align}
 We compare this model with two baselines: 1. \textbf{Full}: the standard technique of using all features, including sensitive features such as race and sex to make predictions; 2. \textbf{Unaware}: fairness through unawareness, where we simply discard race and sex and train a regressor on the remaining features. We evaluate all methods (including our own) using linear regression; this is in accordance with our model which postulates linear interactions between all variables. %; %3. \textbf{Variational Fair Autoencoder (VFAE)} \cite{louizos2015variational}, a recent approach that works to learn a fair representation of the original data.
-% compute counterfactuals for both race and gender
 
 
 \paragraph{Accuracy.}
@@ -100,36 +103,52 @@ We would like to empirically test whether the baseline methods are counterfactua
 \end{figure}
 
 
-\begin{table}[t]
-\vspace{-2ex}
-\caption{Prediction results using logistic regression. Note that we must sacrifice a small amount of accuracy to ensuring counterfactually fair prediction (fair), versus the model which uses all features, including race and sex (unfair).}
-\vspace{-3ex}
-\label{table.pred_law}
-\begin{center}
-\resizebox{\columnwidth}{!}
-{
-\begin{sc}
-\footnotesize
-\begin{tabular}{c|c|c}
+% \begin{table}[t]
+% \vspace{-2ex}
+% \caption{}
+% \vspace{-3ex}
+% \label{table.pred_law}
+% \begin{center}
+% \resizebox{\columnwidth}{!}
+% {
+% \begin{sc}
+% \footnotesize
+% \begin{tabular}{c|c|c|c}
+% \hline
+% %\multicolumn{5}{c}{\textbf{Lower Bounds}}\\
+% \hline
+% & full & unaware  & fair l2 & fair l3 \\
+% \hline
+% RMSE & 0.873 & 0.894 & 0.929 & 0.918 \\ \hline
+% \end{tabular}
+% \end{sc}
+% }
+% \end{center}
+% \vspace{-4ex}
+% \end{table}
+
+%{lr@{$\pm$}lr@{$\pm$}lr@{$\pm$}l}
+\begin{table}
+\centering
+\caption{Prediction results using logistic regression. Note that we must sacrifice a small amount of accuracy to ensuring counterfactually fair prediction (fair), versus the model which uses all features, including race and sex (unfair).}\label{table.pred_law}
+\begin{tabular}{ccccc} 
 \hline
-%\multicolumn{5}{c}{\textbf{Lower Bounds}}\\
+ &  {\bf Full} & {\bf Unaware} & {\bf Fair L2} & {\bf Fair L3} \\
 \hline
-model & balanced acc. & F1-score  \\
-\hline
-unfair & 0.590 & 0.293 \\ \hline
-fair  &  0.562 & 0.216 \\
+RMSE & 0.873 & 0.894 & 0.929 & 0.918 \\
+%\bf{Method} & %\multicolumn{2}{c}{\bf Full} & \multicolumn{2}{c}{\bf Unaware} & \multicolumn{2}{c}{\bf Fair L2} & \multicolumn{2}{c}{\bf Fair L3} \\
 \hline
 \end{tabular}
-\end{sc}
-}
-\end{center}
-\vspace{-4ex}
 \end{table}
+
 
 
 \subsection{True vs. Perceived Criminality}
 \label{sec:true-vs.-perceived}
 Every year since 2002, the New York Police Department (NYPD) has recorded information about every time a police officer has stopped someone. The officer records information such as if they searched or frisked the individual, whether a weapon was found, the individual's appearance, whether force was used, etc. We look at this data collected during 2014 for our analysis.
+
+\paragraph{Model.}
+We model this stop-and-frisk data using the graph in Figure~\ref{figure.stop_and_frisk}. Specifically, we posit main causes for the observations: \emph{Arrest} (if an individual was arrested), \emph{Summons} (an individual was called to a court-summons), \emph{Weapon} (an individual was found to be carrying a weapon), \emph{Force} (some sort of force was used during the stop), \emph{Frisked}, and \emph{Searched}. The first cause of these observations is some measure of an individual's latent \emph{Criminality}, which we do not observe. We believe there is an additional cause, an individual's perceived criminality, \emph{Perception}, also unobserved. This second factor is introduced as we have reason
 
 
 \begin{figure}[th]
