@@ -99,25 +99,22 @@
 
 \begin{abstract} 
 % fairness is important
-  People have begun to make use of machine learning techniques to
-  automate decisions that, historically, have been unfairly biased
-  against certain subgroups in the population (e.g., based on race,
-  gender, sexual orientation).  Because the historical data is often
-  biased, machine learning techniques that are used to make future
-  predictions must account for this to avoid perpetuating
-  discriminatory practices. There have been a number of recent works
-  towards designing fair classifiers, however it is often unclear when
-  to prefer one method over another. In this paper, we develop a
+  Machine learning is being used to
+  automate decisions that have previously been unfairly biased
+  against certain subpopulations (e.g., those of a particular race,
+  gender, or sexual orientation).  Because the past training data is often
+  biased, machine learning predictors must account for this to avoid perpetuating
+  discriminatory practices.  In this paper, we develop a
   framework for modeling fairness in any dataset using tools from
   counterfactual inference. We propose a definition called
-  \emph{counterfactual fairness} that naturally captures the intuition
+  \emph{counterfactual fairness} that captures the intuition
   that a decision is fair towards an individual, if it gives the same
   predictions in (a) in the observed world and (b) a world where the
   individual had always belonged to a different demographic group,
   other background causes of the outcome being equal. We demonstrate
-  our modeling framework on two real-world problems: 1. fair
-  prediction of law school success and 2. fair modeling of an
-  individual's latent criminality in stop-and-frisk policing data.
+  our framework on real-world problems:  fair
+  prediction of law school success; and 2. fair modeling of an
+  individual's criminality in policing data.
 \end{abstract} 
 
 \section{Introduction}

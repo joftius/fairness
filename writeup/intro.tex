@@ -1,7 +1,6 @@
 %!TEX root=ricardo_draft.tex
 % ml is now everywhere
-Machine learning has spread to fields as diverse as credit scoring
-(CITE), crime prediction (CITE), and loan assessment (CITE). As
+Machine learning has spread to fields as diverse as credit scoring \cite{khandani2010consumer}, crime prediction \cite{brennan2009evaluating}, and loan assessment \cite{mahoney2007method}. As
 machine learning enters these new areas it is necessary for the
 modeler to think beyond the simple objective of maximizing prediction
 accuracy, and to consider the social impact of their work.
@@ -9,27 +8,24 @@ accuracy, and to consider the social impact of their work.
 % in these new ml fields, we cannot discriminate
 % discrimination can happen in multiple ways
 % - direct discrimination
-For many of these new applications, it is crucial to
-consider whether the predictions of a machine learning model are
-\emph{fair}. For instance, imagine a bank wishes to train a machine
-learning model to predict whether or not an individual should be given
-a loan to buy a house. The bank wishes to use historical lending data
-on whether or not a loan was paid back, along with personal
-information on individuals. If the bank simply tries to learn a model
-that accurately predicts who to loan to solely based on whether the
-loan will be paid back, it may unjustly favor giving loans to
-applicants of a particular demographic group, due to historical and
-present prejudices. The Obama Administration released a report that
-describes precisely this, and urged machine learning practitioners to
+For many of these applications, it is crucial to
+ask if the predictions of a model are
+\emph{fair}. For instance, imagine a bank wishes to predict if an individual should be given
+a loan to buy a house. The bank wishes to use historical repayment data, alongside  individual data. If they simply learn a model
+that  predicts whether the
+loan will be paid back, it may unjustly favor
+applicants of particular subgroups, due to past and
+present prejudices. The Obama Administration released a report
+describing this which urged data scientists to
 analyze ``how technologies can deliberately or inadvertently
 perpetuate, exacerbate, or mask
 discrimination"\footnote{https://obamawhitehouse.archives.gov/blog/2016/05/04/big-risks-big-opportunities-intersection-big-data-and-civil-rights}.
 
-As a result, there has been immense recent interest in designing
-machine learning algorithms that make fair
-predictions~\cite{hardt2016equality,dwork2012fairness,joseph2016rawlsian,kamishima2011fairness,zliobaite2015survey,zafar2016fairness,zafar2015learning,grgiccase,kleinberg2016inherent,calders2010three,kamiran2012data,bolukbasi2016man,kamiran2009classifying,zemel2013learning,louizos2015variational}. Most
-of these works focus on formalizing fairness into a numeric testable
-definition, and which can be satisfied by bespoke algorithms.
+As a result, there has been immense interest in designing
+algorithms that make fair predictions
+\cite{hardt2016equality,dwork2012fairness,joseph2016rawlsian,kamishima2011fairness,zliobaite2015survey,zafar2016fairness,zafar2015learning,grgiccase,kleinberg2016inherent,calders2010three,kamiran2012data,bolukbasi2016man,kamiran2009classifying,zemel2013learning,louizos2015variational}. Most
+of these works focus on formalizing fairness into a numeric
+definition and satisfying it with bespoke algorithms.
 
 In large part, the initial work on fairness in machine learning has
 focused on formalizing the above definitions and using them to solve a
