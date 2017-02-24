@@ -40,6 +40,7 @@
 \label{subsec:cmc}
 We  follow the framework of \citet{pearl:00}, and define a causal
 model as a triple $(U, V, F)$ of sets such that
+%
 \begin{itemize}
 \item $U$ is a set of {\bf background} variables\footnote{These are
   sometimes called {\bf exogenous variables}, but the fact that members of $U$
@@ -52,27 +53,27 @@ that $V_i = f_i(pa_i, U_{pa_i})$, $pa_i \subseteq V \backslash
 \{V_i\}$ and $U_{pa_i} \subseteq U$. Such equations are also known as
 {\bf structural equations} \citep{bol:89}.
 \end{itemize}
-
-The notation ``$pa_i$'' refers to the ``parents'' of $a_i$ and is motivated by the extra assumption that the
+%
+The notation ``$pa_i$'' refers to the ``parents'' of $a_i$ and is motivated by the assumption that the
 model factorizes according to a directed acyclic graph (DAG). That is, we can
-define a directed graph ${\mathcal G}=(U \cup V, \mathcal E )$ where each node $X$ corresponds to an
-element of $U \cup V$, and each directed edge from $X$ to $V_i$ is added if
-and only if $X \in pa_i \cup U_{pa_i}$. By construction, $\mathcal G$ is
+define a directed graph ${\mathcal G}=(U \cup V, \mathcal E )$ where each node $X$ is an
+element of $U \cup V$, and each edge from $X$ to $V_i$ indicates that $X \in pa_i \cup U_{pa_i}$. By construction, $\mathcal G$ is
 acyclic.
 
-The model is causal in the sense that, given a  probability distribution
-$p(U)$ over the background variables $U$, you can derive the distribution of a
-subset of $X\subseteq V$ following an {\bf intervention} on the complementary
-subset  $V\setminus X$.  The operational meaning of an intervention on the variable $V_i$ of
-value $v$ is the substitution of the equation
-$V_i = f_i(pa_i, U_{pa_i})$ with the equation $V_i = v$. This intervention captures
-the idea of an agent, external to the system, modifying it by forcefully assigning value $v$ to $V_i$. For
-instance, this occurs in a randomized controlled trial where the value of $V_i$ is overridden by a treatment that sets it to $v$, a
-value chosen at random and thus independent of any other causes of the
-system. The do-calculus of \citet{pearl:00} provides a way to identify
-features of interventional distributions %, where possible,
-using only estimates of the joint distribution of $V$ and knowledge of
-the causal DAG.
+The model is causal in that, given a distribution $p(U)$
+over the background variables $U$, you can derive the distribution of
+a subset of $X\subseteq V$ following an {\bf intervention} on the
+complementary subset $V\setminus X$.  Here,
+an {\bf intervention} on the variable $V_i$ of value $v$ refers to the substitution of
+equation $V_i = f_i(pa_i, U_{pa_i})$ with the equation $V_i =
+v$. This captures the idea of an agent, external to the
+system, modifying it by forcefully assigning value $v$ to $V_i$. This occurs in a randomized controlled trials where the value
+of $V_i$ is overridden by a treatment setting it to $v$, a value
+chosen at random, and thus independent of any other causes.% of the
+%system. % The do-calculus of \citet{pearl:00} provides a way to identify
+% features of interventional distributions %, where possible,
+% using only estimates of the joint distribution of $V$ and knowledge of
+% the causal DAG.
 
 In contrast with the independence constraints given by a DAG, the full
 specification of $F$ requires much stronger assumptions but also leads
