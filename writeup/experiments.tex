@@ -32,26 +32,29 @@ before law school. The school would also like to make sure
 these predictions are not biased by an individual's race and
 sex. However, the observed information about
 students, the LSAT, GPA, and FYA scores,  may be biased due to 
-social factors relating to race and gender. We explicitly model these
-``unfair'' factors alongside a latent variable that is counterfactually
-fair.
+social factors relating to race and gender. Our approach will be to use variables that are counterfactually fair for prediction. We will compare our technique with two (unfair) baselines: 1. \textbf{Full}: the standard technique of using all features, including sensitive features such as race and sex to make predictions; 2. \textbf{Unaware}: fairness through unawareness, we simply throw out any features we would like to be fair with respect to. For interpretability, we evaluate all methods (including our own) using linear regression.
 
 \paragraph{Counterfactually fair prediction.}
 As described in Section 5.1 there are three ways in which we can model a counterfactually fair predictor of FYA: 1. We can use any features which are not descendants of race and gender for prediction; 2. We can model latent `fair' variables which are parents of observed variables. Crucially, these variables are independent of race and gender; 3. We can model the data using an additive error model, and use the independent error terms for making predictions of FYA. These models use increasingly strong assumptions that corresponds to a trade-off for lower predictive error.
 
 First we note that because we suspect LSAT, GPA, and FYA to all be biased by race and sex, we cannot use any observed features to construct a counterfactually fair predictor as described in method one. Instead we would need to resort to a constant predictor, such as the mean of FYA over the training set. As this model is trivial we do not consider it. 
 
-Following the second approach, we postulate that a latent variable: a student's \emph{knowledge} (K), affects GPA, LSAT, and FYA scores. The causal graph corresponding to this model is shown in Figure~\ref{figure.law_school}. This model is a short-hand for a system of equations:
-
+Following the second approach, we postulate that a latent variable: a student's \textbf{knowledge} (K), affects GPA, LSAT, and FYA scores. The causal graph corresponding to this model is shown in Figure~\ref{figure.law_school}, Level 2. This model is a short-hand for a system of equations:
 \begin{align}
 \mbox{GPA} &\sim {\cal N}(b_{G} + w_{G}^K K + w_{G}^R R + w_{G}^S S, \sigma_{G}) \nonumber \\
 \mbox{LSAT} &\sim \textrm{Poisson}(\exp(b_{L} + w_{L}^K K + w_{L}^R R + w_{L}^S S)) \nonumber \\
 \mbox{FYA} &\sim {\cal N}(w_{F}^K K + w_{F}^R R + w_{F}^S S, 1) \nonumber \\
 K &\sim {\cal N}(0,1) \nonumber
 \end{align}
-We can perform inference on this model using an observed training set to get an estimate of the posterior distribution of $K$. We call the predictor constructed using $K$ \emph{Fair, Level 2}.
+As FYA is already standardized to have mean $0$ and standard deviation $1$ we do not learn bias and standard deviation terms. We can perform inference on this model using an observed training set to get an estimate of the posterior distribution of $K$. We call the predictor constructed using $K$ \textbf{Fair $K$}.
 
-In the third approach, we model GPA, LSAT, and FYA as continuous variables with additive error terms independent of race and sex (they may in turn be correlated with each other). This model is shown in Figure
+In the third approach, we model GPA, LSAT, and FYA as continuous variables with additive error terms independent of race and sex (they may in turn be correlated with each other). This model is shown in Figure~\ref{figure.law_school}, Level 3, and is expressed by the equations:
+\begin{align}
+\mbox{GPA} &= b_{G} + w_{G}^R R + w_{G}^S S + \epsilon_G, \;\; \epsilon_G \sim p(\epsilon_G) \nonumber \\
+\mbox{LSAT} &= b_{L} + w_{L}^R R + w_{L}^S S + \epsilon_L, \;\; \epsilon_L \sim p(\epsilon_L) \nonumber \\
+\mbox{FYA} &= b_{F} + w_{F}^R R + w_{F}^S S + \epsilon_F, \;\; \epsilon_F \sim p(\epsilon_F) \nonumber
+\end{align}
+We can estimate the error terms $\epsilon_G,\epsilon_L$ by first fitting a model that uses race and sex to predict GPA, LSAT and then computing the residuals. We use these residual estimates of $\epsilon_G,\epsilon_L$ to predict FYA. We call this predictor \emph{Fair Add}.
 
 
 % impacts these features.
@@ -76,7 +79,7 @@ In the third approach, we model GPA, LSAT, and FYA as continuous variables with 
 
 
 \paragraph{Accuracy.}
-We compare the RMSE of all methods for predicting FYA on a hold out dataset in Table~\ref{table.pred_law}. For our method we only use samples from the posterior of knowledge for prediction. As we believe FYA is affected by race and sex note that any model that wishes to be fair w.r.t. to these variables must necessarily lose prediction accuracy. We see this Table~\ref{table.pred_law}: the full model achieves the lowest RMSE as it is able to reconstruct additional information about FYA using race and sex. We note that our method is able to achieve nearly the same RMSE as the unaware model. This implies that our knowledge variable is nearly as good as the unfair variables GPA and LSAT at reconstructing FYA.
+We compare the root mean squared error (RMSE) of all methods for predicting FYA on a hold out dataset in Table~\ref{table.pred_law}.  We note that the \textbf{Full} model achieves the lowest RMSE as it uses race and sex to more accurately reconstruct FYA. The \textbf{Unaware} model still uses the unfair variables GPA and LSAT, but because it does not use race and sex it cannot match the \textbf{Full} model. As both of our models acheieve counterfactual fairness under certain assumptions, and race and sex affect our target variable FYA, they must sacrifice some accuracy for fairness. Our first model \textbf{Fair $K$} uses looser assumptions and thus the RMSE increases compared to the rest of the models. If instead we assume an additive error structure as in \textbf{Fair Add} we can produce a counterfactually fair model with lower holdout RMSE, at the expensive of stricter modelling assumptions.
 
 
 \paragraph{Counterfactual fairness.}
