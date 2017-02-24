@@ -331,8 +331,8 @@ about $U$ that will be described in the next section.
 %
 \paragraph{Scenario 2: High Crime Regions.} 
 A local police precinct wants to know how likely a given house is to be broken into, $Y$. This likelihood depends on many unobserved factors
-($U$) but also upon the neighborhood the house lies in ($X$). However, different ethnic groups are more likely to live in particular neighborhoods, and so neighborhood and break-in rates are often strongly correlated with the 
-race $A$ of the house occupier. This scenario can be seen in Figure~\ref{figure.simple_models} (\emph{Center}). Unlike the previous case, the variable $Y$ itself is not counterfactually fair, so a predictor trained using $X$ and $A$ without additional constraints is unlikely to be fair. 
+($U$) but also upon the neighborhood the house lies in ($X$). However, different ethnic groups are more likely to live in particular neighborhoods, and so neighborhood and break-in rates are often correlated with the 
+race $A$ of the house occupier. This can be seen in Figure~\ref{figure.simple_models} (\emph{Center}). Unlike the previous case, $Y$ is not counterfactually fair, so a predictor trained using $X$ and $A$ without additional constraints is unlikely to be fair. 
 
 
 % In such a scenario, although the likelihood of a particular
@@ -341,7 +341,7 @@ race $A$ of the house occupier. This scenario can be seen in Figure~\ref{figure.
 % counterfactually fair.
 
 \paragraph{Scenario 3: University Success.}
-A university wants to know if a student is likely to be successful after they graduate $Y$. They have information such as incoming grade point average (GPA), advanced placement (AP) exams results, and other academic features $X$. The university believes however, that an individual's gender may influence these features as well as their post-graduation success $Y$ due to social discrimination. Instead, they would like to model an individual's latent talent $U$ which causes $X$ and $Y$. We show this scenario in Figure~\ref{figure.simple_models} (\emph{Right}).
+A university wants to know if students will be successful post-graduation. They have information such as: grade point average (GPA), advanced placement (AP) exams results, and other academic features $X$. The university believes however, that an individual's gender may influence these features and their post-graduation success $Y$ due to social discrimination. Instead, they chose to model an individual's latent talent $U$ which causes $X$ and $Y$. We show this in Figure~\ref{figure.simple_models} (\emph{Right}).
 
 %  The world on the right shows $Y'$ a
 % causally fair variable that doesn't depend on $A$ being directly

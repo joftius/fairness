@@ -14,8 +14,8 @@ section.
 
 Second, any random variable generated independently is trivially
 counterfactually fair. However, we desire that $\hat Y$ is a {\it
-  good} predictor, not something like tossing a coin. That is,
-$\hat Y$ is to be understood as a parameterized function
+  good} predictor, not simply a coin toss. That is,
+$\hat Y$ is typically a parameterized function
 $g_\theta(U, X)$ where $\theta$ is learned by minimizing the empiric
 expected loss $E[l(Y, g_\theta(U, X))\ | X, A].$% , where the expectation
 % is over $A \cup X \cup U \cup \{Y\}$.
@@ -53,7 +53,7 @@ categorize assumptions by three levels of increasing strength.
   % $\hat Y$ is not a function of $U$ but a function
   % of the maximal subset of $X$ that does not contain descendants of $A$;
 \item[L2] This ignores much information, particularly if the protected
-  attributes are typical demographic information such as race or sex,
+  attributes are typical attributes such as race or sex,
   which are parents of many other variables. To include information
   from descendants of $A$, we postulate background latent variables
   that act as causes of observable variables, based on explicit domain
@@ -68,20 +68,21 @@ categorize assumptions by three levels of increasing strength.
   % probabilistic.
   % , instead of being given by a structural equation, as in the
   % previous section;
- \item[L3] In the above construction, the model factorizes as a
+ \item[L3] In L2, the model factorizes as a
    general DAG, where each node follows a non-degenerate
-   distribution given observed and latent variables. In the final
-   level of assumptions, we remove all randomness from the conditional
-   distributions to obtain a full decomposition $(U, V, F)$ of the
+   distribution given observed and latent variables. % In the final
+   % set of assumptions,
+   Finally, we remove all randomness from the conditional
+   distributions obtaining a full decomposition $(U, V, F)$ of the
    model. % Default assumptions %partially independent of the domain,
    % might be invoked.
-   For instance, the conditional distribution
+   For instance, the  distribution
    $p(V_i\ |\ V_1, \dots, V_{i - 1})$ can be treated as an additive
    error model, $V_i = f_i(V_1, \dots, V_{i - 1}) + e_i$
    \citep{peters:14}. The error term $e_i$  then becomes an input
    to $\hat Y$ after conditioning on the observable variables. This
    maximizes the information  extracted
-   from a causal model by the fair predictor $\hat Y$.
+   by the fair predictor $\hat Y$.
 \end{itemize}
 
 
@@ -118,7 +119,29 @@ existing definition.
 %\vspace{-3ex}
 \end{figure*}
 
-We also advocate that counterfactual assumptions should underlie all approaches that separating the sources of variation of the data into ``fair'' and ``unfair'' components. As an example, \citet{louizos2015variational} explains the variability in $X$ from $A$ and an independent source $U$ following the DAG $A \rightarrow X \leftarrow U$. Since $U$ and $A$ are not independent given $X$ in this directed representation, a type of ``posterior regularization'' \citep{ganchev:10} is enforced such that a posterior $p_{fair}(U\ | A, X)$ is close to the model posterior $p(U\ |\ A, X)$ while having the property $p_{fair}(U\ | A = a, X) \approx p_{fair}(U\ | A = a', X)$. But this is neither necessary nor sufficient for counterfactual fairness if the model for $X$ given $A$ and $U$ is not justified by a causal mechanism. If it is, $p(U\ |\ A, X)$ is justified as distribution which we can use to marginalize $U$ in $p(\hat Y(U)\ |\ A, X)$. No posterior regularization is necessary.  Methods which estimate the relationship between $A$, $U$ and $X$ based on penalizing dependence measures between an estimated $U$ and $A$ are relevant in estimating a causal model such as the one described by \citet{mooij:09}, but this is motivated by a model in which $U$ is deterministically inferred from $A$ and $X$ by construction. Moreover, it is unclear in \citet{louizos2015variational} how the ideal label $Y$ is causally connected to $U$ and $A$, so that the semantics of the ``unfair''
+We also advocate that counterfactual assumptions should underlie all
+approaches that separate the sources of variation of the data into
+``fair'' and ``unfair'' components. As an example,
+\citet{louizos2015variational} explains the variability in $X$ from
+$A$ and an independent source $U$ following the DAG
+$A \rightarrow X \leftarrow U$. Since $U$ and $A$ are not independent
+given $X$ in this directed representation, a type of ``posterior
+regularization'' \citep{ganchev:10} is enforced such that a posterior
+$p_{fair}(U\ | A, X)$ is close to the model posterior $p(U\ |\ A, X)$
+while having the property
+$p_{fair}(U\ | A = a, X) \approx p_{fair}(U\ | A = a', X)$. But this
+is neither necessary nor sufficient for counterfactual fairness if the
+model for $X$ given $A$ and $U$ is not justified by a causal
+mechanism. If it is, $p(U\ |\ A, X)$ is justified as distribution
+which we can use to marginalize $U$ in $p(\hat Y(U)\ |\ A, X)$. No
+posterior regularization is necessary.  Methods which estimate the
+relationship between $A$, $U$ and $X$ based on penalizing dependence
+measures between an estimated $U$ and $A$ are relevant in estimating a
+causal model such as the one described by \citet{mooij:09}, but this
+is motivated by a model in which $U$ is deterministically inferred
+from $A$ and $X$ by construction. Moreover, it is unclear in
+\citet{louizos2015variational} how the ideal label $Y$ is causally
+connected to $U$ and $A$, so that the semantics of the ``unfair''
 components of $Y$ are left unexplained.
 
 
