@@ -30,38 +30,42 @@ before law school. The school would also like to make sure
 these predictions are not biased by an individual's race and
 gender. However, we may worry that our observed information about
 students, the LSAT, GPA, and FYA scores, are biased due to historical
-social factors relating to race and gender. 
+social factors relating to race and gender. Our approach will be to use variables that are counterfactually fair for prediction. We will compare our technique with two (unfair) baselines: 1. \textbf{Full}: the standard technique of using all features, including sensitive features such as race and sex to make predictions; 2. \textbf{Unaware}: fairness through unawareness, we simply throw out any features we would like to be fair with respect to. For interpretability, we evaluate all methods (including our own) using linear regression.
 
 
-Our approach is to model these
-``unfair'' factors as well as a latent variable that is counterfactually
-fair. We will then be able to use this latent variable as a feature
-for prediction.
+\paragraph{Counterfactually fair prediction.}
+As described in Section 5.1 there are three ways in which we can model a counterfactually fair predictor of FYA: 1. We can use any features which are not descendants of race and gender for prediction; 2. We can model latent `fair' variables which are parents of observed variables. Crucially, these variables are independent of race and gender; 3. We can model the data using an additive error model, and use the independent error terms for making predictions of FYA. These models use increasingly strong assumptions and we will demonstrate that this corresponds to a trade-off for lower predictive error.
 
-\paragraph{Model.}
-As described in Section 5.1 there are three ways in which we can model a predictor of FYA: 1. We can use any features which are not descendants of race and gender for prediction; 2. We can model latent `fair' variables which are parents of observed variables. Crucially, these variables are independent of race and gender; 3. We can model the data using an additive error model, and use the independent error terms for making predictions of FYA. These models use increasingly strong assumptions and we will demonstrate that this corresponds to a trade-off for lower predictive error.
+First we note that because we suspect LSAT, GPA, and FYA to all be biased by race and sex, we cannot use any observed features to construct a counterfactually fair predictor as described in method one. Instead we would need to resort to a constant predictor, such as the mean of FYA over the training set. As this model is trivial we do not consider it here. 
 
-First we note that because we suspect LSAT, GPA, and FYA to all be biased by race and sex, 
-
-We propose to model the law school data as shown in
-Figure~\ref{figure.law_school}. We suspect that variables race and sex
-affect student performance (e.g. GPA, LSAT, and FYA) due to factors
-such as cultural norms, which assume that individuals of a certain
-race or gender are `better suited' to be lawyers. Such beliefs could
-adversely impact students who do not fit these norms. Instead we would
-like to model the latent \emph{knowledge} (K) of a student, which also
-impacts these features. We can then construct a predictor that
-predicts FYA fairly using knowledge. It is easy to show that such a predictor
-is counterfactually fair, whereas a predictor that uses features GPA and
-LSAT is not (in this case even including race and sex as
-features cannot correct this, as can be done in the linear case). The
-causal model is a short-hand for a system of equations:
+Following the second approach, we postulate that a latent variable: a student's \emph{knowledge} (K), affects GPA, LSAT, and FYA scores. The causal graph corresponding to this model is shown in Figure~\ref{figure.law_school}. This model is a short-hand for a system of equations:
 \begin{align}
 \mbox{GPA} &\sim {\cal N}(b_{G} + w_{G}^K K + w_{G}^R R + w_{G}^S S, \sigma_{G}) \nonumber \\
 \mbox{LSAT} &\sim \textrm{Poisson}(\exp(b_{L} + w_{L}^K K + w_{L}^R R + w_{L}^S S)) \nonumber \\
 \mbox{FYA} &\sim {\cal N}(w_{F}^K K + w_{F}^R R + w_{F}^S S, 1) \nonumber \\
 K &\sim {\cal N}(0,1) \nonumber
 \end{align}
+We can perform inference on this model using an observed training set to get an estimate of the posterior distribution of $K$. We call the predictor constructed using $K$ \emph{Fair, Level 2}.
+
+In the third approach, we model GPA, LSAT, and FYA as continuous variables with additive error terms independent of race and sex (they may be correlated with each other). This model is shown in Figure
+
+
+% impacts these features.
+
+% We propose to model the law school data as shown in
+% Figure~\ref{figure.law_school}. We suspect that variables race and sex
+% affect student performance (e.g. GPA, LSAT, and FYA) due to factors
+% such as cultural norms, which assume that individuals of a certain
+% race or gender are `better suited' to be lawyers. Such beliefs could
+% adversely impact students who do not fit these norms. Instead we would
+% like to model the latent \emph{knowledge} (K) of a student, which also
+% impacts these features. 
+% We can then construct a predictor that
+% predicts FYA fairly using knowledge. It is easy to show that such a predictor
+% is counterfactually fair, whereas a predictor that uses features GPA and
+% LSAT is not (in this case even including race and sex as
+% features cannot correct this, as can be done in the linear case). The
+% causal 
  %; %3. \textbf{Variational Fair Autoencoder (VFAE)} \cite{louizos2015variational}, a recent approach that works to learn a fair representation of the original data.
 % compute counterfactuals for both race and gender
 
