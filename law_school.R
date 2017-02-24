@@ -354,7 +354,7 @@ for (i in 1:length(sense_cols)) {
 }
 
 lawTrain$UGPA_O <- UGPA_O
-lawTrain$UGPA_O <- LSAT_O
+lawTrain$LSAT_O <- LSAT_O
 
 lawTest$UGPA_O <- UGPA_O_TE
 lawTest$LSAT_O <- LSAT_O_TE
@@ -366,6 +366,33 @@ pred_o <- predict(model_o)
 pred_o_te <- predict(model_o, newdata=lawTest)
 rmse_o_te <- sqrt( sum( (pred_o_te - lawTest$ZFYA)^2 ) / nrow(lawTest) )
 
+
+
+
+# regress UGPA on race, sex
+# regress LSAT on race, sex
+model_ugpa <- lm(UGPA ~ amerind + asian + black + hisp + mexican + other + puerto + white + male + female + 1, data=lawTrain)
+model_lsat <- lm(LSAT ~ amerind + asian + black + hisp + mexican + other + puerto + white + male + female + 1, data=lawTrain)
+
+#resid
+lawTrain$resid_UGPA = lawTrain$UGPA - predict(model_ugpa, newdata=lawTrain)
+lawTrain$resid_LSAT = lawTrain$LSAT - predict(model_lsat, newdata=lawTrain)
+
+model_f2 <- lm(ZFYA ~ resid_UGPA + resid_LSAT + 1, data=lawTrain)
+
+model_ugpa_te <- lm(UGPA ~ amerind + asian + black + hisp + mexican + other + puerto + white + male + female + 1, data=lawTest)
+model_lsat_te <- lm(LSAT ~ amerind + asian + black + hisp + mexican + other + puerto + white + male + female + 1, data=lawTest)
+
+#resid
+lawTest$resid_UGPA = lawTest$UGPA - predict(model_ugpa_te, newdata=lawTest)
+lawTest$resid_LSAT = lawTest$LSAT - predict(model_lsat_te, newdata=lawTest)
+
+
+pred_f2_te <- predict(model_f2, newdata=lawTest)
+rmse_f2_te <- sqrt( sum( (pred_f2_te - lawTest$ZFYA)^2 ) / nrow(lawTest) )
+
+
+mZFYA <- mean(lawTrain$ZFYA)
 
 
 # ---------------------------------------
@@ -689,25 +716,60 @@ model_una_samp <- lm(ZFYA ~ UGPA + LSAT + 1, data=lawSample)
 
 
 UGPA_O <- lawSample$UGPA
-
 LSAT_O    <- lawSample$LSAT
+
+UGPA_OR <- lawSampleSwapR$UGPA
+UGPA_OR2 <- lawSampleSwapR2$UGPA
+UGPA_OR3 <- lawSampleSwapR3$UGPA
+UGPA_OG <-   lawSampleSwapG$UGPA
+UGPA_OB <-   lawSampleSwapB$UGPA
+
+LSAT_OR <-   lawSampleSwapR$LSAT
+LSAT_OR2 <- lawSampleSwapR2$LSAT
+LSAT_OR3 <- lawSampleSwapR3$LSAT
+LSAT_OG <-   lawSampleSwapG$LSAT
+LSAT_OB <-   lawSampleSwapB$LSAT
+
+
 
 for (i in 1:length(sense_cols)) {
   UGPA_O = orthogonalize(UGPA_O,lawSample[,sense_cols[i]])
+  
+  UGPA_OR  = orthogonalize(UGPA_OR, lawSampleSwapR[,sense_cols[i]])
+  UGPA_OR2 = orthogonalize(UGPA_OR2,lawSampleSwapR2[,sense_cols[i]])
+  UGPA_OR3 = orthogonalize(UGPA_OR3,lawSampleSwapR3[,sense_cols[i]])
+  UGPA_OG  = orthogonalize(UGPA_OG, lawSampleSwapG[,sense_cols[i]])
+  UGPA_OB  = orthogonalize(UGPA_OB, lawSampleSwapB[,sense_cols[i]])
 
   LSAT_O    = orthogonalize(LSAT_O,lawSample[,sense_cols[i]])
+  
+  LSAT_OR  = orthogonalize(LSAT_OR, lawSampleSwapR[,sense_cols[i]])
+  LSAT_OR2 = orthogonalize(LSAT_OR2,lawSampleSwapR2[,sense_cols[i]])
+  LSAT_OR3 = orthogonalize(LSAT_OR3,lawSampleSwapR3[,sense_cols[i]])
+  LSAT_OG  = orthogonalize(LSAT_OG, lawSampleSwapG[,sense_cols[i]])
+  LSAT_OB  = orthogonalize(LSAT_OB, lawSampleSwapB[,sense_cols[i]])
 }
 
 lawSample$UGPA_O <- UGPA_O
-lawSample$UGPA_O <- LSAT_O
+lawSample$LSAT_O <- LSAT_O
+
+lawSampleSwapR$UGPA_O <- UGPA_OR
+lawSampleSwapR$LSAT_O <- LSAT_OR
+
+lawSampleSwapR2$UGPA_O <- UGPA_OR2
+lawSampleSwapR2$LSAT_O <- LSAT_OR2
+
+lawSampleSwapR3$UGPA_O <- UGPA_OR3
+lawSampleSwapR3$LSAT_O <- LSAT_OR3
+
+lawSampleSwapG$UGPA_O <- UGPA_OG
+lawSampleSwapG$LSAT_O <- LSAT_OG
+
+lawSampleSwapB$UGPA_O <- UGPA_OB
+lawSampleSwapB$LSAT_O <- LSAT_OB
 
 
-model_o_samp <- lm(ZFYA ~ LSAT_O + UGPA_O + 1, data=lawTrain)
-
-
-
-pred_o_te <- predict(model_o, newdata=lawTest)
-rmse_o_te <- sqrt( sum( (pred_o_te - lawTest$ZFYA)^2 ) / nrow(lawTest) )
+model_o_samp <- lm(ZFYA ~ LSAT_O + UGPA_O + 1, data=lawSample)
 
 
 
@@ -732,8 +794,8 @@ predict_and_fair <- function(model, data, dataSwap) {
 #    xlim(55, 70)
   
   p <- ggplot(total, aes(pred_zfya, color = type, fill = type)) + geom_density(alpha=0.1) #stat_density(position="identity",geom="line")## + theme_bw()
-  rmse <- sqrt( sum( (data$pred_zfya - dataSwap$pred_zfya)^2 ) / nrow(dataSwap) )
-  return(list("plot"=p,rmse_te="rmse"))
+  rmse <- sqrt( sum( (data$pred_zfya - data$ZFYA)^2 ) / nrow(data) )
+  return(list("plot"=p,"rmse"=rmse))
 }
 resR = predict_and_fair(model_u_samp, lawSample, lawSampleSwapR)
 resR2 = predict_and_fair(model_u_samp, lawSample, lawSampleSwapR2)
@@ -746,6 +808,13 @@ res_unaR2 = predict_and_fair(model_una_samp, lawSample, lawSampleSwapR2)
 res_unaR3 = predict_and_fair(model_una_samp, lawSample, lawSampleSwapR3)
 res_unaG = predict_and_fair(model_una_samp, lawSample, lawSampleSwapG)
 res_unaB = predict_and_fair(model_una_samp, lawSample, lawSampleSwapB)
+
+
+res_OR  = predict_and_fair(model_o_samp, lawSample, lawSampleSwapR)
+res_OR2 = predict_and_fair(model_o_samp, lawSample, lawSampleSwapR2)
+res_OR3 = predict_and_fair(model_o_samp, lawSample, lawSampleSwapR3)
+res_OG  = predict_and_fair(model_o_samp, lawSample, lawSampleSwapG)
+res_OB  = predict_and_fair(model_o_samp, lawSample, lawSampleSwapB)
 
 # TRY VAE
 vae_train_data <- read.csv("vae_fix_generated_law_train_samp_beta100.0.csv", header = FALSE, strip.white = TRUE)

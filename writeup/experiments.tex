@@ -1,15 +1,4 @@
 % !TEX root=ricardo_draft.tex
-
-\begin{figure}[!th]
-\begin{center}
-\vspace{-1ex}
-\centerline{\includegraphics[width=\columnwidth]{stopandfrisk_output.pdf}}
-\vspace{-2ex}
-\caption{Distributions of estimated latent perception and criminality scores for the stop and frisk dataset.\label{figure.stop_and_frisk_output}\vspace{-5ex}}
-\vspace{-2ex}
-\end{center}
-\end{figure}
-
 In this section we evaluate our framework for modeling fairness. We test our approach on two practical problems in which fairness must be enforced. For each problem we construct causal models, and make explicit how unfairness may affect observed and unobserved variables in the world. Given these models we are able to (a) derive counterfactually fair predictors and (b) predict latent variables such as a person's `criminality' (which may be useful for predicting crime) as well as their `perceived criminality' (which may be due to prejudices based on race and gender). We analyze how realistic our models are by comparing our observations with data generated from the model. We consider two real-world problems, the first is \emph{fair prediction of success in law school} and the second is \emph{separating actual and perceived criminality in stop-and-frisk data}.
 
 \subsection{Law school success}
@@ -83,7 +72,9 @@ We compare the root mean squared error (RMSE) of all methods for predicting FYA 
 
 
 \paragraph{Counterfactual fairness.}
-We would like to empirically test whether the baseline methods are counterfactually fair. Because we do not know the true model of the data, we propose to use Figure~\ref{figure.law_school} as our model of the real world. If this describes the true world we can evaluate counterfactual fairness easily: we can simply sample from the model while fixing an individual's race/sex to particular values. By changing race/sex we can obtain the counterfactual values $\mbox{GPA}_a,\mbox{GPA}_{a'}$ where $a,a'$ are different values of race/sex (and similarly for LSAT). We compare how predictions of FYA change when using counterfactual features versus the original sampled features. Figure~\ref{figure.counterfactual} shows how the distribution of predicted FYA changes when race, sex, and both race and sex are changed (for race, as the majority of individuals have marked their race as white or black we just consider counterfactuals for this subset of individuals).
+We would like to empirically test whether the baseline methods are counterfactually fair. To do so we will assume the true model of the world is given by Figure~\ref{figure.law_school}, Level 2. We can fit the parameters of this model using the observed data and evaluate counterfactual fairness by sampling from it. Specifically, we will generate samples from the model given either the observed race and sex, or \emph{counterfactual} race and sex variables. We will fit models to both the original and counterfactual sampled data and plot how the distribution of predicted FYA changes for both baseline models. Figure~\ref{figure.counterfactual} shows this, where each row corresponds to a baseline predictor and each column corresponds to the couterfactual change. In each plot, the blue distribution is density of predicted FYA for the original data and the red distribution is this density for the counterfactual data. If a model is counterfactually fair we would expect these distributions to lie exactly on top of each other. Instead, we note that the \emph{Full} model exhibits counterfactual unfairness for all counterfactuals except gender. We see a similar trend for the \emph{Unaware} model, although it is closer to being counterfactually fair.
+
+To see why both models are fair w.r.t. to gender we can look at the weights going from sex to GPA and LSAT in the `true' fitted model. They are $0.93$,$1.06$ for male,female to GPA and $1.1$,$1.1$ for male,female to LSAT. Thus, the only reason why these models are fair w.r.t. to gender is because the model indicates that the causal effect from gender to GPA and LSAT is small.
 
 % here describe what we see
 
@@ -146,7 +137,7 @@ We would like to empirically test whether the baseline methods are counterfactua
 \caption{Prediction results using logistic regression. Note that we must sacrifice a small amount of accuracy to ensuring counterfactually fair prediction (fair), versus the model which uses all features, including race and sex (unfair).}\label{table.pred_law}
 \begin{tabular}{ccccc} 
 \hline
- &  {\bf Full} & {\bf Unaware} & {\bf Fair L2} & {\bf Fair L3} \\
+ &  {\bf Full} & {\bf Unaware} & {\bf Fair $K$} & {\bf Fair Add} \\
 \hline
 RMSE & 0.873 & 0.894 & 0.929 & 0.918 \\
 %\bf{Method} & %\multicolumn{2}{c}{\bf Full} & \multicolumn{2}{c}{\bf Unaware} & \multicolumn{2}{c}{\bf Fair L2} & \multicolumn{2}{c}{\bf Fair L3} \\
@@ -154,15 +145,29 @@ RMSE & 0.873 & 0.894 & 0.929 & 0.918 \\
 \end{tabular}
 \end{table}
 
+\begin{figure}[!th]
+\begin{center}
+\vspace{-1ex}
+\centerline{\includegraphics[width=\columnwidth]{stopandfrisk_output.pdf}}
+\vspace{-2ex}
+\caption{Distributions of estimated latent perception and criminality scores for the stop and frisk dataset.\label{figure.stop_and_frisk_output}\vspace{-5ex}}
+\vspace{-2ex}
+\end{center}
+\end{figure}
 
 
 \subsection{True vs. Perceived Criminality}
 \label{sec:true-vs.-perceived}
-Every year since 2002, the New York Police Department (NYPD) has recorded information about every time a police officer has stopped someone. The officer records information such as if they searched or frisked the individual, whether a weapon was found, the individual's appearance, whether force was used, etc. We look at this data collected during 2014 for our analysis.
+Every year since 2002, the New York Police Department (NYPD) has recorded information about every time a police officer has stopped someone. The officer records information such as if they searched or frisked the individual, whether a weapon was found, the individual's appearance, whether force was used, etc. We look at this data collected during 2014 for our analysis. We limit our analysis to looking at just males stopped as this accounts for more than $90\%$ of the data.
 
 \paragraph{Model.}
-We model this stop-and-frisk data using the graph in Figure~\ref{figure.stop_and_frisk}. Specifically, we posit main causes for the observations: \emph{Arrest} (if an individual was arrested), \emph{Summons} (an individual was called to a court-summons), \emph{Weapon} (an individual was found to be carrying a weapon), \emph{Force} (some sort of force was used during the stop), \emph{Frisked}, and \emph{Searched}. The first cause of these observations is some measure of an individual's latent \emph{Criminality}, which we do not observe. We believe there is an additional cause, an individual's perceived criminality, \emph{Perception}, also unobserved. This second factor is introduced as we have reason
+We model this stop-and-frisk data using the graph in Figure~\ref{figure.stop_and_frisk}. Specifically, we posit main causes for the observations: \emph{Arrest} (if an individual was arrested), \emph{Summons} (an individual was called to a court-summons), \emph{Weapon} (an individual was found to be carrying a weapon), \emph{Force} (some sort of force was used during the stop), \emph{Frisked}, and \emph{Searched}. The first cause of these observations is some measure of an individual's latent \emph{Criminality}, which we do not observe. We believe there is an additional cause, an individual's perceived criminality, \emph{Perception}, also unobserved. This second factor is introduced as we believe that these observations may be biased based on an officer's perception of whether an individual is likely a criminal or not. This perception is affected by an individual's appearance and their race. In this sense \emph{Criminality} is counterfactually fair, while \emph{Perception} models how race affects each of the other observed variables.
 
+\paragraph{Criminality and perception distributions.}
+After fitting this model to the data we can look at the distribution of \emph{Criminality} and \emph{Perception} across different races, shown as box plots in Figure~\ref{figure.stop_and_frisk}. We see that the median criminality for each race is nearly identical, while the distributions are somewhat different. These differences may be due to unobserved confounding variables that are affected by race or unmodeled noise in the data. On the right we note that \emph{Perception} varies considerably by race with white individuals having the lowest perceived criminality while black and black Hispanic individuals have the highest.
+
+\paragraph{Visualization on a map of New York City.}
+Each of the stops can be mapped to longitude and latitude points for where the stop occurred\footnote{https://github.com/stablemarkets/StopAndFrisk}. Thus we can visualize \emph{Criminality} and \emph{Perception} alongside \emph{Race} and the combination of \emph{Arrest} and \emph{Summons}, shown in Figure~\ref{figure.criminality}. We note that criminality seems to be a continuous approximation of arrest and summons as both plots show red in similar areas. However, the criminality plots show that certain areas, while having a lot of arrests have somewhat low criminality scores such as the southern regions of the Bronx and east Queens. Comparing the perceived criminality with a plot of race, where we have divided the races into Group A: black, black Hispanic, Hispanic, and Native American (shown in purple); and Group B: white and Asian/Pacific Islander (shown in green). Group A are all races that have positive weights on the connection from \emph{Race} to \emph{Perception} in the fitted model, while Group B all have negative weights. Thus being in Group A leads one to have a higher perceived criminality than being in Group B. This can be seen in the right-most plot of Figure~\ref{figure.criminality}. Certain areas of town such as central Brooklyn, central Bronx, and southern Queens have very high criminality and almost all stops are by members of Group A.
 
 \begin{figure}[th]
 \begin{center}
