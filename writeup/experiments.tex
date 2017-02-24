@@ -1,49 +1,61 @@
 % !TEX root=ricardo_draft.tex
-In this section we evaluate our framework for modeling fairness. We test our approach on two practical problems in which fairness must be enforced. For each problem we construct causal models, and make explicit how unfairness may affect observed and unobserved variables in the world. Given these models we are able to (a) derive counterfactually fair predictors and (b) predict latent variables such as a person's `criminality' (which may be useful for predicting crime) as well as their `perceived criminality' (which may be due to prejudices based on race and gender). We analyze how realistic our models are by comparing our observations with data generated from the model. We consider two real-world problems, the first is \emph{fair prediction of success in law school} and the second is \emph{separating actual and perceived criminality in stop-and-frisk data}.
+% In this section we evaluate our framework for modeling fairness.
+We test our approach on two practical problems that require  fairness. For each problem we construct causal models, and make explicit how unfairness may affect observed and unobserved variables in the world. Given these models we: derive counterfactually fair predictors; and predict latent variables such as a person's `criminality' (which may be useful for predicting crime) as well as their `perceived criminality' (which may be due to prejudices based on race and gender). We analyze how realistic our models are by comparing our observations with data generated from the model. We consider two real-world problems, the first is \emph{prediction of success in law school} and the second is \emph{separating actual and perceived criminality in police stops}.
 
 \subsection{Law school success}
 \label{sec:law-school-success}
-From 1991 to 1996 the Law School Admission Council
-counducted a longitudinal survey following students across 163 law
+% From 1991 to 1996
+The Law School Admission Council
+counducted a survey across 163 law
 schools in the United States \cite{wightman1998lsac}. % The survey was
 % designed to assess `the law school experience of minority students, as
 % well as their ultimate entry into the profession'.
-The survey contains students' features before entering law school
-including: their entrance exam scores (LSAT) and their grade-point
-average (GPA) and the average grade of their first year of law school
+It contains students'  entrance exam scores (LSAT) and their grade-point
+average (GPA) collected prior to law school and their first year average grade
 (FYA). %, and following Law
 %School i.e. whether students passed the final examination, the `bar
 %exam' (P)).
 
-Given this data a law school may wish to predict if a law student
-will succeed in their first year (have a high FYA) from information about their academic performance 
-before law school. The school would also like to make sure
-these predictions are not biased by an individual's race and
-sex. However, the observed information about
-students, the LSAT, GPA, and FYA scores,  may be biased due to 
-social factors relating to race and gender. Our approach will be to use variables that are counterfactually fair for prediction. We will compare our technique with two (unfair) baselines: 1. \textbf{Full}: the standard technique of using all features, including sensitive features such as race and sex to make predictions; 2. \textbf{Unaware}: fairness through unawareness, we simply throw out any features we would like to be fair with respect to. For interpretability, we evaluate all methods (including our own) using linear regression.
+Given this data, a  school may wish to predict if a  student will
+have a high FYA. % from information about their academic performance
+% before law school.
+The school would also like to make sure these
+predictions are not biased by an individual's race and sex. However,
+the LSAT, GPA, and FYA scores, may be biased due to social factors. % Our approach will use variables that are
+% counterfactually fair for prediction.
+We compare our framework with
+two unfair baselines: 1. \textbf{Full}: the standard technique of
+using all features, including sensitive features such as race and sex
+to make predictions; 2. \textbf{Unaware}: fairness through
+unawareness, where we do not use race and sex as features. For comparision, we generate predictors $\hat y$
+over each set of features using linear regression.
 
 \paragraph{Counterfactually fair prediction.}
-As described in Section 5.1 there are three ways in which we can model a counterfactually fair predictor of FYA: 1. We can use any features which are not descendants of race and gender for prediction; 2. We can model latent `fair' variables which are parents of observed variables. Crucially, these variables are independent of race and gender; 3. We can model the data using an additive error model, and use the independent error terms for making predictions of FYA. These models use increasingly strong assumptions that corresponds to a trade-off for lower predictive error.
+As described in Section~\ref{sec:limit-guide-model},  there are three ways in which we can model a counterfactually fair predictor of FYA: L1. using any features which are not descendants of race and gender for prediction; L2. modelling latent `fair' variables which are parents of observed variables. These variables are independent of both race and gender; L3. We model the data using an additive error model, and use the independent error terms to make predictions. These models make increasingly strong assumptions corresponding to lower predictive error.
 
-First we note that because we suspect LSAT, GPA, and FYA to all be biased by race and sex, we cannot use any observed features to construct a counterfactually fair predictor as described in method one. Instead we would need to resort to a constant predictor, such as the mean of FYA over the training set. As this model is trivial we do not consider it. 
+As we believe LSAT, GPA, and FYA are all biased by race and sex, we
+cannot use any observed features to construct an counterfactually fair
+predictor as described in L1. % Instead we would need to resort to a
+% constant predictor% , such as the mean of FYA over the training set
+% . % As this model is trivial we do not consider it. 
 
-Following the second approach, we postulate that a latent variable: a student's \textbf{knowledge} (K), affects GPA, LSAT, and FYA scores. The causal graph corresponding to this model is shown in Figure~\ref{figure.law_school}, Level 2. This model is a short-hand for a system of equations:
+In L2, we postulate that a latent variable: a student's \textbf{knowledge} (K), affects GPA, LSAT, and FYA scores. The causal graph corresponding to this model is shown in Figure~\ref{figure.law_school}, Level 2. This is a short-hand for the equations:
 \begin{align}
 \mbox{GPA} &\sim {\cal N}(b_{G} + w_{G}^K K + w_{G}^R R + w_{G}^S S, \sigma_{G}) \nonumber \\
 \mbox{LSAT} &\sim \textrm{Poisson}(\exp(b_{L} + w_{L}^K K + w_{L}^R R + w_{L}^S S)) \nonumber \\
 \mbox{FYA} &\sim {\cal N}(w_{F}^K K + w_{F}^R R + w_{F}^S S, 1) \nonumber \\
 K &\sim {\cal N}(0,1) \nonumber
 \end{align}
-As FYA is already standardized to have mean $0$ and standard deviation $1$ we do not learn bias and standard deviation terms. We can perform inference on this model using an observed training set to get an estimate of the posterior distribution of $K$. We call the predictor constructed using $K$ \textbf{Fair $K$}.
+% As FYA is already standardized to have mean $0$ and standard deviation $1$ we do not learn bias and standard deviation terms.
+We perform inference on this model using an observed training set to estimate the posterior distribution of $K$. We call the predictor constructed using $K$, \textbf{Fair $K$}.
 
-In the third approach, we model GPA, LSAT, and FYA as continuous variables with additive error terms independent of race and sex (they may in turn be correlated with each other). This model is shown in Figure~\ref{figure.law_school}, Level 3, and is expressed by the equations:
+In L3, we model GPA, LSAT, and FYA as continuous variables with additive error terms independent of race and sex (that may in turn correlated with one-another). This model is shown in Figure~\ref{figure.law_school}, Level 3, and is expressed by: % the equations:
 \begin{align}
 \mbox{GPA} &= b_{G} + w_{G}^R R + w_{G}^S S + \epsilon_G, \;\; \epsilon_G \sim p(\epsilon_G) \nonumber \\
 \mbox{LSAT} &= b_{L} + w_{L}^R R + w_{L}^S S + \epsilon_L, \;\; \epsilon_L \sim p(\epsilon_L) \nonumber \\
 \mbox{FYA} &= b_{F} + w_{F}^R R + w_{F}^S S + \epsilon_F, \;\; \epsilon_F \sim p(\epsilon_F) \nonumber
 \end{align}
-We can estimate the error terms $\epsilon_G,\epsilon_L$ by first fitting a model that uses race and sex to predict GPA, LSAT and then computing the residuals. We use these residual estimates of $\epsilon_G,\epsilon_L$ to predict FYA. We call this predictor \emph{Fair Add}.
+We estimate the error terms $\epsilon_G,\epsilon_L$ by first fitting a model that uses race and sex to predict GPA, LSAT and then computing the residuals. We use these residual estimates of $\epsilon_G,\epsilon_L$ to predict FYA. We call this predictor \emph{Fair Add}.
 
 
 % impacts these features.
@@ -67,11 +79,11 @@ We can estimate the error terms $\epsilon_G,\epsilon_L$ by first fitting a model
 
 
 
-\paragraph{Accuracy.}
-We compare the root mean squared error (RMSE) of all methods for predicting FYA on a hold out dataset in Table~\ref{table.pred_law}.  We note that the \textbf{Full} model achieves the lowest RMSE as it uses race and sex to more accurately reconstruct FYA. The \textbf{Unaware} model still uses the unfair variables GPA and LSAT, but because it does not use race and sex it cannot match the \textbf{Full} model. As both of our models acheieve counterfactual fairness under certain assumptions, and race and sex affect our target variable FYA, they must sacrifice some accuracy for fairness. Our first model \textbf{Fair $K$} uses looser assumptions and thus the RMSE increases compared to the rest of the models. If instead we assume an additive error structure as in \textbf{Fair Add} we can produce a counterfactually fair model with lower holdout RMSE, at the expensive of stricter modelling assumptions.
+\paragraph{Accuracy}
+We compare the RMS error on held-out data in Table~\ref{table.pred_law}.  The \textbf{Full} model achieves the lowest RMSE as it uses race and sex to more accurately reconstruct FYA. The \textbf{Unaware} model still uses the unfair variables GPA and LSAT, but because it does not use race and sex it cannot match the \textbf{Full} model. As our models satisfy counterfactual fairness, they sacrifice some accuracy. Our first model \textbf{Fair $K$} uses weaker assumptions and thus the RMSE is highest. Using the L3 assumptions, as in \textbf{Fair Add} we produce a counterfactually fair model with lower RMSE.
 
 
-\paragraph{Counterfactual fairness.}
+\paragraph{Counterfactual fairness}
 We would like to empirically test whether the baseline methods are counterfactually fair. To do so we will assume the true model of the world is given by Figure~\ref{figure.law_school}, Level 2. We can fit the parameters of this model using the observed data and evaluate counterfactual fairness by sampling from it. Specifically, we will generate samples from the model given either the observed race and sex, or \emph{counterfactual} race and sex variables. We will fit models to both the original and counterfactual sampled data and plot how the distribution of predicted FYA changes for both baseline models. Figure~\ref{figure.counterfactual} shows this, where each row corresponds to a baseline predictor and each column corresponds to the couterfactual change. In each plot, the blue distribution is density of predicted FYA for the original data and the red distribution is this density for the counterfactual data. If a model is counterfactually fair we would expect these distributions to lie exactly on top of each other. Instead, we note that the \emph{Full} model exhibits counterfactual unfairness for all counterfactuals except gender. We see a similar trend for the \emph{Unaware} model, although it is closer to being counterfactually fair.
 
 To see why both models are fair w.r.t. to gender we can look at the weights going from sex to GPA and LSAT in the `true' fitted model. They are $0.93$,$1.06$ for male,female to GPA and $1.1$,$1.1$ for male,female to LSAT. Thus, the only reason why these models are fair w.r.t. to gender is because the model indicates that the causal effect from gender to GPA and LSAT is small.
