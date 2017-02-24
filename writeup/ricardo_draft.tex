@@ -102,22 +102,22 @@
   People have begun to make use of machine learning techniques to
   automate decisions that, historically, have been unfairly biased
   against certain subgroups in the population (e.g., based on race,
-  gender, sexual orientation). 
-  Because the historical data is often biased, machine learning
-  techniques that are used to make future predictions must account for
-  this to avoid perpetuating discriminatory practices. There have been
-  a number of recent works towards designing fair classifiers, however
-  it is often unclear when to prefer one method over another. In this
-  paper, we develop a framework for modeling fairness in any dataset
-  using tools from counterfactual inference. We propose a definition
-  called \emph{counterfactual fairness} that naturally captures the
-  intuition that a decision is fair towards an individual, if it gives
-  the same predictions in (a) in the observed world and (b) a world
-  where the individual had always belonged to a different demographic
-  group. We demonstrate our modeling framework on two real-world
-  problems: 1. fair prediction of law school success and 2. fair
-  modeling of an individual's latent criminality in stop-and-frisk
-  policing data.
+  gender, sexual orientation).  Because the historical data is often
+  biased, machine learning techniques that are used to make future
+  predictions must account for this to avoid perpetuating
+  discriminatory practices. There have been a number of recent works
+  towards designing fair classifiers, however it is often unclear when
+  to prefer one method over another. In this paper, we develop a
+  framework for modeling fairness in any dataset using tools from
+  counterfactual inference. We propose a definition called
+  \emph{counterfactual fairness} that naturally captures the intuition
+  that a decision is fair towards an individual, if it gives the same
+  predictions in (a) in the observed world and (b) a world where the
+  individual had always belonged to a different demographic group,
+  other background causes of the outcome being equal. We demonstrate
+  our modeling framework on two real-world problems: 1. fair
+  prediction of law school success and 2. fair modeling of an
+  individual's latent criminality in stop-and-frisk policing data.
 \end{abstract} 
 
 \section{Introduction}
@@ -157,6 +157,11 @@ experimentally contrasted our approach with previous racially blind
 approaches and show that our explicit causal models capture these
 social biases and make clear the implicit trade-off between
 prediction accuracy and fairness in an unfair world.
+
+We defend that fairness should be regulated using explicit
+information about the causal structure of the world, according to the
+best of an expert's knowledge. Criteria based purely on probabilistic
+independence cannot satisfy this.
 
 \bibliography{rbas,bibliography}
 \bibliographystyle{icml2017}
