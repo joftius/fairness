@@ -86,7 +86,11 @@ We compare the RMS error on held-out data in Table~\ref{table.pred_law}.  The \t
 \paragraph{Counterfactual fairness}
 We would like to empirically test whether the baseline methods are counterfactually fair. To do so we will assume the true model of the world is given by Figure~\ref{figure.law_school}, Level 2. We can fit the parameters of this model using the observed data and evaluate counterfactual fairness by sampling from it. Specifically, we will generate samples from the model given either the observed race and sex, or \emph{counterfactual} race and sex variables. We will fit models to both the original and counterfactual sampled data and plot how the distribution of predicted FYA changes for both baseline models. Figure~\ref{figure.counterfactual} shows this, where each row corresponds to a baseline predictor and each column corresponds to the couterfactual change. In each plot, the blue distribution is density of predicted FYA for the original data and the red distribution is this density for the counterfactual data. If a model is counterfactually fair we would expect these distributions to lie exactly on top of each other. Instead, we note that the \emph{Full} model exhibits counterfactual unfairness for all counterfactuals except sex. We see a similar trend for the \emph{Unaware} model, although it is closer to being counterfactually fair.
 
-To see why both models are fair w.r.t. to sex we can look at the weights going from sex to GPA and LSAT in the `true' fitted model. They are $0.93$,$1.06$ for male,female to GPA and $1.1$,$1.1$ for male,female to LSAT. Thus, the only reason why these models are fair w.r.t. to sex is because the model indicates that the causal effect from sex to GPA and LSAT is small.
+To see why these models are fair w.r.t. to sex we can look at the
+weights going from sex to GPA and LSAT in the fitted model. They are
+$0.93$,$1.06$ for male, female to GPA and $1.1$,$1.1$ for male, female
+to LSAT. These models are fair w.r.t. to sex simply
+because the model indicates a very weak causal link between sex and GPA/LSAT.
 
 % here describe what we see
 
