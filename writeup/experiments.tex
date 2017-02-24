@@ -1,44 +1,48 @@
 % !TEX root=ricardo_draft.tex
+
 \begin{figure}[!th]
 \begin{center}
 \vspace{-1ex}
 \centerline{\includegraphics[width=\columnwidth]{stopandfrisk_output.pdf}}
 \vspace{-2ex}
-\caption{Distributions of estimated latent perception and criminality scores for the stop and frisk dataset.\label{figure.stop_and_frisk_output}}
+\caption{Distributions of estimated latent perception and criminality scores for the stop and frisk dataset.\label{figure.stop_and_frisk_output}\vspace{-5ex}}
 \vspace{-2ex}
 \end{center}
 \end{figure}
 
-In this section we evaluate our framework for modeling fairness. We test our approach on two practical problems in which fairness must be enforced. For each problem we construct causal models, and make explicit how unfairness may affect observed and unobserved variables in the world. Given these models we are able to (a) derive counterfactually fair predictors and (b) predict latent variables such as a person's `criminality' (which may be useful for predicting crime) as well as their `perceived criminality' (which may be due to prejudices based on race and gender). Additionally, we can analyze how realistic our models are by comparing our observations with data generated from the model. We consider two real-world problems, the first is \emph{fair prediction of success in law school} and the second is \emph{separating actual and perceived criminality in stop-and-frisk data}.
+In this section we evaluate our framework for modeling fairness. We test our approach on two practical problems in which fairness must be enforced. For each problem we construct causal models, and make explicit how unfairness may affect observed and unobserved variables in the world. Given these models we are able to (a) derive counterfactually fair predictors and (b) predict latent variables such as a person's `criminality' (which may be useful for predicting crime) as well as their `perceived criminality' (which may be due to prejudices based on race and gender). We analyze how realistic our models are by comparing our observations with data generated from the model. We consider two real-world problems, the first is \emph{fair prediction of success in law school} and the second is \emph{separating actual and perceived criminality in stop-and-frisk data}.
 
 \subsection{Law school success}
-Between the years of 1991-1996 the Law School Admission Council
+\label{sec:law-school-success}
+From 1991 to 1996 the Law School Admission Council
 counducted a longitudinal survey following students across 163 law
-schools in the United States \cite{wightman1998lsac}. The survey was
-designed to assess `the law school experience of minority students, as
-well as their ultimate entry into the profession'. The survey contains
-students' features before entering law school including: their
-entrance exam (LSAT) scores and their undergraduate grade-point
-average (GPA) and features collected during law school, including their average
-grade of their first-year of law school (FYA)). %, and following Law
+schools in the United States \cite{wightman1998lsac}. % The survey was
+% designed to assess `the law school experience of minority students, as
+% well as their ultimate entry into the profession'.
+The survey contains students' features before entering law school
+including: their entrance exam scores (LSAT) and their grade-point
+average (GPA) and the average grade of their first year of law school
+(FYA). %, and following Law
 %School i.e. whether students passed the final examination, the `bar
 %exam' (P)).
 
-Given this data a law school may wish to predict whether a law student
+Given this data a law school may wish to predict if a law student
 will succeed in their first year (have a high FYA) from information about their academic performance 
 before law school. The school would also like to make sure
 these predictions are not biased by an individual's race and
-gender. However, we may worry that our observed information about
-students, the LSAT, GPA, and FYA scores, are biased due to historical
-social factors relating to race and gender. Our approach will be to use variables that are counterfactually fair for prediction. We will compare our technique with two (unfair) baselines: 1. \textbf{Full}: the standard technique of using all features, including sensitive features such as race and sex to make predictions; 2. \textbf{Unaware}: fairness through unawareness, we simply throw out any features we would like to be fair with respect to. For interpretability, we evaluate all methods (including our own) using linear regression.
-
+sex. However, the observed information about
+students, the LSAT, GPA, and FYA scores,  may be biased due to 
+social factors relating to race and gender. We explicitly model these
+``unfair'' factors alongside a latent variable that is counterfactually
+fair.
 
 \paragraph{Counterfactually fair prediction.}
-As described in Section 5.1 there are three ways in which we can model a counterfactually fair predictor of FYA: 1. We can use any features which are not descendants of race and gender for prediction; 2. We can model latent `fair' variables which are parents of observed variables. Crucially, these variables are independent of race and gender; 3. We can model the data using an additive error model, and use the independent error terms for making predictions of FYA. These models use increasingly strong assumptions and we will demonstrate that this corresponds to a trade-off for lower predictive error.
+As described in Section 5.1 there are three ways in which we can model a counterfactually fair predictor of FYA: 1. We can use any features which are not descendants of race and gender for prediction; 2. We can model latent `fair' variables which are parents of observed variables. Crucially, these variables are independent of race and gender; 3. We can model the data using an additive error model, and use the independent error terms for making predictions of FYA. These models use increasingly strong assumptions that corresponds to a trade-off for lower predictive error.
 
-First we note that because we suspect LSAT, GPA, and FYA to all be biased by race and sex, we cannot use any observed features to construct a counterfactually fair predictor as described in method one. Instead we would need to resort to a constant predictor, such as the mean of FYA over the training set. As this model is trivial we do not consider it here. 
+First we note that because we suspect LSAT, GPA, and FYA to all be biased by race and sex, we cannot use any observed features to construct a counterfactually fair predictor as described in method one. Instead we would need to resort to a constant predictor, such as the mean of FYA over the training set. As this model is trivial we do not consider it. 
 
 Following the second approach, we postulate that a latent variable: a student's \emph{knowledge} (K), affects GPA, LSAT, and FYA scores. The causal graph corresponding to this model is shown in Figure~\ref{figure.law_school}. This model is a short-hand for a system of equations:
+
 \begin{align}
 \mbox{GPA} &\sim {\cal N}(b_{G} + w_{G}^K K + w_{G}^R R + w_{G}^S S, \sigma_{G}) \nonumber \\
 \mbox{LSAT} &\sim \textrm{Poisson}(\exp(b_{L} + w_{L}^K K + w_{L}^R R + w_{L}^S S)) \nonumber \\
@@ -70,6 +74,7 @@ In the third approach, we model GPA, LSAT, and FYA as continuous variables with 
 % compute counterfactuals for both race and gender
 
 
+
 \paragraph{Accuracy.}
 We compare the RMSE of all methods for predicting FYA on a hold out dataset in Table~\ref{table.pred_law}. For our method we only use samples from the posterior of knowledge for prediction. As we believe FYA is affected by race and sex note that any model that wishes to be fair w.r.t. to these variables must necessarily lose prediction accuracy. We see this Table~\ref{table.pred_law}: the full model achieves the lowest RMSE as it is able to reconstruct additional information about FYA using race and sex. We note that our method is able to achieve nearly the same RMSE as the unaware model. This implies that our knowledge variable is nearly as good as the unfair variables GPA and LSAT at reconstructing FYA.
 
@@ -84,23 +89,13 @@ We would like to empirically test whether the baseline methods are counterfactua
  
 
 % TODO rank top 10 students by ability or by other score in law_school.py which only considers observed features
-\begin{figure*}[th]
-\begin{center}
-\vspace{-2ex}
-\centerline{\includegraphics[width=\textwidth]{stop_and_frisk_graphs.png}}
-\vspace{-2ex}
-\caption{P.}
-\label{figure.criminality}
-\vspace{-2ex}
-\end{center}
-\end{figure*}
 
 \begin{figure}[th]
 \begin{center}
 \vspace{-1ex}
 \centerline{\includegraphics[width=0.8\columnwidth]{law_school_model}}
 \vspace{-2ex}
-\caption{A causal model for the problem of predicting law school success fairly.\label{figure.law_school}}
+\caption{A causal model for the problem of predicting law school success fairly.\label{figure.law_school}\vspace{-2ex}}
 \vspace{-2ex}
 \end{center}
 \end{figure}
@@ -159,6 +154,7 @@ RMSE & 0.873 & 0.894 & 0.929 & 0.918 \\
 
 
 \subsection{True vs. Perceived Criminality}
+\label{sec:true-vs.-perceived}
 Every year since 2002, the New York Police Department (NYPD) has recorded information about every time a police officer has stopped someone. The officer records information such as if they searched or frisked the individual, whether a weapon was found, the individual's appearance, whether force was used, etc. We look at this data collected during 2014 for our analysis.
 
 \paragraph{Model.}
@@ -170,13 +166,13 @@ We model this stop-and-frisk data using the graph in Figure~\ref{figure.stop_and
 \vspace{-1ex}
 \centerline{\includegraphics[width=\columnwidth]{stop_and_frisk_model3.pdf}}
 \vspace{-2ex}
-\caption{A causal model for the stop and frisk dataset.\label{figure.stop_and_frisk}}
+\caption{A causal model for the stop and frisk dataset.\label{figure.stop_and_frisk}\vspace{-4ex}}
 \vspace{-2ex}
 \end{center}
 \end{figure}
 
 
-\subsection{Model criticism}
+%\subsection{Model criticism}
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "ricardo_draft"

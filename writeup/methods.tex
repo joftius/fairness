@@ -53,17 +53,20 @@ categorize assumptions by three levels of increasing strength.
   % $\hat Y$ is not a function of $U$ but a function
   % of the maximal subset of $X$ that does not contain descendants of $A$;
 \item[L2] This ignores much information, particularly if the protected
-  attributes are typical demographic information such as race or sex, which are parents of many other variables. To
-  include information from descendants of $A$, we postulate background
-  latent variables that act as causes of observable variables, based
-  on explicit domain knowledge and learning algorithms\footnote{In
-    some domains, it is actually common to build a model entirely
-    around latent constructs with few or no observable parents nor
-    connections among observed variables \citep{bol:89}.}.  As these
-  variables are not descendants of $A$, they can be used to fairly predict
-  $\hat Y$.  Conditioning on descendants of $A$ propagates information
-  from $X$ to them. This dependency of each $V_i$ on its parents can be
-  probabilistic.% , instead of being given by a structural equation, as in the
+  attributes are typical demographic information such as race or sex,
+  which are parents of many other variables. To include information
+  from descendants of $A$, we postulate background latent variables
+  that act as causes of observable variables, based on explicit domain
+  knowledge and learning algorithms\footnote{In some domains, it is
+    actually common to build a model entirely around latent constructs
+    with few or no observable parents nor connections among observed
+    variables \citep{bol:89}.}. Information from $X$ will propagate to
+  the latent variables by conditioning.% As these
+  % variables are not descendants of $A$, they can be used to fairly predict
+  % $\hat Y$.  Conditioning on descendants of $A$ propagates information
+  % from $X$ to them. This dependency of each $V_i$ on its parents can be
+  % probabilistic.
+  % , instead of being given by a structural equation, as in the
   % previous section;
  \item[L3] In the above construction, the model factorizes as a
    general DAG, where each node follows a non-degenerate
@@ -84,8 +87,7 @@ categorize assumptions by three levels of increasing strength.
 
 \subsection{Special cases}
 %
-Consider the graph $A \rightarrow X \rightarrow Y$ (see
-Figure~\ref{fig:ex1} (a)). In general, if $\hat Y$ is a function of
+Consider the graph $A \rightarrow X \rightarrow Y$. In general, if $\hat Y$ is a function of
 $X$ only, then $\hat Y$ need not obey demographic parity, i.e.
 \begin{align}
   p(\hat Y\ |\ A = a) \neq p(\hat Y\ |\ A = a').\nonumber
@@ -96,9 +98,8 @@ can deduce $e_X$. If $\hat Y$ is a function of $e_X$ only and, by
 assumption, $e_X$ is independent of $A$, then the assumptions imply
 that $\hat Y$ will satisfy demographic parity, and that can be
 falsified.
-
 By way of contrast, if $e_X$ is not uniquely identifiable from the structural equation and $(A, X)$, then the distribution of $\hat Y$ depends on the value of $A$ as we marginalize $e_X$, and demographic parity will not follow. This leads to the following:
-
+%
 \begin{lem}
 If all background variables $U' \subseteq U$ used in the definition of $\hat Y$ are determined from $(A, W)$, and all observable variables used in the definition of $\hat Y$ are independent of $A$ given $U'$, then $\hat Y$ satisfies demographic parity. % If the conditions fail, then $\hat Y$ will not satisfy demographic parity in general. 
 \end{lem}
@@ -107,7 +108,17 @@ In one sense, Definition~\ref{eq:cf_definition} is a counterfactual
 demographic parity condition, that can replace the
 existing definition.
 
-We also advocate that counterfactual assumptions should underlie all approaches based on separating the sources of variation of the data into ``fair'' and ``unfair'' components. As an example, \citet{louizos2015variational} explains the variability in $X$ from $A$ and an independent source $U$ following the DAG $A \rightarrow X \leftarrow U$. Since $U$ and $A$ are not independent given $X$ in this directed representation, a type of ``posterior regularization'' \citep{ganchev:10} is enforced such that a posterior $p_{fair}(U\ | A, X)$ is close to the model posterior $p(U\ |\ A, X)$ while having the property $p_{fair}(U\ | A = a, X) \approx p_{fair}(U\ | A = a', X)$. But this is neither necessary nor sufficient for counterfactual fairness if the model for $X$ given $A$ and $U$ is not justified by a causal mechanism. If it is, $p(U\ |\ A, X)$ is justified as distribution which we can use to marginalize $U$ in $p(\hat Y(U)\ |\ A, X)$. No posterior regularization is necessary.  Methods which estimate the relationship between $A$, $U$ and $X$ based on penalizing dependence measures between an estimated $U$ and $A$ are relevant in estimating a causal model such as the one described by \citet{mooij:09}, but this is motivated by a model in which $U$ is deterministically inferred from $A$ and $X$ by construction. Moreover, it is unclear in \citet{louizos2015variational} how the ideal label $Y$ is causally connected to $U$ and $A$, so that the semantics of the ``unfair''
+\begin{figure*}[!th]
+\begin{center}
+\vspace{-2ex}
+\centerline{\includegraphics[width=\textwidth]{stop_and_frisk_graphs.png}}
+\vspace{-2ex}
+\caption{Understanding criminality. The above maps show the decomposition of stop and search data in New York into factors based on percieved criminality (a race dependent variable) and latent criminality (a race neutral measure). See section~\ref{sec:true-vs.-perceived}.     \label{figure.criminality}\vspace{-7ex}}
+\end{center}
+%\vspace{-3ex}
+\end{figure*}
+
+We also advocate that counterfactual assumptions should underlie all approaches that separating the sources of variation of the data into ``fair'' and ``unfair'' components. As an example, \citet{louizos2015variational} explains the variability in $X$ from $A$ and an independent source $U$ following the DAG $A \rightarrow X \leftarrow U$. Since $U$ and $A$ are not independent given $X$ in this directed representation, a type of ``posterior regularization'' \citep{ganchev:10} is enforced such that a posterior $p_{fair}(U\ | A, X)$ is close to the model posterior $p(U\ |\ A, X)$ while having the property $p_{fair}(U\ | A = a, X) \approx p_{fair}(U\ | A = a', X)$. But this is neither necessary nor sufficient for counterfactual fairness if the model for $X$ given $A$ and $U$ is not justified by a causal mechanism. If it is, $p(U\ |\ A, X)$ is justified as distribution which we can use to marginalize $U$ in $p(\hat Y(U)\ |\ A, X)$. No posterior regularization is necessary.  Methods which estimate the relationship between $A$, $U$ and $X$ based on penalizing dependence measures between an estimated $U$ and $A$ are relevant in estimating a causal model such as the one described by \citet{mooij:09}, but this is motivated by a model in which $U$ is deterministically inferred from $A$ and $X$ by construction. Moreover, it is unclear in \citet{louizos2015variational} how the ideal label $Y$ is causally connected to $U$ and $A$, so that the semantics of the ``unfair''
 components of $Y$ are left unexplained.
 
 

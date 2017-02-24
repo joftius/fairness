@@ -9,12 +9,8 @@
   \caption{(a) The graph corresponding to a causal model with $A$ being the protected attribute
     and $Y$ some outcome of interest, with background variables assumed to be independent.
     (b) Expanding the model to include an intermediate variable indicating whether the individual
-    is employed with two (latent) background variables $\textbf{Prejudiced}$ (whether the person in charge
-    of offering the job is prejudiced) and $\textbf{Qualifications}$ (a measure of the qualifications of
-    the individual). (c) A twin network representation of this system \citep{pearl:00}
-    under two different counterfactual levels for $A$. The network is created by creating copies
-    of nodes descending from $A$, which inherit parents from the factual world that have not
-    been affected.}
+    is employed with two (latent) background variables $\textbf{Prejudiced}$ (if the person  offering the job is prejudiced) and $\textbf{Qualifications}$ (a measure of the individual's qualifications). (c) A twin network representation of this system \citep{pearl:00}
+    under two different counterfactual levels for $A$. This is created by copying nodes descending from $A$, which inherit unaffected parents from the factual world.\vspace{-5ex}}
 \vspace{-2ex}
 \end{center}
 % \begin{center}
@@ -92,20 +88,26 @@ should come from $A$ and $W$ alone, as in many setups we wish to
 predict some $Y$ as $\hat Y$, when $Y$ is unavailable at any point in
 our inference.
 
-We also emphasize that counterfactual fairness is an individual-level
-definition. This is substantially different from the notion of ``causal independence''
-as discussed in Section 4.3.1 of \cite{pearl:16}. Causal independence
-% requires
-% \begin{align}
-%   &P(\hat Y = y\ |\ do(A = a), W = w) =\nonumber\\ 
-%   &P(\hat Y = y\ |\ do(A = a'), W = w),
-% \end{align}
-% which
-entails comparing different units that happen to share the
-same ``treatment'' and coincide on values of $W$, while
-counterfactual fairness concerns the variation possible within an
-individual depending on their value of $a$ and the descendents of
-$A$ in the causal graph.
+% We also emphasize that counterfactual fairness is an individual-level
+% definition. This is substantially different from the notion of ``causal independence''
+% as discussed in Section 4.3.1 of \cite{pearl:16}. Causal independence
+% % requires
+% % \begin{align}
+% %   &P(\hat Y = y\ |\ do(A = a), W = w) =\nonumber\\ 
+% %   &P(\hat Y = y\ |\ do(A = a'), W = w),
+% % \end{align}
+% % which
+% entails comparing different units that happen to share the
+% same ``treatment'' and coincide on values of $W$, while
+% counterfactual fairness concerns the variation possible within an
+% individual depending on their value of $a$ and the descendents of
+% $A$ in the causal graph.
+We also emphasize that counterfactual fairness is an
+individual-level definition. This is substantially different
+from comparing different units that happen to share the
+same ``treatment'' and coincide on values of $X$, as discussed in
+Section 4.3.1 of \citep{pearl:16}. Here, differences in the value
+of $X$ must be caused by variations on $A$ only.
 
 \subsection{Implications}
 %
@@ -181,12 +183,13 @@ stochastic component of it is independent of any descendant of $A$.
 % The second and more complicated issue concerns the fact that
 There is a subtlety to address here: by abduction,
 $U$ will typically depend on $A$, and hence so will $\hat Y$ when
-marginalizing over $U$. This seems to disagree with the intuition that our
-fair variable should be not be caused by $A$. We discuss
-methods to address this in general in Section~\ref{sec:methods},
-but consider the simple case where 
-$U$ is fully determined by $A$ and $W$
-(which occurs in some important special cases).
+marginalizing over $U$.
+This seems to disagree with the intuition that our fair
+variable should be not be caused by $A$. However, this is a comparison
+{\it across individuals}, not within an individual, as discussed by*
+Section 4.3.1 of \citep{pearl:16}. More intuitively, consider the
+simple case where $U$ is fully determined by $A$ and $X$ (which occurs
+in some important special cases).
 In this
 scenario, we proceed just as if we have {\it measured} $U$ from the
 beginning rather than performing abduction.
@@ -258,10 +261,10 @@ causal structure of the world\footnote{The notion of ``closest world''
 % indirectly as in {\em center} or directly as in {\em Right}.
 \begin{figure*}[th]
 \begin{center}
-\vspace{-2ex}
+\vspace{-1.5ex}
 \centerline{\includegraphics[width=0.9\textwidth]{simple_models_no_q2}}
 \vspace{-2ex}
-\caption{Three causal models for different real-world fair prediction scenarios.\label{figure.simple_models} See section \ref{sec:count_fair} for discussion.}
+\caption{Three causal models for different real-world fair prediction scenarios.\label{figure.simple_models} See section \ref{sec:count_fair} for discussion.\vspace{-5ex}}
 \vspace{-2ex}
 \end{center}
 \end{figure*}
@@ -285,7 +288,10 @@ individuals of a certain race more than others, even though {\em no
 agrees with this notion.
 %
 \begin{lem}
-The predictor $\hat{Y}(X)$ is not counterfactually fair for the model in Figure~\ref{figure.simple_models} (\emph{Left}).
+  Consider the structure in Figue 2 (Left).  There exist model
+classes where fitting a predictor of $Y$ to $X$ only is not counterfactually
+fair, while the same algorithm will given a fair predictor using $A$
+and $X$.
 \end{lem}
 %
 \begin{proof}
@@ -293,9 +299,10 @@ For simplicity, consider the case where the equations described by the model in 
 \begin{align}
 X = \alpha A + \beta U, \;\;\;\; Y = \gamma U \nonumber
 \end{align}
-where the coefficients $\alpha,\beta,\gamma$ are given (in practice these are estimated), and by assumption $\alpha \neq 0$. We can test whether a predictor $\hat{Y}(X)$ is counterfactually-fair using the procedure described in Section~\ref{subsec:cmc}:
+where the coefficients $\alpha,\beta,\gamma$ are given (in practice these are estimated), and by assumption $\alpha \neq 0$. We can test whether the predictor $\hat Y(X)$
+defined by least-squares projection of $Y$ on $X$ is counterfactually-fair using the procedure described in Section~\ref{subsec:cmc}:
 %\begin{itemize}
-{\em (i)} Compute $U$ given observations of $X,Y,A$.%, by solving for $U$. 
+{\em (i)} Compute $U$ given observations of $X,A$.%, by solving for $U$. 
 {\em (ii)} Substitute the equations involving $A$ with an interventional value $a'$. 
 % (i.e., this says: `what happens if the race of an individual were changed')
 {\em (iii)} Compute the variables $X,Y$ with the interventional value $a'$.
@@ -308,7 +315,7 @@ The above result holds in a more general case: any non-constant estimator that d
 \paragraph{Scenario 2: High Crime Regions.} 
 A local police precinct wants to know how likely a given house is to be broken into, $Y$. This likelihood depends on many unobserved factors
 ($U$) but also upon the neighborhood the house lies in ($X$). However, different ethnic groups are more likely to live in particular neighborhoods, and so neighborhood and break-in rates are often strongly correlated with the 
-race $A$ of the house occupier. This scenario can be seen in Figure~\ref{figure.simple_models} (\emph{Center}).
+race $A$ of the house occupier. This scenario can be seen in Figure~\ref{figure.simple_models} (\emph{Center}). Unlike the previous case, the variable $Y$ itself is not counterfactually fair, so a predictor trained using $X$ and $A$ without additional constraints is unlikely to be fair. 
 
 
 % In such a scenario, although the likelihood of a particular
