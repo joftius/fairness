@@ -85,12 +85,11 @@ We compare the RMS error on held-out data in Table~\ref{table.pred_law}.  The \t
 
 \paragraph{Counterfactual fairness}
 We would like to empirically test whether the baseline methods are counterfactually fair. To do so we will assume the true model of the world is given by Figure~\ref{figure.law_school}, Level 2. We can fit the parameters of this model using the observed data and evaluate counterfactual fairness by sampling from it. Specifically, we will generate samples from the model given either the observed race and sex, or \emph{counterfactual} race and sex variables. We will fit models to both the original and counterfactual sampled data and plot how the distribution of predicted FYA changes for both baseline models. Figure~\ref{figure.counterfactual} shows this, where each row corresponds to a baseline predictor and each column corresponds to the couterfactual change. In each plot, the blue distribution is density of predicted FYA for the original data and the red distribution is this density for the counterfactual data. If a model is counterfactually fair we would expect these distributions to lie exactly on top of each other. Instead, we note that the \emph{Full} model exhibits counterfactual unfairness for all counterfactuals except sex. We see a similar trend for the \emph{Unaware} model, although it is closer to being counterfactually fair.
-
 To see why these models are fair w.r.t. to sex we can look at the
 weights going from sex to GPA and LSAT in the fitted model. They are
 $0.93$,$1.06$ for male, female to GPA and $1.1$,$1.1$ for male, female
 to LSAT. These models are fair w.r.t. to sex simply
-because the model indicates a very weak causal link between sex and GPA/LSAT.
+because of a very weak causal link between sex and GPA/LSAT.
 
 % here describe what we see
 
@@ -174,7 +173,11 @@ RMSE & 0.873 & 0.894 & 0.929 & 0.918 \\
 
 \subsection{True vs. Perceived Criminality}
 \label{sec:true-vs.-perceived}
-Every year since 2002, the New York Police Department (NYPD) has recorded information about every time a police officer has stopped someone. The officer records information such as if they searched or frisked the individual, whether a weapon was found, the individual's appearance, whether force was used, etc. We look at this data collected during 2014 for our analysis. We limit our analysis to looking at just males stopped as this accounts for more than $90\%$ of the data.
+Since 2002, the New York Police Department (NYPD) has recorded
+information about every time a police officer has stopped someone. The
+officer records information such as if the person was searched or
+frisked, if a weapon was found, appearance, if force was used, etc. We
+consider the data collected on males stopped during 2014. % We limit our analysis to looking at just males stopped as this accounts for more than $90\%$ of the data.
 
 \paragraph{Model.}
 We model this stop-and-frisk data using the graph in Figure~\ref{figure.stop_and_frisk}. Specifically, we posit main causes for the observations: \emph{Arrest} (if an individual was arrested), \emph{Summons} (an individual was called to a court-summons), \emph{Weapon} (an individual was found to be carrying a weapon), \emph{Force} (some sort of force was used during the stop), \emph{Frisked}, and \emph{Searched}. The first cause of these observations is some measure of an individual's latent \emph{Criminality}, which we do not observe. We believe there is an additional cause, an individual's perceived criminality, \emph{Perception}, also unobserved. This second factor is introduced as we believe that these observations may be biased based on an officer's perception of whether an individual is likely a criminal or not. This perception is affected by an individual's appearance and their race. In this sense \emph{Criminality} is counterfactually fair, while \emph{Perception} models how race affects each of the other observed variables.
