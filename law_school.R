@@ -38,108 +38,188 @@ ne <- nrow(lawTest)
 
 
 
-#gender <- lawTrain$sex - 1
-#gender_te <- lawTest$sex - 1
 
-#a <- cbind(gender, race)
+##########
+###########gender <- lawTrain$sex - 1
+###########gender_te <- lawTest$sex - 1
+##########
+###########a <- cbind(gender, race)
+##########
+##########z <- lawTrain$ZFYA
+##########t <- as.integer(lawTrain$LSAT)
+##########g <- lawTrain$UGPA
+##########l <- as.numeric(lawTrain$region_first) - 1
+##########
+##########y <- lawTrain$first_pf
+##########
+###########a_te <- cbind(gender_te, race_te)
+##########z_te <- lawTest$ZFYA
+##########t_te <- as.integer(lawTest$LSAT)
+##########g_te <- lawTest$UGPA
+##########l_te <- as.numeric(lawTest$region_first) - 1
+##########y_te <- lawTest$first_pf
+##########
+##########k <- length(sense_cols) #ncol(a)
+##########
+##########
+########### Priors for coefficients
+##########mu_g0 <- 0
+##########sigma_g0 <- 1
+##########
+##########mu_u_g <- 0
+##########sigma_u_g <- 1
+##########
+##########mu_l0 <- 0
+##########sigma_l0 <- 1
+##########
+##########mu_u_t <- 0
+##########sigma_u_t <- 1
+##########
+##########mu_u_z <- 0
+##########sigma_u_z <- 1
+##########
+###########mu_yp0 <- 0
+###########sigma_yp0 <- 1
+##########
+###########mu_u_yp <- 0
+###########sigma_u_yp <- 1
+##########
+##########mu_y0 <- 0
+##########sigma_y0 <- 1
+##########
+###########mu_yp_y <- 0
+###########sigma_yp_y <- 1
+##########
+##########mu_a_y <- 0
+##########sigma_a_y <- 1
+##########
+###########mu_l_y <- 0
+###########sigma_l_y <- 1
+##########
+##########mu_u_y <- 0
+##########sigma_u_y <- 1
+##########
+##########mu_a_g <- 0
+##########sigma_a_g <- 1
+##########
+##########mu_a_t <- 0
+##########sigma_a_t <- 1
+##########
+##########mu_a_z <- 0
+##########sigma_a_z <- 1
+##########
+##########mu_a_y <- 0
+##########sigma_a_y <- 1
+##########
+##########
+##########library(rstan)
+##########
+##########
+##########law_stan_dat <- list(N = n, K = k, a = data.matrix(lawTrain[,sense_cols]), z = z, t = t, g = g, #l = l, 
+##########                        y = y,
+##########                        N_TE = ne, a_TE = data.matrix(lawTest[,sense_cols]), z_TE = z_te, t_TE = t_te, g_TE = g_te, #l_TE = l_te,
+##########                        mu_g0 = mu_g0, sigma_g0 = sigma_g0, mu_u_g = mu_u_g, sigma_u_g = sigma_u_g,
+##########                        mu_l0 = mu_l0, sigma_l0 = sigma_l0,
+##########                        mu_u_t = mu_u_t, sigma_u_t = sigma_u_t,
+##########                        mu_u_z = mu_u_z, sigma_u_z = sigma_u_z,
+##########                        #mu_yp0 = mu_yp0, sigma_yp0 = sigma_yp0, mu_u_yp = mu_u_yp, sigma_u_yp = sigma_u_yp,
+##########                        #mu_y0 = mu_y0, sigma_y0 = sigma_y0, mu_yp_y = mu_yp_y, sigma_yp_y = sigma_yp_y,
+##########                        #mu_a_y = mu_a_y, sigma_a_y = sigma_a_y,
+##########                        #mu_l_y = mu_l_y, sigma_l_y = sigma_l_y,
+##########                        mu_y0 = mu_y0, sigma_y0 = sigma_y0,
+##########                        mu_u_y = mu_u_y, sigma_u_y = sigma_u_y,
+##########                        mu_a_g = mu_a_g, sigma_a_g = sigma_a_g,
+##########                        mu_a_t = mu_a_t, sigma_a_t = sigma_a_t,
+##########                        mu_a_z = mu_a_z, sigma_a_z = sigma_a_z,
+##########                        mu_a_y = mu_a_y, sigma_a_y = sigma_a_y)
+##########                        
+##########                
+##########fit_law <- stan(file = 'law_school_l.stan', data = law_stan_dat, iter = 2000, chains = 1, verbose = TRUE)
+##########
+########### Extract information
+##########
+##########la_law <- extract(fit_law, permuted = TRUE)
+##########u_hat <- colMeans(la_law$u)
+##########u_te_hat <- colMeans(la_law$u_TE)
+########### Predict Y
 
-z <- lawTrain$ZFYA
-t <- as.integer(lawTrain$LSAT)
-g <- lawTrain$UGPA
-l <- as.numeric(lawTrain$region_first) - 1
-
-y <- lawTrain$first_pf
-
-#a_te <- cbind(gender_te, race_te)
-z_te <- lawTest$ZFYA
-t_te <- as.integer(lawTest$LSAT)
-g_te <- lawTest$UGPA
-l_te <- as.numeric(lawTest$region_first) - 1
-y_te <- lawTest$first_pf
-
-k <- length(sense_cols) #ncol(a)
 
 
-# Priors for coefficients
-mu_g0 <- 0
-sigma_g0 <- 1
-
-mu_u_g <- 0
-sigma_u_g <- 1
-
-mu_l0 <- 0
-sigma_l0 <- 1
-
-mu_u_t <- 0
-sigma_u_t <- 1
-
-mu_u_z <- 0
-sigma_u_z <- 1
-
-#mu_yp0 <- 0
-#sigma_yp0 <- 1
-
-#mu_u_yp <- 0
-#sigma_u_yp <- 1
-
-mu_y0 <- 0
-sigma_y0 <- 1
-
-#mu_yp_y <- 0
-#sigma_yp_y <- 1
-
-mu_a_y <- 0
-sigma_a_y <- 1
-
-#mu_l_y <- 0
-#sigma_l_y <- 1
-
-mu_u_y <- 0
-sigma_u_y <- 1
-
-mu_a_g <- 0
-sigma_a_g <- 1
-
-mu_a_t <- 0
-sigma_a_t <- 1
-
-mu_a_z <- 0
-sigma_a_z <- 1
-
-mu_a_y <- 0
-sigma_a_y <- 1
 
 
-library(rstan)
 
 
-law_stan_dat <- list(N = n, K = k, a = data.matrix(lawTrain[,sense_cols]), z = z, t = t, g = g, #l = l, 
-                        y = y,
-                        N_TE = ne, a_TE = data.matrix(lawTest[,sense_cols]), z_TE = z_te, t_TE = t_te, g_TE = g_te, #l_TE = l_te,
-                        mu_g0 = mu_g0, sigma_g0 = sigma_g0, mu_u_g = mu_u_g, sigma_u_g = sigma_u_g,
-                        mu_l0 = mu_l0, sigma_l0 = sigma_l0,
-                        mu_u_t = mu_u_t, sigma_u_t = sigma_u_t,
-                        mu_u_z = mu_u_z, sigma_u_z = sigma_u_z,
-                        #mu_yp0 = mu_yp0, sigma_yp0 = sigma_yp0, mu_u_yp = mu_u_yp, sigma_u_yp = sigma_u_yp,
-                        #mu_y0 = mu_y0, sigma_y0 = sigma_y0, mu_yp_y = mu_yp_y, sigma_yp_y = sigma_yp_y,
-                        #mu_a_y = mu_a_y, sigma_a_y = sigma_a_y,
-                        #mu_l_y = mu_l_y, sigma_l_y = sigma_l_y,
-                        mu_y0 = mu_y0, sigma_y0 = sigma_y0,
-                        mu_u_y = mu_u_y, sigma_u_y = sigma_u_y,
-                        mu_a_g = mu_a_g, sigma_a_g = sigma_a_g,
-                        mu_a_t = mu_a_t, sigma_a_t = sigma_a_t,
-                        mu_a_z = mu_a_z, sigma_a_z = sigma_a_z,
-                        mu_a_y = mu_a_y, sigma_a_y = sigma_a_y)
-                        
-                
-fit_law <- stan(file = 'law_school_l.stan', data = law_stan_dat, iter = 2000, chains = 1, verbose = TRUE)
 
+
+
+
+
+#get_performance <- function(pred, y) {
+#  conf <- confusionMatrix(pred,y)
+#  print(conf$byClass["Balanced Accuracy"])
+#  F1 <- as.numeric(2*(conf$byClass["Precision"]*conf$byClass["Recall"])/(conf$byClass["Precision"]+conf$byClass["Recall"]))
+#  print(F1)
+#  return(list(conf$byClass["Balanced Accuracy"],F1))
+#}
+#res = get_perforamance(pred_UNA_te_thres(0.5),y_te)
+
+
+# HERERERERERERE
+lawTrain$LSAT <- round(lawTrain$LSAT)
+lawTest$LSAT <- round(lawTest$LSAT)
+
+# don't fit model transductively and don't use pass
+# -------------------------------------------------
+law_stan_train <- list(N = n, K = length(sense_cols), a = data.matrix(lawTrain[,sense_cols]), 
+                          ugpa = lawTrain[,c("UGPA")], lsat = lawTrain[,c("LSAT")], zfya = lawTrain[,c("ZFYA")])
+
+
+fit_law_train <- stan(file = 'law_school_train.stan', data = law_stan_train, iter = 2000, chains = 1, verbose = TRUE)
 # Extract information
 
-la_law <- extract(fit_law, permuted = TRUE)
-u_hat <- colMeans(la_law$u)
-u_te_hat <- colMeans(la_law$u_TE)
-# Predict Y
+la_law_train <- extract(fit_law_train, permuted = TRUE)
+#u_te_samp <- colMeans(la_law_train$u_TE)
+U_TRAIN   <- colMeans(la_law_train$u)
+
+ugpa0      <- mean(la_law_train$ugpa0)
+eta_u_ugpa <- mean(la_law_train$eta_u_ugpa)
+eta_a_ugpa <- colMeans(la_law_train$eta_a_ugpa)
+
+lsat0      <- mean(la_law_train$lsat0)
+eta_u_lsat <- mean(la_law_train$eta_u_lsat)
+eta_a_lsat <- colMeans(la_law_train$eta_a_lsat)
+
+SIGMA_G <- mean(la_law_train$sigma_g)
+
+# get U_TEST by sampling from stan
+#----------------------------------
+law_stan_test <- list(N = ne, K = length(sense_cols), a = data.matrix(lawTest[,sense_cols]),
+                      ugpa = lawTest[,c("UGPA")], lsat = lawTest[,c("LSAT")],
+                      ugpa0 = ugpa0, eta_u_ugpa = eta_u_ugpa, eta_a_ugpa = eta_a_ugpa,
+                      lsat0 = lsat0, eta_u_lsat = eta_u_lsat, eta_a_lsat = eta_a_lsat,
+                      sigma_g = SIGMA_G)
+
+
+fit_law_test <- stan(file = 'law_school_only_u.stan', data = law_stan_test, iter = 2000, chains = 1, verbose = TRUE)
+la_law_test <- extract(fit_law_test, permuted = TRUE)
+#u_te_samp <- colMeans(la_law_train$u_TE)
+U_TEST   <- colMeans(la_law_test$u)
+
+##lawTrainSmall <- lawTrain
+##lawTrainSmall <- lawTrainSmall[lawTrainSmall$black==1 | lawTrainSmall$white==1,]
+##
+##lawTestSmall <- lawTest
+##lawTestSmall <- lawTestSmall[lawTestSmall$black==1 | lawTestSmall$white==1,]
+##
+##n_small <- nrow(lawTrainSmall)
+##law_stan_train <- list(N = n_small, K = length(sense_cols), a = data.matrix(lawTrain[,sense_cols]), 
+##                       ugpa = lawTrain[,c("UGPA")], lsat = lawTrain[,c("LSAT")], zfya = lawTrain[,c("ZFYA")])
+
+
+
+
+#outSampSwap <- outSampSwap[outSampSwap$black==1 | outSampSwap$white==1,]
+
 
 ######################################################################################################
 # Store data for prediction module
@@ -162,21 +242,21 @@ output <- data.frame(bar_pass_fair = y,
                      u_hat = u_hat)
 
 output_te <- data.frame(bar_pass_fair = y_te,
-                     location = l_te,
-                     UGPA = g_te, 
-                     LSAT = t_te, 
-                     ZFYA = z_te,
-                     amerind = lawTest$amerind,
-                     asian   = lawTest$asian  ,
-                     black   = lawTest$black  ,
-                     hisp    = lawTest$hisp   ,
-                     mexican = lawTest$mexican,
-                     other   = lawTest$other  ,
-                     puerto  = lawTest$puerto ,
-                     white   = lawTest$white  ,
-                     female  = lawTest$female,
-                     male    = lawTest$male,
-                     u_hat = u_te_hat)
+                        location = l_te,
+                        UGPA = g_te, 
+                        LSAT = t_te, 
+                        ZFYA = z_te,
+                        amerind = lawTest$amerind,
+                        asian   = lawTest$asian  ,
+                        black   = lawTest$black  ,
+                        hisp    = lawTest$hisp   ,
+                        mexican = lawTest$mexican,
+                        other   = lawTest$other  ,
+                        puerto  = lawTest$puerto ,
+                        white   = lawTest$white  ,
+                        female  = lawTest$female,
+                        male    = lawTest$male,
+                        u_hat = u_te_hat)
 
 write.csv(output, file = "law_school_l_stan_transductive_train.csv", row.names = TRUE)
 write.csv(output_te, file = "law_school_l_stan_transductive_test.csv", row.names = TRUE)
@@ -189,97 +269,126 @@ save(la_law,file='law_school_l_stan_results.Rdata')
 
 
 
+
+
+
+
+
+
 # Classifiers on data
 # -------------------
-x_unfair <- cbind(data.matrix(lawTrain[,sense_cols]), z, t, g)#, l)
-x_unfair_te <- cbind(data.matrix(lawTest[,sense_cols]), z_te, t_te, g_te)#, l_te)
 
 X_U <- as.data.frame(data.matrix(lawTrain[,sense_cols]))
-X_U$z <- z
-X_U$t <- t
-X_U$g <- g
-X_U$y <- y
-#X_U$l <- l
-X_U_TE <- data.frame(amerind=lawTest$amerind,
-                     asian=lawTest$asian,
-                     black=lawTest$black,
-                     hisp=lawTest$hisp,
-                     mexican=lawTest$mexican,
-                     other=lawTest$other,
-                     puerto=lawTest$puerto,
-                     white=lawTest$white,
-                     male=lawTest$male,
-                     female=lawTest$female, z=z_te, t=t_te, g=g_te)      #, l=l_te)
-#data.frame(gender=gender_te, race=race_te, z=z_te, t=t_te, g=g_te, l=l_te)
+X_U$ZFYA <- lawTrain$ZFYA
+X_U$LSAT <- lawTrain$LSAT
+X_U$UGPA <- lawTrain$UGPA
+
+X_U_TE <- as.data.frame(data.matrix(lawTest[,sense_cols]))
+X_U_TE$ZFYA <- lawTest$ZFYA
+X_U_TE$LSAT <- lawTest$LSAT
+X_U_TE$UGPA <- lawTest$UGPA
 
 
-model_u <- glm(y ~ . + 1,family=binomial(link='logit'), data=X_U)
-pred_u <- predict.glm(model_u, type = "response")
+
+model_u <- lm(ZFYA ~ LSAT + UGPA + amerind + asian + black + hisp + mexican + other + puerto + white + male + female + 1, data=X_U)
+pred_u <- predict.glm(model_u)
 
 
-pred_u_te <- predict(model_u, newdata=X_U_TE, type = "response")
+pred_u_te <- predict(model_u, newdata=X_U_TE)
+rmse_u_te <- sqrt( sum( (pred_u_te - X_U_TE$ZFYA)^2 ) / nrow(X_U_TE) )
 
-pred_u_thres <- function(t) ifelse(pred_u > t , 1,0)
-pred_u_te_thres <- function(t) ifelse(pred_u_te > t , 1,0)
+#pred_u_thres <- function(t) ifelse(pred_u > t , 1,0)
+#pred_u_te_thres <- function(t) ifelse(pred_u_te > t , 1,0)
 
-#confusionMatrix(pred_u_thres(0.5),y)
-conf_u <- confusionMatrix(pred_u_te_thres(0.5),y_te)
-conf_u$byClass["Balanced Accuracy"]
-F1_u <- as.numeric(2*(conf_u$byClass["Precision"]*conf_u$byClass["Recall"])/(conf_u$byClass["Precision"]+conf_u$byClass["Recall"]))
-F1_u
-
-x_fair <- cbind(u_hat)
-x_fair_te <- cbind(u_te_hat)
+##confusionMatrix(pred_u_thres(0.5),y)
+#conf_u <- confusionMatrix(pred_u_te_thres(0.5),y_te)
+#conf_u$byClass["Balanced Accuracy"]
+#F1_u <- as.numeric(2*(conf_u$byClass["Precision"]*conf_u$byClass["Recall"])/(conf_u$byClass["Precision"]+conf_u$byClass["Recall"]))
+#F1_u
 
 
-X_F <- data.frame(u_hat=u_hat)
-X_F_TE <- data.frame(u_hat=u_te_hat)
+X_F <- data.frame(u=U_TRAIN, ZFYA=lawTrain$ZFYA)
+X_F_TE <- data.frame(u=U_TEST, ZFYA=lawTest$ZFYA)
 
 #model_f <- glm(y ~ x_fair,family=binomial(link='logit'))
-model_f <- glm(y ~ u_hat + 1, family=binomial(link='logit'), data=X_F)
+model_f <- lm(ZFYA ~ u + 1, data=X_F)
 
-pred_f <- predict.glm(model_f, type = "response")
-pred_f_te <- predict.glm(model_f, newdata=X_F_TE, type = "response")
+pred_f <- predict.glm(model_f)
+pred_f_te <- predict.glm(model_f, newdata=X_F_TE)
 
-pred_f_thres <- function(t) ifelse(pred_f > t , 1,0)
-pred_f_te_thres <- function(t) ifelse(pred_f_te > t , 1,0)
-
-
-#confusionMatrix(pred_f_thres(0.5),y)
-conf_f <- confusionMatrix(pred_f_te_thres(0.5),y_te)
-conf_f$byClass["Balanced Accuracy"]
-F1_f <- as.numeric(2*(conf_f$byClass["Precision"]*conf_f$byClass["Recall"])/(conf_f$byClass["Precision"]+conf_f$byClass["Recall"]))
-F1_f
+rmse_f_te <- sqrt( sum( (pred_f_te - X_F_TE$ZFYA)^2 ) / nrow(X_F_TE) )
 
 
 
 
-X_UNAWARE <- data.frame(z=z, t=t, g=g, y=y)
-X_UNAWARE_TE <- data.frame(z=z_te, t=t_te, g=g_te)
-model_UNA <- glm(y ~ . + 1,family=binomial(link='logit'), data=X_UNAWARE)
-pred_UNA <- predict.glm(model_UNA, type = "response")
-pred_UNA_te <- predict(model_UNA, newdata=X_UNAWARE_TE, type = "response")
-pred_UNA_thres <- function(t) ifelse(pred_UNA > t , 1,0)
-pred_UNA_te_thres <- function(t) ifelse(pred_UNA_te > t , 1,0)
-#confusionMatrix(pred_u_thres(0.5),y)
-conf_UNA <- confusionMatrix(pred_UNA_te_thres(0.5),y_te)
-conf_UNA$byClass["Balanced Accuracy"]
-F1_UNA <- as.numeric(2*(conf_UNA$byClass["Precision"]*conf_u$byClass["Recall"])/(conf_u$byClass["Precision"]+conf_u$byClass["Recall"]))
-F1_UNA
+
+model_un <- lm(ZFYA ~ LSAT + UGPA + 1, data=X_U)
+pred_un <- predict.glm(model_un)
+
+
+pred_un_te <- predict(model_un, newdata=X_U_TE)
+rmse_un_te <- sqrt( sum( (pred_un_te - X_U_TE$ZFYA)^2 ) / nrow(X_U_TE) )
+
+
+
+
+orthogonalize <- function(F, A) {
+  
+  mult <- sum(F * A) / sum(A*A)
+  O <- F - A*mult
+  
+  return(O)
+}
+
+UGPA_O <- lawTrain$UGPA
+UGPA_O_TE <- lawTest$UGPA
+
+LSAT_O    <- lawTrain$LSAT
+LSAT_O_TE <-  lawTest$LSAT
+for (i in 1:length(sense_cols)) {
+  UGPA_O = orthogonalize(UGPA_O,lawTrain[,sense_cols[i]])
+  UGPA_O_TE = orthogonalize(UGPA_O_TE,lawTest[,sense_cols[i]])
+  
+  LSAT_O    = orthogonalize(LSAT_O,lawTrain[,sense_cols[i]])
+  LSAT_O_TE = orthogonalize(LSAT_O_TE,lawTest[,sense_cols[i]])
+}
+
+lawTrain$UGPA_O <- UGPA_O
+lawTrain$UGPA_O <- LSAT_O
+
+lawTest$UGPA_O <- UGPA_O_TE
+lawTest$LSAT_O <- LSAT_O_TE
+
+model_o <- lm(ZFYA ~ LSAT_O + UGPA_O + 1, data=lawTrain)
+pred_o <- predict(model_o)
+
+
+pred_o_te <- predict(model_o, newdata=lawTest)
+rmse_o_te <- sqrt( sum( (pred_o_te - lawTest$ZFYA)^2 ) / nrow(lawTest) )
+
 
 
 # ---------------------------------------
 
 
 
-#get_performance <- function(pred, y) {
-#  conf <- confusionMatrix(pred,y)
-#  print(conf$byClass["Balanced Accuracy"])
-#  F1 <- as.numeric(2*(conf$byClass["Precision"]*conf$byClass["Recall"])/(conf$byClass["Precision"]+conf$byClass["Recall"]))
-#  print(F1)
-#  return(list(conf$byClass["Balanced Accuracy"],F1))
-#}
-#res = get_perforamance(pred_UNA_te_thres(0.5),y_te)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -290,22 +399,35 @@ F1_UNA
 # we'll try computing counterfactuals!!!!!!
 # -----------------------------------------
 # 1.  Estimate the parameters by taking the posterior expected value
-G0 <- mean(la_law$g0)
-ETA_U_G <- mean(la_law$eta_u_g)
-ETA_A_G <- colMeans(la_law$eta_a_g)
+ugpa0      <- mean(la_law_train$ugpa0)
+eta_u_ugpa <- mean(la_law_train$eta_u_ugpa)
+eta_a_ugpa <- colMeans(la_law_train$eta_a_ugpa)
 
-L0 <- mean(la_law$l0)
-ETA_U_T <- mean(la_law$eta_u_t)
-ETA_A_T <- colMeans(la_law$eta_a_t)
+lsat0      <- mean(la_law_train$lsat0)
+eta_u_lsat <- mean(la_law_train$eta_u_lsat)
+eta_a_lsat <- colMeans(la_law_train$eta_a_lsat)
 
-ETA_U_Z <- mean(la_law$eta_u_z)
-ETA_A_Z <- colMeans(la_law$eta_a_z)
+eta_u_zfya <- mean(la_law_train$eta_u_zfya)
+eta_a_zfya <- colMeans(la_law_train$eta_a_zfya)
 
-Y0 <- mean(la_law$y0)
-ETA_U_Y <- mean(la_law$eta_u_y)
-ETA_A_Y <- colMeans(la_law$eta_a_y)
+SIGMA_G <- mean(la_law_train$sigma_g)
 
-SIGMA_G <- mean(la_law$sigma_g)
+#G0 <- mean(la_law$g0)
+#ETA_U_G <- mean(la_law$eta_u_g)
+#ETA_A_G <- colMeans(la_law$eta_a_g)
+#
+#L0 <- mean(la_law$l0)
+#ETA_U_T <- mean(la_law$eta_u_t)
+#ETA_A_T <- colMeans(la_law$eta_a_t)
+#
+#ETA_U_Z <- mean(la_law$eta_u_z)
+#ETA_A_Z <- colMeans(la_law$eta_a_z)
+#
+#Y0 <- mean(la_law$y0)
+#ETA_U_Y <- mean(la_law$eta_u_y)
+#ETA_A_Y <- colMeans(la_law$eta_a_y)
+#
+#SIGMA_G <- mean(la_law$sigma_g)
 
 # 2. Simulate fake data out of it
 # sample a new training set and test set
@@ -313,11 +435,34 @@ SIGMA_G <- mean(la_law$sigma_g)
 # compute Z for training set and test set
 # compute Z for counterfactual test set
 ATR = data.matrix(lawTrain[,sense_cols])
-ATR = data.matrix(lawTest[,sense_cols])
-ATR_swap <- ATR
-temp <- ATR_swap[,8] # white
-ATR_swap[,8] <- ATR_swap[,3] # black
-ATR_swap[,3] <- temp
+#ATR = data.matrix(lawTest[,sense_cols])
+ATR_swap_r <- ATR
+ATR_swap_r2 <- ATR
+ATR_swap_r3 <- ATR
+ATR_swap_g <- ATR
+
+
+temp <- ATR_swap_r[,8] # white
+ATR_swap_r[,8] <- ATR_swap_r[,3] # black
+ATR_swap_r[,3] <- temp
+
+temp <- ATR_swap_g[,9] # male
+ATR_swap_g[,9] <- ATR_swap_g[,10] # female
+ATR_swap_g[,10] <- temp
+
+ATR_swap_b <- ATR_swap_r
+temp <- ATR_swap_b[,9] # male
+ATR_swap_b[,9] <- ATR_swap_b[,10] # female
+ATR_swap_b[,10] <- temp
+
+temp <- ATR_swap_r2[,8] # white
+ATR_swap_r2[,8] <- ATR_swap_r2[,2] # asian
+ATR_swap_r2[,2] <- temp
+
+temp <- ATR_swap_r3[,8] # white
+ATR_swap_r3[,8] <- ATR_swap_r3[,5] # mexican
+ATR_swap_r3[,5] <- temp
+
 
 set.seed(0)
 gpa_rand_tr <- rnorm(n, mean=0, sd=SIGMA_G)
@@ -337,7 +482,7 @@ u_rand_tr <- rnorm(n)
 
 
 sample_GPA <- function(u, a, eps) {
-  GPA_m <- G0 + ETA_U_G * u + a %*% ETA_A_G
+  GPA_m <- ugpa0 + eta_u_ugpa * u + a %*% eta_a_ugpa
   #eps <- rnorm(1,mean=0,sd=SIGMA_G)
   #return(list(GPA_m,eps))
   return(GPA_m + eps)
@@ -346,40 +491,66 @@ sample_GPA <- function(u, a, eps) {
 sample_LSAT <- function(u, a, eps) {
   #eps <- runif(1)
   #LSAT_m <- qpois( eps, exp( L0 + ETA_U_T * u + a %*% ETA_A_T ) )
-  LSAT_m <- exp( L0 + ETA_U_T * u + a %*% ETA_A_T )
+  LSAT_m <- exp( lsat0 + eta_u_lsat * u + a %*% eta_a_lsat )
   sample <- qpois( eps, LSAT_m )
   return(sample)#list(LSAT_m,eps))
 }
 
 sample_ZFYA <- function(u, a, eps) {
-  ZFYA_m <- ETA_U_Z * u + a %*% ETA_A_Z
+  ZFYA_m <- eta_u_zfya * u + a %*% eta_a_zfya
   #eps <- rnorm(1,mean=0,sd=1)
   return(ZFYA_m + eps)#list(ZFYA_m,eps))
 }
 
-sample_PASS <- function(u, a, eps) {
-  PASS_m <- 1.0/(1.0 + exp(-(Y0 + ETA_U_Y * u + a %*% ETA_A_Y)))
-  #eps <- runif(1)
-  # qbinom( eps, 1, PASS_m)
-  sample <- qbinom( eps, 1, PASS_m )
-  return(sample) #(list(PASS_m,eps))
-}
+#sample_PASS <- function(u, a, eps) {
+#  PASS_m <- 1.0/(1.0 + exp(-(Y0 + ETA_U_Y * u + a %*% ETA_A_Y)))
+#  #eps <- runif(1)
+#  # qbinom( eps, 1, PASS_m)
+#  sample <- qbinom( eps, 1, PASS_m )
+#  return(sample) #(list(PASS_m,eps))
+#}
 
 lawSample     <- lawTrain
-lawSampleSwap <- lawTrain
+lawSampleSwapR <- lawTrain
+lawSampleSwapR2 <- lawTrain
+lawSampleSwapR3 <- lawTrain
+lawSampleSwapG <- lawTrain
+lawSampleSwapB <- lawTrain
 for (i in 1:n) {
   lawSample$UGPA[i] = sample_GPA(u_rand_tr[i], ATR[i,], gpa_rand_tr[i])
   lawSample$LSAT[i] = sample_LSAT(u_rand_tr[i], ATR[i,], lsat_rand_tr[i])
   lawSample$ZFYA[i] = sample_ZFYA(u_rand_tr[i], ATR[i,], zfya_rand_tr[i])
-  lawSample$first_pf[i] = sample_PASS(u_rand_tr[i], ATR[i,], pass_rand_tr[i])
+  #lawSample$first_pf[i] = sample_PASS(u_rand_tr[i], ATR[i,], pass_rand_tr[i])
   
-  lawSampleSwap$UGPA[i]     = sample_GPA(u_rand_tr[i],  ATR_swap[i,], gpa_rand_tr[i])
-  lawSampleSwap$LSAT[i]     = sample_LSAT(u_rand_tr[i], ATR_swap[i,], lsat_rand_tr[i])
-  lawSampleSwap$ZFYA[i]     = sample_ZFYA(u_rand_tr[i], ATR_swap[i,], zfya_rand_tr[i])
-  lawSampleSwap$first_pf[i] = sample_PASS(u_rand_tr[i], ATR_swap[i,], pass_rand_tr[i])
+  lawSampleSwapR$UGPA[i]     = sample_GPA(u_rand_tr[i],  ATR_swap_r[i,], gpa_rand_tr[i])
+  lawSampleSwapR$LSAT[i]     = sample_LSAT(u_rand_tr[i], ATR_swap_r[i,], lsat_rand_tr[i])
+  lawSampleSwapR$ZFYA[i]     = sample_ZFYA(u_rand_tr[i], ATR_swap_r[i,], zfya_rand_tr[i])
+  #lawSampleSwap$first_pf[i] = sample_PASS(u_rand_tr[i], ATR_swap[i,], pass_rand_tr[i])
+  lawSampleSwapR2$UGPA[i]     = sample_GPA(u_rand_tr[i],  ATR_swap_r2[i,], gpa_rand_tr[i])
+  lawSampleSwapR2$LSAT[i]     = sample_LSAT(u_rand_tr[i], ATR_swap_r2[i,], lsat_rand_tr[i])
+  lawSampleSwapR2$ZFYA[i]     = sample_ZFYA(u_rand_tr[i], ATR_swap_r2[i,], zfya_rand_tr[i])
   
+  lawSampleSwapR3$UGPA[i]     = sample_GPA(u_rand_tr[i],  ATR_swap_r3[i,], gpa_rand_tr[i])
+  lawSampleSwapR3$LSAT[i]     = sample_LSAT(u_rand_tr[i], ATR_swap_r3[i,], lsat_rand_tr[i])
+  lawSampleSwapR3$ZFYA[i]     = sample_ZFYA(u_rand_tr[i], ATR_swap_r3[i,], zfya_rand_tr[i])
+
+  lawSampleSwapG$UGPA[i]     = sample_GPA(u_rand_tr[i],  ATR_swap_g[i,], gpa_rand_tr[i])
+  lawSampleSwapG$LSAT[i]     = sample_LSAT(u_rand_tr[i], ATR_swap_g[i,], lsat_rand_tr[i])
+  lawSampleSwapG$ZFYA[i]     = sample_ZFYA(u_rand_tr[i], ATR_swap_g[i,], zfya_rand_tr[i])
+  #lawSampleSwap$first_pf[i] = sample_PASS(u_rand_tr[i], ATR_swap[i,], pass_rand_tr[i])
+  
+  lawSampleSwapB$UGPA[i]     = sample_GPA(u_rand_tr[i],  ATR_swap_b[i,], gpa_rand_tr[i])
+  lawSampleSwapB$LSAT[i]     = sample_LSAT(u_rand_tr[i], ATR_swap_b[i,], lsat_rand_tr[i])
+  lawSampleSwapB$ZFYA[i]     = sample_ZFYA(u_rand_tr[i], ATR_swap_b[i,], zfya_rand_tr[i])
+  #lawSampleSwap$first_pf[i] = sample_PASS(u_rand_tr[i], ATR_swap[i,], pass_rand_tr[i])
+  
+    
 }
-lawSampleSwap[,sense_cols] = ATR_swap
+lawSampleSwapR[,sense_cols] = ATR_swap_r
+lawSampleSwapR2[,sense_cols] = ATR_swap_r2
+lawSampleSwapR3[,sense_cols] = ATR_swap_r3
+lawSampleSwapG[,sense_cols] = ATR_swap_g
+lawSampleSwapB[,sense_cols] = ATR_swap_b
 
 #lawSampleTe <- lawTest
 ##lawSampleTeSwap <- lawTest
@@ -505,20 +676,119 @@ outSampSwap$puerto <- NULL
 write.csv(outSamp, file = "law_school_sampled_train.csv", row.names = TRUE)
 write.csv(outSampSwap, file = "law_school_sampled_swap.csv", row.names = TRUE)
 
-
+#lawSample     <- lawTrain
+#lawSampleSwapR <- lawTrain
+#lawSampleSwapG <- lawTrain
+#lawSampleSwapB
 
 
 
 # fit unfair classifier to sampled data
-model_u_samp <- lm(ZFYA ~ UGPA + LSAT + black + white + male + female + 1, data=outSamp) #,family=binomial(link='logit'), data=outSamp)
-pred_u_samp_te   <- predict(model_u_samp, newdata=outSampTe)#, type="response")
-pred_u_samp_swap <- predict(model_u_samp, newdata=outSampTeSwap)#, type="response")
+model_u_samp <- lm(ZFYA ~ LSAT + UGPA + amerind + asian + black + hisp + mexican + other + puerto + white + male + female + 1, data=lawSample) #,family=binomial(link='logit'), data=outSamp)
+model_una_samp <- lm(ZFYA ~ UGPA + LSAT + 1, data=lawSample)
+
+
+UGPA_O <- lawSample$UGPA
+
+LSAT_O    <- lawSample$LSAT
+
+for (i in 1:length(sense_cols)) {
+  UGPA_O = orthogonalize(UGPA_O,lawSample[,sense_cols[i]])
+
+  LSAT_O    = orthogonalize(LSAT_O,lawSample[,sense_cols[i]])
+}
+
+lawSample$UGPA_O <- UGPA_O
+lawSample$UGPA_O <- LSAT_O
+
+
+model_o_samp <- lm(ZFYA ~ LSAT_O + UGPA_O + 1, data=lawTrain)
+
+
+
+pred_o_te <- predict(model_o, newdata=lawTest)
+rmse_o_te <- sqrt( sum( (pred_o_te - lawTest$ZFYA)^2 ) / nrow(lawTest) )
+
+
+
+
+
+
+predict_and_fair <- function(model, data, dataSwap) {
+  pred      <- predict(model, newdata=data)#, type="response")
+  pred_swap <- predict(model, newdata=dataSwap)#, type="response")
+  
+  data$pred_zfya <- pred
+  data$type <- 0
+  
+  dataSwap$pred_zfya <- pred_swap
+  dataSwap$type <- 1
+  
+  total <- rbind(data, dataSwap)
+  total$type <- factor(total$type, labels=c("original", "swapped"))
+  
+#  ggplot(diamonds, aes(depth, fill = cut, colour = cut)) +
+#    geom_density(alpha = 0.1) +
+#    xlim(55, 70)
+  
+  p <- ggplot(total, aes(pred_zfya, color = type, fill = type)) + geom_density(alpha=0.1) #stat_density(position="identity",geom="line")## + theme_bw()
+  rmse <- sqrt( sum( (data$pred_zfya - dataSwap$pred_zfya)^2 ) / nrow(dataSwap) )
+  return(list("plot"=p,rmse_te="rmse"))
+}
+resR = predict_and_fair(model_u_samp, lawSample, lawSampleSwapR)
+resR2 = predict_and_fair(model_u_samp, lawSample, lawSampleSwapR2)
+resR3 = predict_and_fair(model_u_samp, lawSample, lawSampleSwapR3)
+resG = predict_and_fair(model_u_samp, lawSample, lawSampleSwapG)
+resB = predict_and_fair(model_u_samp, lawSample, lawSampleSwapB)
+
+res_unaR = predict_and_fair(model_una_samp, lawSample, lawSampleSwapR)
+res_unaR2 = predict_and_fair(model_una_samp, lawSample, lawSampleSwapR2)
+res_unaR3 = predict_and_fair(model_una_samp, lawSample, lawSampleSwapR3)
+res_unaG = predict_and_fair(model_una_samp, lawSample, lawSampleSwapG)
+res_unaB = predict_and_fair(model_una_samp, lawSample, lawSampleSwapB)
+
+# TRY VAE
+vae_train_data <- read.csv("vae_fix_generated_law_train_samp_beta100.0.csv", header = FALSE, strip.white = TRUE)
+vae_swap_data  <- read.csv("vae_fix_generated_law_swap_samp_beta100.0.csv", header = FALSE, strip.white = TRUE)
+
+
+
+model_vae <- lm(V1 ~ V2 + 1, data=vae_train_data)
+res_vae = predict_and_fair(model_vae, vae_train_data, vae_swap_data)
+
+
+# HERE
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+pred_u_samp  <- predict(model_u_samp)
+pred_u_swap  <- predict(model_u_samp, newdata=outSampSwap)
+#pred_u_samp_te   <- predict(model_u_samp, newdata=outSampTe)#, type="response")
+#pred_u_samp_swap <- predict(model_u_samp, newdata=outSampTeSwap)#, type="response")
 #pred_u_samp_te_t <- function(t) ifelse(pred_u_samp_te > t , 1,0)
 #pred_u_samp_samp_t <- function(t) ifelse(pred_u_samp_swap > t , 1,0)
 
 #outSamp$race <- factor(as.matrix(outSamp[,5:12]) %*% 1:8, labels = c("amerind", "asian", "black", "hisp", "mexican", "other", "puerto", "white"))
-outSampTe$race <- factor(as.matrix(outSampTe[,c("black","white")]) %*% 1:2, labels = c("black", "white"))
-outSampTeSwap$race <- factor(as.matrix(outSampTeSwap[,c("black","white")]) %*% 1:2, labels = c("black", "white"))
+outSamp$race     <- factor(as.matrix(outSamp[,c("black","white")]) %*% 1:2, labels = c("black", "white"))
+outSampSwap$race <- factor(as.matrix(outSampSwap[,c("black","white")]) %*% 1:2, labels = c("black", "white"))
+
+#outSampTe$race <- factor(as.matrix(outSampTe[,c("black","white")]) %*% 1:2, labels = c("black", "white"))
+#outSampTeSwap$race <- factor(as.matrix(outSampTeSwap[,c("black","white")]) %*% 1:2, labels = c("black", "white"))
 
 
 outSampTe$pred <- pred_u_samp_te
