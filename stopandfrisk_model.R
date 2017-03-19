@@ -267,7 +267,7 @@ p_data = data.frame(longitude=data$longitude,
 
 
 qmplot(longitude, latitude, data=c_data, maptype = "toner-background", color=criminality, size=I(0.000001), zoom = 11, darken = .7, legend = "topleft") + 
-  scale_color_gradient2("Criminality", low = "white", high = "red", midpoint=0.5) #(max(data$criminality)-min(data$criminality))/2 + min(data$criminality))
+  scale_color_gradient2("Criminality", low = "white", high = "red", midpoint=0) #(max(data$criminality)-min(data$criminality))/2 + min(data$criminality))
 
 # there's one dude who's really not a criminal and his/her perception is 11 while the next person is ~3.6, let's rescale appropriately
 qmplot(longitude, latitude, data=p_data, maptype = "toner-background", color=perception,  size=I(0.000001), zoom = 11, darken = .7, legend = "topleft") + 
@@ -276,11 +276,11 @@ qmplot(longitude, latitude, data=p_data, maptype = "toner-background", color=per
 whichrace <- rep(1, length(data$race)); 
 whichrace[data$white == 1] <- 0
 whichrace[data$aspi == 1] <- 0
-whichrace[data$naam == 1] <- 0
+#whichrace[data$naam == 1] <- 0
 
 data$race_categ <- whichrace
-data$race_categ[data$race_categ == 0] = "White/AsianPac/NativeAm"
-data$race_categ[data$race_categ == 1] = "Black/Hispanic"
+data$race_categ[data$race_categ == 0] = "White/AsianPac"
+data$race_categ[data$race_categ == 1] = "Black/Hispanic/NativeAm"
 data$race_categ <- as.factor(data$race_categ)
 
 # HERERE
