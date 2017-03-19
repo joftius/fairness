@@ -38,7 +38,7 @@
 
 %\subsection{Causal Models and Counterfactuals}
 \label{subsec:cmc}
-We  follow the framework of \citet{pearl:00}, and define a causal
+We follow the framework of \citet{pearl:00}, and define a causal
 model as a triple $(U, V, F)$ of sets such that
 %
 \begin{itemize}
@@ -54,7 +54,7 @@ that $V_i = f_i(pa_i, U_{pa_i})$, $pa_i \subseteq V \backslash
 {\bf structural equations} \citep{bol:89}.
 \end{itemize}
 %
-The notation ``$pa_i$'' refers to the ``parents'' of $a_i$ and is motivated by the assumption that the
+The notation ``$pa_i$'' refers to the ``parents'' of $V_i$ and is motivated by the assumption that the
 model factorizes according to a directed acyclic graph (DAG). That is, we can
 define a directed graph ${\mathcal G}=(U \cup V, \mathcal E )$ where each node $X$ is an
 element of $U \cup V$, and each edge from $X$ to $V_i$ indicates that $X \in pa_i \cup U_{pa_i}$. By construction, $\mathcal G$ is
