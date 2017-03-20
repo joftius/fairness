@@ -156,21 +156,15 @@
 
 \section{Conclusion}
 \label{sec:conclusion}
-We have presented a new model of fairness we refer to as {\em
-  counterfactual fairness}. It allows us to propose fair
+We have presented a new model of fairness we refer to as {\em counterfactual fairness}. It allows us to propose fair
 algorithms that, rather than simply ignoring protected attributes, are
-able to take into account the different opportunities and social biases
-that may arise towards and individual of a particular race, gender, or
+able to take into account the different social biases
+that may arise towards individuals of a particular race, gender, or
 sexuality and compensate for these biases effectively. We
-experimentally contrasted our approach with previous racially blind
+experimentally contrasted our approach with previous unfair
 approaches and show that our explicit causal models capture these
 social biases and make clear the implicit trade-off between
-prediction accuracy and fairness in an unfair world.
-
-We defend that fairness should be regulated using explicit
-information about the causal structure of the world, according to the
-best of an expert's knowledge. Criteria based purely on probabilistic
-independence cannot satisfy this.
+prediction accuracy and fairness in an unfair world. We propose that fairness should be regulated by explicitly modeling the causal structure of the world. Criteria based purely on probabilistic independence cannot satisfy this and are unable to address \emph{how} unfairness is occurring in the task at hand. By providing such causal tools for addressing fairness questions we hope we can provide practitioners with customized techniques for solving a wide array of fair modeling problems.
 
 \bibliography{rbas,bibliography}
 \bibliographystyle{icml2017}
