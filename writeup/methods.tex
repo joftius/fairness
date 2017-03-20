@@ -1,8 +1,11 @@
-Various design choices lead to the definition of $\hat Y$ and its fitting. Given a causal model, these choices include:% the following:
+% !TEX root=ricardo_draft.tex
+Given that the unaware and full information models are not counterfactually fair, how can we design predictors that are? In general given a causal model, a counterfactually fair classifier $\hat Y$ is one that is a function of \emph{any $U$ and any variables $X$ which are not descendants of $A$}. As defined, these variables are independent of $A$ and thus any change in $A$ cannot change $\hat Y$. In this section we describe techniques for constructing latent variables $U$ and a predictor $\hat Y$.
+% Various design choices lead to the definition of $\hat Y$ and its fitting. Given a causal model, these choices include:% the following:
+% First, $\hat Y$ is a function of a subset of $U \cup X$ and any
+% element of $X$ which is not a descendant of $A$ can be used in
+% building a fair classifier. 
 
-First, $\hat Y$ is a function of a subset of $U \cup X$ and any
-element of $X$ which is not a descendant of $A$ can be used in
-building a fair classifier. If a strict subset of $U$ is used, the
+Before delving into details, we point out two important observations. First, if a strict subset of $U$ is used, the
 causal model need not be fully specified: equation
 $V_i = f_i(pa_i, U_{pa_i})$ can be substituted by a conditional
 probability $p(V_i\ |\ pa_i, U_{pa_i}')$, where
@@ -17,7 +20,7 @@ counterfactually fair. However, we desire that $\hat Y$ is a {\it
   good} predictor, not simply a coin toss. That is,
 $\hat Y$ is typically a parameterized function
 $g_\theta(U, X)$ where $\theta$ is learned by minimizing the empiric
-expected loss $E[l(Y, g_\theta(U, X))\ | X, A].$% , where the expectation
+expected loss $E[l(Y, g_\theta(U, X))\ | X, A]$. % , where the expectation
 % is over $A \cup X \cup U \cup \{Y\}$.
 For instance, $l(Y, g_\theta(U, X)) = (Y - g_\theta(U, X))^2$, or the
 log-loss for Bernoulli classification.  In practice, the distribution
@@ -45,7 +48,7 @@ are unavoidable. As a guide for building fair predictive models, we
 categorize assumptions by three levels of increasing strength.
 %
 \begin{itemize}
-\item[L1] Given a causal DAG, build $\hat Y$
+\item[Level 1] Given a causal DAG, build $\hat Y$
   using as covariates only the observable variables  not
   descendants of the protected attributes $A$. This
   requires information about the DAG, but no
@@ -53,7 +56,7 @@ categorize assumptions by three levels of increasing strength.
   variables. %  Here
   % $\hat Y$ is not a function of $U$ but a function
   % of the maximal subset of $X$ that does not contain descendants of $A$;
-\item[L2] This ignores much information, particularly if the protected
+\item[Level 2] Level 1 ignores much information, particularly if the protected
   attributes are typical attributes such as race or sex,
   which are parents of many other variables. To include information
   from descendants of $A$, we postulate background latent variables
@@ -69,20 +72,20 @@ categorize assumptions by three levels of increasing strength.
   % probabilistic.
   % , instead of being given by a structural equation, as in the
   % previous section;
- \item[L3] In L2, the model factorizes as a
-   general DAG, where each node follows a non-degenerate
+ \item[Level 3] In Level 2, the model factorizes as a
+   general DAG, and each node follows a non-degenerate
    distribution given observed and latent variables. % In the final
    % set of assumptions,
-   Finally, we remove all randomness from the conditional
+   In this level, we remove all randomness from the conditional
    distributions obtaining a full decomposition $(U, V, F)$ of the
    model. % Default assumptions %partially independent of the domain,
    % might be invoked.
-   For instance, the  distribution
+   For instance, the distribution
    $p(V_i\ |\ V_1, \dots, V_{i - 1})$ can be treated as an additive
-   error model, $V_i = f_i(V_1, \dots, V_{i - 1}) + e_i$
-   \citep{peters:14}. The error term $e_i$  then becomes an input
-   to $\hat Y$ after conditioning on the observable variables. This
-   maximizes the information  extracted
+   error model, $V_i \!=\! f_i(V_1, \dots, V_{i - 1}) \!+\! e_i$
+   \citep{peters:14}. The error term $e_i$ then becomes an input
+   to $\hat Y$ after conditioning on the observed variables. This
+   maximizes the information extracted
    by the fair predictor $\hat Y$.
 \end{itemize}
 
@@ -92,7 +95,7 @@ categorize assumptions by three levels of increasing strength.
 Consider the graph $A \rightarrow X \rightarrow Y$. In general, if $\hat Y$ is a function of
 $X$ only, then $\hat Y$ need not obey demographic parity, i.e.
 \begin{align}
-  p(\hat Y\ |\ A = a) \neq p(\hat Y\ |\ A = a').\nonumber
+  P(\hat Y\ |\ A = a) \neq P(\hat Y\ |\ A = a').\nonumber
 \end{align}
 If we postulate a
 structural equation $X = \alpha A + e_X$, then given $A$ and $X$ we
@@ -103,24 +106,12 @@ falsified.
 By way of contrast, if $e_X$ is not uniquely identifiable from the structural equation and $(A, X)$, then the distribution of $\hat Y$ depends on the value of $A$ as we marginalize $e_X$, and demographic parity will not follow. This leads to the following:
 %
 \begin{lem}
-If all background variables $U' \subseteq U$ used in the definition of $\hat Y$ are determined from $(A, W)$, and all observable variables used in the definition of $\hat Y$ are independent of $A$ given $U'$, then $\hat Y$ satisfies demographic parity. % If the conditions fail, then $\hat Y$ will not satisfy demographic parity in general. 
+If all background variables $U' \subseteq U$ in the definition of $\hat Y$ are determined from $A$ and evidence $W$, 
+%(A, W)$,
+and all observable variables in the definition of $\hat Y$ are independent of $A$ given $U'$, then $\hat Y$ satisfies demographic parity. % If the conditions fail, then $\hat Y$ will not satisfy demographic parity in general. 
 \end{lem}
   
-In one sense, Definition~\ref{eq:cf_definition} is a counterfactual
-demographic parity condition, that can replace the
-existing definition.
-
-\begin{figure*}[!th]
-\begin{center}
-\vspace{-2ex}
-\centerline{\includegraphics[width=\textwidth]{stop_and_frisk_graphs.png}}
-\vspace{-2ex}
-\caption{Understanding criminality. The above maps show the decomposition of stop and search data in New York into factors based on percieved criminality (a race dependent variable) and latent criminality (a race neutral measure). See section~\ref{sec:true-vs.-perceived}.     \label{figure.criminality}\vspace{-7ex}}
-\end{center}
-%\vspace{-3ex}
-\end{figure*}
-
-We advocate that counterfactual assumptions should underlie all
+Thus, counterfactual fairness can be thought of as a counterfactual analog of demographic parity. We advocate that counterfactual assumptions should underlie all
 approaches that separate the sources of variation of the data into
 ``fair'' and ``unfair'' components. As an example,
 \citet{louizos2015variational} explains the variability in $X$ from
@@ -144,7 +135,7 @@ are motivated by  $U$ being is deterministically inferred
 from $A$ and $X$ by construction. It is unclear in
 \citet{louizos2015variational} how the ideal label $Y$ is causally
 connected to $U$ and $A$, and the semantics of the ``unfair''
-components of $Y$ are  unexplained.
+components of $Y$ are not detailed. % unexplained.
 
 
 %%% Local Variables:

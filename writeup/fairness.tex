@@ -41,7 +41,7 @@ any decision making, and $W$ the set of complementary measurements such that
 $W= V \setminus ( A \cup \{\hat Y\})$.
 \begin{define}[Counterfactual fairness]
 We say $\hat Y$ is {\bf counterfactually fair}
-if under any context uniquely defined by $W = w$ and $A = a$,
+if under any context uniquely defined by evidence $W = w$ and sensitive $A = a$,
   \label{eq:cf_definition}
 \begin{align}
   &P(\hat Y_{A \leftarrow a\ }(U) = y\ |\ W = w, A = a)  =\nonumber\\ 
@@ -357,12 +357,14 @@ Now imagine we have observed $A\!=\!a$. This implies that $X = \alpha a + \beta 
 % $Y$ on $U$, resulting on $\hat Y \!=\! \gamma U$, which is counterfactually fair.
 \end{proof}
 
-The above result holds in a more general case for the structure given
-in Figure~\ref{figure.simple_models} (left): any non-constant estimator that
+Note that if Figure~\ref{figure.simple_models} (\emph{Left}) is the true model for the real world then $\hat Y(X,A)$ will also satisfy demographic parity and equality of opportunity as $Y$ will be unaffected by $A$.
+
+The above lemma holds in a more general case for the structure given
+in Figure~\ref{figure.simple_models} (\emph{Left}): any non-constant estimator that
 depends only on $X$ is not counterfactually fair as changing $A$ always alters $X$.
 We also point out that the method used in the proof is a special case
 of a general method to building a predictor based on information deduced
-about $U$ that will be described in the next section.
+about $U$ that will be described in the next section. We note that, outside of this particular causal model in Figure~\ref{figure.simple_models} (\emph{Left}), the predictor $\hat Y(X,A)$ is not counterfactually fair, as described in the following scenarios.
 %
 %
 \paragraph{Scenario 2: High Crime Regions.} 
@@ -378,6 +380,7 @@ race $A$ of the house occupier. This can be seen in Figure~\ref{figure.simple_mo
 \paragraph{Scenario 3: University Success.}
 A university wants to know if students will be successful post-graduation $Y$. They have information such as: grade point average (GPA), advanced placement (AP) exams results, and other academic features $X$. The university believes however, that an individual's gender $A$ may influence these features and their post-graduation success $Y$ due to social discrimination. They also believe that independently, an individual's latent talent $U$ casues $X$ and $Y$. We show this in Figure~\ref{figure.simple_models} (\emph{Right}). We can again ask, is the predictor $\hat Y(X,A)$ counterfactually fair? In this case, the different between this and Scenario 1 is that $Y$ is a function of $U$ and $A$ as follows: $Y \!=\! \gamma U + \eta A$. We can again solve for $\lambda_X,\lambda_A$ and show that $\hat Y(X,a) \!=\! (\gamma - \frac{\alpha \eta v_A}{\beta v_U})U + \eta a$. Again $\hat Y(X,A)$ is a function of $A$ so it cannot be counterfactually fair.
 
+%In Scenarios 2 and 3 in general $\hat Y(X,A)$ will also not satisfy demographic parity as $Y$ will be affected by $A$. In fact, we demonstrate in the next section that demographic parity is strictly more restrictive than counterfactual fairness.
 
 %  The world on the right shows $Y'$ a
 % causally fair variable that doesn't depend on $A$ being directly

@@ -56,14 +56,14 @@ that $V_i = f_i(pa_i, U_{pa_i})$, $pa_i \subseteq V \backslash
 %
 The notation ``$pa_i$'' refers to the ``parents'' of $V_i$ and is motivated by the assumption that the
 model factorizes according to a directed acyclic graph (DAG). That is, we can
-define a directed graph ${\mathcal G}=(U \cup V, \mathcal E )$ where each node $X$ is an
-element of $U \cup V$, and each edge from $X$ to $V_i$ indicates that $X \in pa_i \cup U_{pa_i}$. By construction, $\mathcal G$ is
+define a directed graph ${\mathcal G}=(U \cup V, \mathcal E )$ where each node is an
+element of $U \cup V$, and each edge from some $Z \subseteq U \cup V$ to $V_i$ indicates that $Z \in pa_i \cup U_{pa_i}$. By construction, $\mathcal G$ is
 acyclic.
 
 The model is causal in that, given a distribution $p(U)$
 over the background variables $U$, you can derive the distribution of
-a subset of $X\subseteq V$ following an {\bf intervention} on the
-complementary subset $V\setminus X$.  Here,
+a subset $Z \subseteq V$ following an {\bf intervention} on the
+complementary subset $V\setminus Z$.  Here,
 an {\bf intervention} on the variable $V_i$ of value $v$ refers to the substitution of
 equation $V_i = f_i(pa_i, U_{pa_i})$ with the equation $V_i =
 v$. This captures the idea of an agent, external to the
@@ -81,26 +81,26 @@ to much stronger claims. In particular, it allows for the
 calculation of {\bf counterfactual} quantities. % Without going into a
 % detailed coverage of the topic
 In brief, consider the following counterfactual
-statement, ``the value of $Y$ if $X$ had taken value $x$'', for two endogenous
-variables $X$ and $Y$ in a causal model. By assumption, the state of
+statement, ``the value of $Y$ if $Z$ had taken value $z$'', for two endogenous
+variables $Z$ and $Y$ in a causal model. By assumption, the state of
 any endogenous variable is fully determined by
 the background variables and structural equations. The counterfactual is
 modeled as the solution for $Y$ for a given $U = u$ where the equations
-for $X$ are replaced with $X = x$.  We denote it by $Y_{X \leftarrow x}(u)$
-\cite{pearl:00}, and sometimes as $Y_x$ if the context of the notation is clear.
+for $Z$ are replaced with $Z \!=\! z$.  We denote it by $Y_{Z \leftarrow z}(u)$
+\cite{pearl:00}, and sometimes as $Y_z$ if the context of the notation is clear.
 
-Counterfactual inference, as specified by a causal model $(U, V, F)$,
+Counterfactual inference, as specified by a causal model $(U, V, F)$ given evidence $W$,
 is the computation of probabilities
-$P(Y_{X \leftarrow x}(U)\ |\ W = w)$, where $W$, $X$ and $Y$ are
+$P(Y_{Z \leftarrow z}(U)\ |\ W \!=\! w)$, where $W$, $Z$ and $Y$ are
 subsets of $V$. Inference proceeds in three steps, as explained in
 more detail in Chapter 4 of \citet{pearl:16}:
 \begin{enumerate}
 \item Abduction: for a given prior on $U$, compute the posterior
   distribution of $U$ given the evidence $W = w$;
-\item Action: substitute the equations for $X$ with the interventional
-  values $x$, resulting in the modified set of equations $F_x$;
+\item Action: substitute the equations for $Z$ with the interventional
+  values $z$, resulting in the modified set of equations $F_z$;
 \item Prediction: compute the implied distribution on the remaining
-  elements of $V$ using $F_x$ and the posterior $P(U\ | W = w)$.
+  elements of $V$ using $F_z$ and the posterior $P(U\ | W = w)$.
 \end{enumerate}
 
 
