@@ -154,6 +154,36 @@ There is already a wealth of literature on the topic of testing implications of 
 
 Our view is that fairness should be the consequence of clear assumptions that need to be defended given the extent of existing available evidence, but with the understanding that there will be a subset of assumptions which cannot be tested. The ultimate validation of a counterfactual model is a matter of agreement between regulators and algorithm designers, lying outside the realm of machine learning theory and within the subject matter of the domain. The goal of counterfactual fairness is to provide a foundation for justifying particular modeling choices, which otherwise may sound arbitrary. With counterfactual fairness, assumptions are laid out in the open for criticism by regulators and society.
 
+
+\section{Details of NYPD experiment}
+
+\begin{figure}[th]
+\begin{center}
+\vspace{-1ex}
+\centerline{\includegraphics[width=\columnwidth]{stop_and_frisk_model3.pdf}}
+\vspace{-2ex}
+\caption{A causal model for the stop and frisk dataset.\label{figure.stop_and_frisk}\vspace{-4ex}}
+\vspace{-2ex}
+\end{center}
+\end{figure}
+
+\paragraph{Model.}
+We model this stop-and-frisk data using the graph in Figure~\ref{figure.stop_and_frisk}. Specifically, we posit main causes for the observations: \emph{Arrest} (if an individual was arrested), \emph{Summons} (an individual was called to a court-summons), \emph{Weapon} (an individual was found to be carrying a weapon), \emph{Force} (some sort of force was used during the stop), \emph{Frisked}, and \emph{Searched}. The first cause of these observations is some measure of an individual's latent \emph{Criminality}, which we do not observe. We believe there is an additional cause, an individual's perceived criminality, \emph{Perception}, also unobserved. This second factor is introduced as we believe that these observations may be biased based on an officer's perception of whether an individual is likely a criminal or not. This perception is affected by an individual's \emph{Appearance} and their \emph{Race}. In this sense \emph{Criminality} is counterfactually fair, while \emph{Perception} models how race affects each of the other observed variables.
+
+\paragraph{Criminality and perception distributions.}
+After fitting this model to the data we can look at the distribution of \emph{Criminality} and \emph{Perception} across different races, shown as box plots in Figure~\ref{figure.stop_and_frisk}. We see that the median criminality for each race is nearly identical, while the distributions are somewhat different, demonstrating that \emph{Criminality} approaches demographic parity. The differences that due exist may be due to unobserved confounding variables that are affected by race or unmodeled noise in the data. On the right \emph{Perception} varies considerably by race with white individuals having the lowest perceived criminality while black and black Hispanic individuals have the highest.
+
+\begin{figure}[!th]
+\begin{center}
+%\vspace{-1ex}
+\centerline{\includegraphics[width=\columnwidth]{stopandfrisk_output.pdf}}
+\vspace{-2ex}
+\caption{Distributions of estimated latent perception and criminality scores for the stop and frisk dataset.\label{figure.stop_and_frisk_output}\vspace{-5ex}}
+\vspace{-2ex}
+\end{center}
+\end{figure}
+
+
 \bibliography{rbas,bibliography}
 \bibliographystyle{icml2017}
 
