@@ -98,18 +98,15 @@ Section 4.3.1 of \citep{pearl:16}. Here, differences in the value
 of $X$ must be caused by variations on $A$ only.
 
 \begin{figure}
-\begin{center}
-\vspace{-1ex}
-\centerline{\includegraphics[width=\columnwidth]{implications_fig.pdf}}
-\vspace{-2ex}
-\label{fig:ex1}
-  \caption{(a) The graph corresponding to a causal model with $A$ being the protected attribute
+  \begin{tabular}{p{0.5\columnwidth}|p{0.5\columnwidth}}
+    \centerline{\includegraphics[width=0.5\columnwidth]{implications_fig.pdf}}&
+    \centerline{\includegraphics[width=0.5\columnwidth]{simple_models_no_q3}}
+  \end{tabular}
+  \caption{\label{fig:ex1} {\bf Left:} (a) The graph corresponding to a causal model with $A$ being the protected attribute
     and $Y$ some outcome of interest, with background variables assumed to be independent.
     (b) Expanding the model to include an intermediate variable indicating whether the individual
     is employed with two (latent) background variables $\textbf{Prejudiced}$ (if the person  offering the job is prejudiced) and $\textbf{Qualifications}$ (a measure of the individual's qualifications). (c) A twin network representation of this system \citep{pearl:00}
-    under two different counterfactual levels for $A$. This is created by copying nodes descending from $A$, which inherit unaffected parents from the factual world.\vspace{-5ex}}
-\vspace{-2ex}
-\end{center}
+    under two different counterfactual levels for $A$. This is created by copying nodes descending from $A$, which inherit unaffected parents from the factual world. {\bf Right:} Three causal models for different real-world fair prediction scenarios.\label{figure.simple_models} See section \ref{sec:count_fair} for discussion.}
 \end{figure}
 
 \subsection{Implications}
@@ -260,15 +257,6 @@ causal structure of the world\footnote{The notion of ``closest world''
 % dependencies on $A$. {\em Center and Right:} Potentially unfair worlds
 % in which the state of $A$ can influence the state of $Y$ either
 % indirectly as in {\em center} or directly as in {\em Right}.
-\begin{figure}[th]
-\begin{center}
-\vspace{-1.5ex}
-\centerline{\includegraphics[width=\columnwidth]{simple_models_no_q3}}
-\vspace{-2ex}
-\caption{Three causal models for different real-world fair prediction scenarios.\label{figure.simple_models} See section \ref{sec:count_fair} for discussion.\vspace{-5ex}}
-\vspace{-2ex}
-\end{center}
-\end{figure}
 
 \subsection{Examples}
 To give an intuition for counterfactual fairness we will consider three % real-world

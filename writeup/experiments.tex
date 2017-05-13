@@ -54,13 +54,14 @@ We perform inference on this model using an observed training set to estimate th
 
 
 \begin{figure}[th]
-\begin{center}
-\vspace{-1ex}
-\centerline{\includegraphics[width=0.8\columnwidth]{law_school_model}}
-\vspace{-2ex}
-\caption{A causal model for the problem of predicting law school success fairly.\label{figure.law_school}\vspace{-2ex}}
-\vspace{-2ex}
-\end{center}
+  \begin{tabular}{p{0.5\columnwidth}p{0.5\columnwidth}}
+    \centerline{\includegraphics[width=0.4\columnwidth]{law_school_model}}
+    &
+      \centerline{\includegraphics[width=0.5\columnwidth]{counterfactual}}
+  \end{tabular}
+  \caption{{\bf Left:} A causal model for the problem of predicting law school success fairly.\label{figure.law_school}
+  {\bf Right:} Density plots of predicted $\mbox{FYA}_a$ and $\mbox{FYA}_{a'}$.\label{figure.counterfactual}
+}
 \end{figure}
 
 \begin{table}
@@ -76,15 +77,6 @@ RMSE & 0.873 & 0.894 & 0.929 & 0.918 \\
 \end{tabular}
 \end{table}
 
-\begin{figure}[th]
-\begin{center}
- \vspace{-1ex}
-\centerline{\includegraphics[width=\columnwidth]{counterfactual}}
-\vspace{-2ex}
-\caption{Density plots of predicted $\mbox{FYA}_a$ and $\mbox{FYA}_{a'}$.\label{figure.counterfactual}}
-\vspace{-2ex}
-\end{center}
-\end{figure}
 
 \begin{figure*}[!th]
 \begin{center}
