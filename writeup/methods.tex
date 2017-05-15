@@ -1,142 +1,143 @@
 % !TEX root=ricardo_draft.tex
-Given that the unaware and full information models are not counterfactually fair, how can we design predictors that are? In general given a causal model, a counterfactually fair classifier $\hat Y$ is one that is a function of \emph{any $U$ and any variables $X$ which are not descendants of $A$}. As defined, these variables are independent of $A$ and thus any change in $A$ cannot change $\hat Y$. In this section we describe techniques for constructing latent variables $U$ and a predictor $\hat Y$.
-% Various design choices lead to the definition of $\hat Y$ and its fitting. Given a causal model, these choices include:% the following:
-% First, $\hat Y$ is a function of a subset of $U \cup X$ and any
-% element of $X$ which is not a descendant of $A$ can be used in
-% building a fair classifier. 
 
-Before delving into details, we point out two important observations. First, if a strict subset of $U$ is used, the
-causal model need not be fully specified: equation
-$V_i = f_i(pa_i, U_{pa_i})$ can be substituted by a conditional
-probability $p(V_i\ |\ pa_i, U_{pa_i}')$, where
-$U_{pa_i}' \subset U_{pa_i}$ and
-$p(V_i\ |\ pa_i, U_{pa_i}') = \int f_i(pa_i, U_{pa_i}) d U_{pa_i}''$,
-where $U_{pa_i}'' \equiv U_{pa_i} \backslash U_{pa_i}'$. This
-marginalization has implications in modeling discussed in the next
-section.
+As discussed in the previous Section, we need to relate $\hat Y$ to
+$Y$ if the predictor is to be useful, and that we will restrict to
+$\hat Y$ to be a (parameterized) function of the non-descendants of
+$A$ in the causal graph. An algorithm is introduced in Section
+\ref{sec:algorithm}, followed by a discussion of the assumptions that
+can be used to express counterfactuals.
 
-Second, any random variable generated independently is trivially
-counterfactually fair. However, we desire that $\hat Y$ is a {\it
-  good} predictor, not simply a coin toss. That is,
-$\hat Y$ is typically a parameterized function
-$g_\theta(U, X)$ where $\theta$ is learned by minimizing the empiric
-expected loss $E[l(Y, g_\theta(U, X))\ | X, A]$. % , where the expectation
-% is over $A \cup X \cup U \cup \{Y\}$.
-For instance, $l(Y, g_\theta(U, X)) = (Y - g_\theta(U, X))^2$, or the
-log-loss for Bernoulli classification.  In practice, the distribution
-of $A \cup X \cup \{Y\}$ can be the empirical distribution as given by
-some training data, while $p(U\ |\ X, A)$ comes from the estimated
-causal model fit to the same training data. %  Markov chain Monte Carlo
-% (MCMC) may be necessary to generate samples from this conditional,
-% which means every training data point is replaced by a set of data
-% points sharing the same $A \cup X \cup \{Y\}$ but with different
-% replicates of $U$.
-Any predictor can be used to learn $g_\theta(U, X)$
-including random forests and neural networks.
+\subsection{Algorithm}
+\label{sec:algorithm}
 
-\subsection{Limitations and a Guide to Model Building}
-\label{sec:limit-guide-model}
-Causal modeling requires untestable assumptions. Experimental data can
-sometimes be used to infer causal connections, but counterfactual
-modeling requires functional
-decompositions between background and endogenous variables.
-Such decompositions are not
-uniquely identifiable  with experimental data. As in several
-matters of law and regulation, fairness at an individual level is a
-counterfactual quantity and some level of assumptions
-are unavoidable. As a guide for building fair predictive models, we
-categorize assumptions by three levels of increasing strength.
-%
-\begin{itemize}
-\item[Level 1] Given a causal DAG, build $\hat Y$
-  using as covariates only the observable variables  not
-  descendants of the protected attributes $A$. This
-  requires information about the DAG, but no
-  assumptions about structural equations or priors over background
-  variables. %  Here
-  % $\hat Y$ is not a function of $U$ but a function
-  % of the maximal subset of $X$ that does not contain descendants of $A$;
-\item[Level 2] Level 1 ignores much information, particularly if the protected
-  attributes are typical attributes such as race or sex,
-  which are parents of many other variables. To include information
-  from descendants of $A$, we postulate background latent variables
-  that act as causes of observable variables, based on explicit domain
-  knowledge and learning algorithms\footnote{In some domains, it is
-    actually common to build a model entirely around latent constructs
-    with few or no observable parents nor connections among observed
-    variables \citep{bol:89}.}. Information from $X$ will propagate to
-  the latent variables by conditioning.% As these
-  % variables are not descendants of $A$, they can be used to fairly predict
-  % $\hat Y$.  Conditioning on descendants of $A$ propagates information
-  % from $X$ to them. This dependency of each $V_i$ on its parents can be
-  % probabilistic.
-  % , instead of being given by a structural equation, as in the
-  % previous section;
- \item[Level 3] In Level 2, the model factorizes as a
-   general DAG, and each node follows a non-degenerate
-   distribution given observed and latent variables. % In the final
-   % set of assumptions,
-   In this level, we remove all randomness from the conditional
-   distributions obtaining a full decomposition $(U, V, F)$ of the
-   model. % Default assumptions %partially independent of the domain,
-   % might be invoked.
-   For instance, the distribution
-   $p(V_i\ |\ V_1, \dots, V_{i - 1})$ can be treated as an additive
-   error model, $V_i \!=\! f_i(V_1, \dots, V_{i - 1}) \!+\! e_i$
-   \citep{peters:14}. The error term $e_i$ then becomes an input
-   to $\hat Y$ after conditioning on the observed variables. This
-   maximizes the information extracted
-   by the fair predictor $\hat Y$.
-\end{itemize}
-
-
-\subsection{Special cases}
-%
-Consider the graph $A \rightarrow X \rightarrow Y$. In general, if $\hat Y$ is a function of
-$X$ only, then $\hat Y$ need not obey demographic parity, i.e.
-\begin{align}
-  P(\hat Y\ |\ A = a) \neq P(\hat Y\ |\ A = a').\nonumber
-\end{align}
-If we postulate a
-structural equation $X = \alpha A + e_X$, then given $A$ and $X$ we
-can deduce $e_X$. If $\hat Y$ is a function of $e_X$ only and, by
-assumption, $e_X$ is independent of $A$, then the assumptions imply
-that $\hat Y$ will satisfy demographic parity, and that can be
-falsified.
-By way of contrast, if $e_X$ is not uniquely identifiable from the structural equation and $(A, X)$, then the distribution of $\hat Y$ depends on the value of $A$ as we marginalize $e_X$, and demographic parity will not follow. This leads to the following:
-%
-\begin{lem}
-If all background variables $U' \subseteq U$ in the definition of $\hat Y$ are determined from $A$ and evidence $W$, 
-%(A, W)$,
-and all observable variables in the definition of $\hat Y$ are independent of $A$ given $U'$, then $\hat Y$ satisfies demographic parity. % If the conditions fail, then $\hat Y$ will not satisfy demographic parity in general. 
-\end{lem}
+Let $\hat Y \equiv g_\theta(U, X_{\nsucc A})$ be a predictor
+parameterized by $\theta$, such as a logistic regression or a neural
+network, and where $X_{\nsucc A} \subseteq X$ are non-descendants of
+$A$. Given a loss function $l(\cdot, \cdot)$ such as squared loss of
+log-likelihood, and training data $\{(A^{(i)}, X^{(i)}, Y^{(i)})\}$
+for $i = 1, 2, \dots, n$, we define define $L(\theta) \equiv \sum_{i =
+  1}^n \mathbb E[l(y^{(i)}, g_\theta(U^{(i)}, x^{(i)}_{\nsucc
+    A})\ |\ x^{(i)}, a^{(i)}] / n$ as the empirical loss to be
+minimized with respect to $\theta$.  The expectation is with respect
+to random variable $U^{(i)} \sim F_{\mathcal M}(U\ |\ x^{(i)},
+a^{(i)})$ where $F_{\mathcal M}(U\ |\ x, a)$ is the conditional
+distribution of the background variables as given by a causal model
+$\mathcal M$ that is available by assumption. If this expectation
+cannot be calculated analytically, Markov chain Monte Carlo (MCMC) can
+be used to approximate it, resulting in the following algorithm.
   
-Thus, counterfactual fairness can be thought of as a counterfactual analog of demographic parity. We advocate that counterfactual assumptions should underlie all
+\begin{algorithmic}[1]
+\Procedure{FairLearning}{$\mathcal D, \mathcal M$}\Comment{Learned parameters $\hat \theta$}  
+  \State For each data point $i \in \mathcal D$, sample $m$ MCMC samples
+  $U_1^{(i)}, \dots, U_m^{(i)} \sim F_{\mathcal M}(U\ |\ x^{(i)},a^{(i)})$
+  \State Let $\mathcal D'$ be the augmented dataset where each point
+  $(a^{(i)}, x^{(i)}, y^{(i)})$  in $\mathcal D$ is replaced with the corresponding $m$ points
+  \State $\hat \theta \leftarrow \mathrm{argmin}_\theta \sum_{i' \in \mathcal D'}
+                                   l(y^{(i')}, g_\theta(U^{(i')}, x^{(i')}_{\nsucc A}))$
+\EndProcedure
+\end{algorithmic}
+
+At prediction time, we report $\tilde Y \equiv \mathbb E[\hat Y(U^\star,
+  x^\star_{\nsucc A})\ |\ x^\star, a^\star]$ for a new data point $(a^\star,
+x^\star)$.
+
+\noindent{\bf Deconvolution approaches.} The algorithm can be
+understood as a deconvolution approach that, given observables $A \cup
+X$, extracts its latent sources and pipeline them into a predictive
+model. We advocate that counterfactual assumptions should underlie all
 approaches that separate the sources of variation of the data into
 ``fair'' and ``unfair'' components. As an example,
-\citet{louizos2015variational} explains the variability in $X$ from
-$A$ and an independent source $U$ following the DAG
-$A \rightarrow X \leftarrow U$. As $U$ and $A$ are not independent
-given $X$ in this representation, a type of ``posterior
-regularization'' \citep{ganchev:10} is enforced such that a posterior
-$p_{fair}(U\ | A, X)$ is close to the model posterior $p(U\ |\ A, X)$
-while satisfying
-$p_{fair}(U\ | A = a, X) \approx p_{fair}(U\ | A = a', X)$. But this
-is neither necessary nor sufficient for counterfactual fairness if the
-model for $X$ given $A$ and $U$ is not justified by a causal
-mechanism. If it is, $p(U\ |\ A, X)$ is justified as distribution
-which we can use to marginalize $U$ in $p(\hat Y(U)\ |\ A, X)$, without requiring regularization.
-%
-Methods which estimate the
-relationship between $A$, $U$ and $X$ based on penalizing dependence
-measures between an estimated $U$ and $A$ are relevant in estimating a
-causal model (e.g. \citet{mooij:09}), but these
-are motivated by  $U$ being is deterministically inferred
-from $A$ and $X$ by construction. It is unclear in
-\citet{louizos2015variational} how the ideal label $Y$ is causally
-connected to $U$ and $A$, and the semantics of the ``unfair''
-components of $Y$ are not detailed. % unexplained.
+\citet{louizos2015variational} start from the DAG $A \rightarrow X
+\leftarrow U$ to extract $P(U\ |\ X, A)$. As $U$ and $A$ are not
+independent given $X$ in this representation, a type of penalization
+is enforced such that a posterior $p_{fair}(U\ | A, X)$ is close to
+the model posterior $p(U\ |\ A, X)$ while satisfying $p_{fair}(U\ | A
+= a, X) \approx p_{fair}(U\ | A = a', X)$. But {\it this is neither
+  necessary nor sufficient for counterfactual fairness}. The model for
+$X$ given $A$ and $U$ must be justified by a causal mechanism, and
+that being the case, $p(U\ |\ A, X)$ requires no postprocessing. As a
+matter of fact, model $\mathcal M$ can be learned by by penalizing
+empirical dependence measures between $U$ and $A$ given $X$
+(e.g. \citet{mooij:09}), but this is motivated by explicit assumptions
+about structural equations, as described next.
 
+\subsection{Designing the Input Causal Model}
+\label{sec:limit-guide-model}
+
+Model $\mathcal M$ must be provided to algorithm {\sc FairLearning}.
+Causal models always require strong assumptions, but counterfactuals
+in particular are typically presented in terms of structural equations
+which are in general unfalsifiable. We point out that we do not need
+to specify a fully deterministic model, and structural equations can
+be relaxed as conditional distributions. In particular, the concept of
+counterfactual fairness holds under three levels of assumptions of
+increasing strength:
+
+\noindent {\bf Level 1.}  Build $\hat Y$ using only the observable
+non-descendants of $A$.  This only requires partial causal ordering
+and no further causal assumptions, but in many problems there will be
+few, if any, observables which are not descendants of demographic
+factors.
+  
+\noindent {\bf Level 2.} We postulate background latent variables that
+act as non-deterministic causes of observable variables, based on
+explicit domain knowledge and learning algorithms\footnote{In some
+  domains, it is actually common to build a model entirely around
+  latent constructs with few or no observable parents nor connections
+  among observed variables \citep{bol:89}.}. Information about $X$ is
+passed to $\hat Y$ via $P(U\ |\ x, a)$.
+
+\noindent {\bf Level 3.} We postulate a full deterministic model with
+latent variables. For instance, the distribution $p(V_i\ |\ V_1,
+\dots, V_{i - 1})$ can be treated as an additive error model, $V_i
+\!=\! f_i(V_1, \dots, V_{i - 1}) \!+\! e_i$ \citep{peters:14}. The
+error term $e_i$ then becomes an input to $\hat Y$ after conditioning
+on the observed variables. This maximizes the information extracted by
+the fair predictor $\hat Y$.
+
+%%%%%%%%%%% ICML
+%\begin{itemize}
+%\item[Level 1] Given a causal DAG, build $\hat Y$
+%  using as covariates only the observable variables  not
+%  descendants of the protected attributes $A$. This
+%  requires information about the DAG, but no
+%  assumptions about structural equations or priors over background
+%  variables. %  Here
+%  % $\hat Y$ is not a function of $U$ but a function
+%  % of the maximal subset of $X$ that does not contain descendants of $A$;
+%\item[Level 2] Level 1 ignores much information, particularly if the protected
+%  attributes are typical attributes such as race or sex,
+%  which are parents of many other variables. To include information
+%  from descendants of $A$, we postulate background latent variables
+%  that act as causes of observable variables, based on explicit domain
+%  knowledge and learning algorithms\footnote{In some domains, it is
+%    actually common to build a model entirely around latent constructs
+%    with few or no observable parents nor connections among observed
+%    variables \citep{bol:89}.}. Information from $X$ will propagate to
+%  the latent variables by conditioning.% As these
+%  % variables are not descendants of $A$, they can be used to fairly predict
+%  % $\hat Y$.  Conditioning on descendants of $A$ propagates information
+%  % from $X$ to them. This dependency of each $V_i$ on its parents can be
+%  % probabilistic.
+%  % , instead of being given by a structural equation, as in the
+%  % previous section;
+% \item[Level 3] In Level 2, the model factorizes as a
+%   general DAG, and each node follows a non-degenerate
+%   distribution given observed and latent variables. % In the final
+%   % set of assumptions,
+%   In this level, we remove all randomness from the conditional
+%   distributions obtaining a full decomposition $(U, V, F)$ of the
+%   model. % Default assumptions %partially independent of the domain,
+%   % might be invoked.
+%   For instance, the distribution
+%   $p(V_i\ |\ V_1, \dots, V_{i - 1})$ can be treated as an additive
+%   error model, $V_i \!=\! f_i(V_1, \dots, V_{i - 1}) \!+\! e_i$
+%   \citep{peters:14}. The error term $e_i$ then becomes an input
+%   to $\hat Y$ after conditioning on the observed variables. This
+%   maximizes the information extracted
+%   by the fair predictor $\hat Y$.
+%\end{itemize}
+%%%%%%%%%% END ICML
 
 %%% Local Variables:
 %%% mode: latex

@@ -84,6 +84,88 @@
 
 \vskip 0.3in
 ]
+
+\setcounter{section{3}}
+
+  %
+\begin{lem}
+Consider the structure in Figure~\ref{figure.simple_models}(d)
+(left). There exist model classes and loss functions where fitting a
+predictor to $X$ \emph{only} is not counterfactually fair, while the same
+algorithm will give a fair predictor using \emph{both} $A$ and $X$.
+\end{lem}
+%
+\begin{proof}
+As in the definition, we will consider the population case, where the
+joint distribution is known. Consider the case where the equations
+described by the model in Figure~\ref{figure.simple_models}(d)
+(\emph{Left}) are deterministic and linear:
+\begin{align}
+X = \alpha A + \beta U, \;\;\;\; Y = \gamma U \nonumber
+\end{align}
+and the variance of $U$ is $v_U$, the variance of $A$ is $v_A$,
+and we assume all coefficients are non-zero.
+The predictor $\hat Y(X)$ defined by least-squares
+regression of $Y$ on \emph{only} $X$ is given by $\hat Y(X) \equiv \lambda X$, where $\lambda =
+Cov(X, Y) / Var(X) \!=\! \beta\gamma v_U / (\alpha^2 v_A + \beta^2 v_U) \neq 0$.
+
+We can test whether a predictor $\hat{Y}$ is counterfactually fair
+using the procedure described in Section~\ref{subsec:cmc}:
+%\begin{itemize}
+{\em (i)} Compute $U$ given observations of $X,Y,A$; %, by solving for $U$.
+{\em (ii)} Substitute the equations involving $A$ with an interventional value $a'$; 
+% (i.e., this says: `what happens if the race of an individual were changed')
+{\em (iii)} Compute the variables $X,Y$ with the interventional value $a'$. It is clear here that $\hat Y_a(U) \!=\! \lambda(\alpha a + \beta U) \neq
+\hat Y_{a'}(U)$. This predictor is not counterfactually fair. Thus, in this case fairness through unawareness actually perpetuates unfairness.
+
+Consider instead doing least-squares regression of $Y$ on $X$ \emph{and} $A$. Note that $\hat Y(X,A) \equiv \lambda_X X + \lambda_A A$ where $\lambda_X,\lambda_A$ can be derived as follows:
+\begin{align}
+\begin{pmatrix}
+\lambda_X \\
+\lambda_A
+\end{pmatrix} &=
+\begin{pmatrix}
+Var(X) & Cov(A,X) \\
+Cov(X,A) & Var(A)
+\end{pmatrix}^{-1}
+\begin{pmatrix}
+Cov(X,Y) \\
+Cov(A,Y)
+\end{pmatrix} \nonumber \\
+&=
+%\frac{1}{(\alpha^2 v_A + \beta^2 v_U)v_A - \alpha^2 v_A^2}
+\frac{1}{\beta^2 v_U v_A}
+\begin{pmatrix}
+v_A & -\alpha v_A \\
+-\alpha v_A & \alpha^2 v_A + \beta^2 v_U
+\end{pmatrix}
+\begin{pmatrix}
+\beta \gamma v_U \\
+0
+\end{pmatrix} \nonumber \\
+&=
+\begin{pmatrix}
+\frac{\gamma}{\beta} \\
+\frac{-\alpha\gamma}{\beta}
+%(-\alpha\gamma) / \beta
+\end{pmatrix}
+\end{align}
+Now imagine we have observed $A\!=\!a$. This implies that $X = \alpha a + \beta U$ and our predictor is $\hat Y(X,a) = \frac{\gamma}{\beta}(\alpha a + \beta U) + \frac{-\alpha\gamma}{\beta} a = \gamma U$. Thus, if we substitute $a$ with a counterfactual $a'$ (the action step described in Section~\ref{background}) the predictor $\hat Y(X,A)$ is unchanged! This is because our predictor is constructed in such a way that any change in $X$ caused by a change in $A$ is cancelled out by the $\lambda_A$. Thus this predictor is counterfactually fair.
+% This is known to be equivalent to first getting the residuals $R_X$ of $X$ regressed on $A$
+% and regressing $Y$ on $R_X$ and $A$. Notice that $R_X \!=\! U$, and $A$ is independent of $U$
+% and $Y$. Hence, $\hat Y$ will be the least squares regression of
+% $Y$ on $U$, resulting on $\hat Y \!=\! \gamma U$, which is counterfactually fair.
+\end{proof}
+
+Note that if Figure~\ref{figure.simple_models} (\emph{Left}) is the true model for the real world then $\hat Y(X,A)$ will also satisfy demographic parity and equality of opportunity as $Y$ will be unaffected by $A$.
+
+The above lemma holds in a more general case for the structure given
+in Figure~\ref{figure.simple_models} (\emph{Left}): any non-constant estimator that
+depends only on $X$ is not counterfactually fair as changing $A$ always alters $X$.
+We also point out that the method used in the proof is a special case
+of a general method to building a predictor based on information deduced
+about $U$ that will be described in the next section. We note that, outside of this particular causal model in Figure~\ref{figure.simple_models} (\emph{Left}), the predictor $\hat Y(X,A)$ is not counterfactually fair, as described in the following scenarios.
+
 \setcounter{section}{4}
 % this must go after the closing bracket ] following \twocolumn[ ...
 

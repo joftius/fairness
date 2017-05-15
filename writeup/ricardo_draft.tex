@@ -20,8 +20,9 @@
 \usepackage{amsfonts}       % blackboard math symbols
 \usepackage{nicefrac}       % compact symbols for 1/2, etc.
 \usepackage{microtype}      % microtypography
-\usepackage{algorithm}
-\usepackage{algorithmic}
+%\usepackage{algorithm}
+%\usepackage{algorithmic}
+\usepackage{algpseudocode}
 \usepackage{amsthm,amssymb,amsopn,amsmath}
 \usepackage{graphicx} % more modern
 %\usepackage{epsfig} % less modern
@@ -34,7 +35,7 @@
 \newtheorem{thm}{Theorem}
 \newtheorem{lem}{Lemma}
 \newtheorem{coro}{Corollary}
-\title{Coutnerfactual Fairness}
+\title{Counterfactual Fairness}
 %\newcommand\independent{\protect\mathpalette{\protect\independenT}{\perp}}
 \def\independenT#1#2{\mathrel{\rlap{$#1#2$}\mkern2mu{#1#2}}}
 \newcommand\cff{{\sc cff}}
@@ -89,61 +90,72 @@
 
 \begin{abstract} 
 % fairness is important
-  Machine learning has matured to the point to where it is now being considered to
-  automate decisions in loan lending, employee hiring, and predictive policing.
-  In many of these scenarios however, previous decisions have been made that are unfairly biased
-  against certain subpopulations (e.g., those of a particular race,
-  gender, or sexual orientation).  Because this past data is often
-  biased, machine learning predictors must account for this to avoid perpetuating
-  discriminatory practices (or indicentally making new ones).  In this paper, we develop a
-  framework for modeling fairness in any dataset using tools from
-  counterfactual inference. We propose a definition called
-  \emph{counterfactual fairness} that captures the intuition
-  that a decision is fair towards an individual, if it gives the same
-  predictions in (a) in the observed world and (b) a world where the
-  individual had always belonged to a different demographic group,
-  other background causes of the outcome being equal. We demonstrate 
-  our framework on two real-world problems: fair
+  Machine learning has matured to the point to where it is now being
+  considered to automate decisions in loan lending, employee hiring,
+  and predictive policing.  In many of these scenarios however,
+  previous decisions have been made that are unfairly biased against
+  certain subpopulations (e.g., those of a particular race, gender, or
+  sexual orientation).  Because this past data is often biased,
+  machine learning predictors must account for this to avoid
+  perpetuating discriminatory practices (or indicentally making new
+  ones).  In this paper, we develop a framework for modeling fairness
+  in any dataset using tools from counterfactual inference. We propose
+  a definition called \emph{counterfactual fairness} that captures the
+  intuition that a decision is fair towards an individual, if it gives
+  the same predictions in (a) in the observed world and (b) a world
+  where the individual had always belonged to a different demographic
+  group, other background causes of the outcome being equal. We
+  demonstrate our framework on two real-world problems: fair
   prediction of law school success, and fair modeling of an
   individual's criminality in policing data.
 \end{abstract} 
 
-\section{Introduction}
-\label{introduction}
+\section{Contribution}
+\label{sec:introduction}
 \input{intro}
 
-\section{Fairness}
-\label{sec:related}
-\input{related}
-
-\section{Causal Models and Counterfactuals}
-\label{background}
+\section{Background}
+\label{sec:background}
 \input{background}
+
+%\section{Background}
+%\label{sec:related}
+%\input{related}
+
+%\section{Causal Models and Counterfactuals}
+%\label{sec:background}
+%\input{background}
 
 \section{Counterfactual Fairness}
 \label{sec:count_fair}
 \input{fairness}
 
-
-\section{Methods and Assessment}
+\section{Implementing Counterfactual Fairness}
 \label{sec:methods}
 \input{methods}
 
-\section{Experiments}
+\section{Illustration: Law School Success}
 \label{sec:experiments}
 \input{experiments}
 
 \section{Conclusion}
 \label{sec:conclusion}
-We have presented a new model of fairness we refer to as {\em counterfactual fairness}. It allows us to propose fair
-algorithms that, rather than simply ignoring protected attributes, are
-able to take into account the different social biases
-that may arise towards individuals of a particular race, gender, or
-sexuality and compensate for these biases effectively. We
-experimentally contrasted our approach with previous unfair
-approaches and show that our explicit causal models capture these
-social biases and make clear the implicit trade-off between
-prediction accuracy and fairness in an unfair world. We propose that fairness should be regulated by explicitly modeling the causal structure of the world. Criteria based purely on probabilistic independence cannot satisfy this and are unable to address \emph{how} unfairness is occurring in the task at hand. By providing such causal tools for addressing fairness questions we hope we can provide practitioners with customized techniques for solving a wide array of fair modeling problems.
+We have presented a new model of fairness we refer to as {\em
+  counterfactual fairness}. It allows us to propose fair algorithms
+that, rather than simply ignoring protected attributes, are able to
+take into account the different social biases that may arise towards
+individuals of a particular race, gender, or sexuality and compensate
+for these biases effectively. We experimentally contrasted our
+approach with previous unfair approaches and show that our explicit
+causal models capture these social biases and make clear the implicit
+trade-off between prediction accuracy and fairness in an unfair
+world. We propose that fairness should be regulated by explicitly
+modeling the causal structure of the world. Criteria based purely on
+probabilistic independence cannot satisfy this and are unable to
+address \emph{how} unfairness is occurring in the task at hand. By
+providing such causal tools for addressing fairness questions we hope
+we can provide practitioners with customized techniques for solving a
+wide array of fairness modeling problems.
 
 \bibliography{rbas,bibliography}
 \bibliographystyle{icml2017}

@@ -1,6 +1,138 @@
 %!TEX root=ricardo_draft.tex
 % We begin by describing the problem of fair prediction and introduce three of the most popular definitions developed for this task.  We then give a brief overview of causal modeling which will act as our `tool-kit' for modeling and defining fairness.
 
+% !TEX root=ricardo_draft.tex
+% binary classification
+% In essence, the primary challenge in training fair classifiers comes
+% from the world itself  not being fair, and as such an
+% unbiased (in the technical sense) classifier trained from real-world
+% data is not guaranteed to be fair (in the social sense).
+
+This section provides a basic account of two separate areas of
+research in machine learning, which are formally unified in this
+paper. We suggest \citet{berk:17} and \citet{pearl:16} as references for
+further reading.
+
+Throughout this paper, we will use the following notation.  Let $A$
+denote the set of {\it protected attributes} of an individual,
+variables that must not be discriminated against in a formal sense
+defined differently by each notion of fairness discussed. The decision
+of whether an attribute is protected or not is taken as a primitive in
+any given problem, regardless of the definition of fairness
+adopted. Moreover, let $X$ denote the other observable attributes of any
+particular individual, $U$ the set of latent attributes, and let $Y$
+denote the outcome to be predicted, which itself might be contaminated
+with historical biases. Finally, $\hat Y$ is the {\it predictor}, a
+random variable that depends on $A, X$ and $U$, and which is given by
+a machine learning algorithm as a prediction for $Y$.
+
+\subsection{Fairness}
+
+The goal of fairness in machine learning is to design automated
+algorithms that make fair predictions across various demographic
+groups. This unfairness can arise in several ways. Consider for
+instance historically biased distributions, where individuals
+with different protected attributes $A$ may have many different
+attributes $X$ such as their current level of wealth. Disparities may be due to
+discriminative measures in hiring practices and perpetuated by lacking
+of educational opportunities in the typical geographical location of
+minorities.
+%In the case of {\bf selection unfairness}, an outcome such
+%as number of past arrests might be associated more strongly with particular demographics
+%groups due to their typical neighborhoods being targeted more frequently than average
+%by police searches.
+%%%%%%%%%%%%%% ICML text
+%\item {\bf Historically biased distributions:} Individuals with
+%  different protected attributes $A$ may have many different
+%  attributes due to current and historic biases (e.g., racial
+%  inequality caused by things like colonialism, slavery, a history of
+%  discrimination in hiring and housing etc.). %Importantly, these
+%  differences may lead to unfairness% , even
+%% if you use different covariates to make predictions for each group
+%\item {\bf Selection unfairness:} The training data could contain
+%  selection bias. For instance, if we are using a dataset describing
+%  who paid loans back in full in order to train a loan prediction
+%  algorithm, it may be that loans were unfairly distributed. Since we
+%  can't see whether people will pay back a loan if they didn't receive
+%  one, our algorithms may be biased by this sampling.
+%\item {\bf Prediction unfairness:} The learned classifier could use
+%  either protected attributes such as race or correlated attributes as
+%  features, and learn a biased predictor.
+%\end{description}
+%%%%%%%%%%%%%% END ICML TEXT
+
+There has been a wealth of recent work towards fair
+algorithms. % In large part, these methods have focused (and reasonably
+% so) on binary classification with a binary sensitive attributes
+% (CITE).
+These include fairness through unawareness \cite{grgiccase}, demographic
+parity/disparate impact \cite{zafar2015learning}, individual fairness
+\cite{dwork2012fairness,zemel2013learning,louizos2015variational,joseph2016rawlsian}, and
+equality of opportunity \cite{hardt2016equality,zafar2016fairness}.
+
+% A variety of algorithmic approaches to achieving fairness have been proposed.
+%\begin{description}
+
+\begin{define}[Fairness Through Unawareness (FTU)]
+  An algorithm is fair so long as any protected attributes $A$ are not
+  explicitly used in the decision-making process. Any mapping
+  $\hat{Y}: X \rightarrow Y$ that excludes $A$ satisfies this.
+  %(or other unfair attributes, see \citet{grgiccase}) satisfies this.
+\end{define}
+Initially proposed as a baseline method, the approach has found favor
+recently with more general approaches such as \citet{grgiccase}.  The
+approach has a compelling simplicity, but it has a clear shortcoming
+as elements of $X$ can contain discriminatory information analogous to $A$ that may
+not be obvious only through the assessment of their association. The need
+for expert knowledge in assessing the relationship between
+$A$ and $X$ was highlighted in the work on individual fairness:
+%and constructs a predictor $\hat
+%Y$ based on a feature vector $X$ that excludes $A$, and in the case of
+%\citet{grgiccase} other attributes labeled as unfair.
+%
+\begin{define}[Individual Fairness (IF)]
+  An algorithm is fair if it gives similar predictions to similar
+  individuals. Formally, if individuals $i$ and $j$ are similar apart
+  from their protected attributes $A_i$, $A_j$ then
+  $\hat{Y}(X^{(i)}, A^{(i)}) \approx \hat{Y}(X^{(j)}, A^{(j)})$.
+%\begin{align}
+%  \hat{Y}(X^{(i)}, A^{(i)}) \approx \hat{Y}(X^{(j)}, A^{(j)}).\nonumber
+%\end{align}
+\end{define}
+%This approach can be understood loosely as a continuous analog of
+%FTU.
+As described in \cite{dwork2012fairness}, the notion of similarity
+must be carefully chosen, requiring an understanding of the domain at
+hand beyond black-box statistical modeling. This can also be
+contrasted again population level criteria such as
+%of fairness
+%will not correct for the historical biases described above.
+%
+\begin{define}[Demographic Parity (DP)] 
+A predictor  $\hat{Y}$ satisfies demographic parity if
+%\begin{align}
+$P(\hat{Y} | A = 0) = P(\hat{Y} | A = 1)$. %\nonumber
+%\end{align}
+\end{define}
+ %       
+ % PROBLEMS: (a) It allows that we accept qualified applicants for one value of A and unqualified applicants for another value of A (which could arise naturally if we have little training data about one value of A). (b) It can seriously destroy prediction accuracy. (c) It is technically possible to use such a classifier to justify discrimination, if we pick unqualified applicants in one group. (d) Is ignorant of how data was sampled and ignores fairness with respect to subgroups or super-groups.
+%
+\begin{define}[Equality of Opportunity (EO)]
+ %An algorithm is fair if it is equally accurate for each value of the sensitive attribute $A$.
+ A predictor $\hat{Y}$ satisfies equality of opportunity if
+%\begin{align}
+$P(\hat{Y}=1 | A=0,Y=1) = P(\hat{Y}=1 | A=1,Y=1)$. %\nonumber
+%\end{align}
+\end{define}
+These criteria can be incompatible in
+general, as discussed by \citet{kleinberg2016inherent} and \citet{berk:17}.
+Following the motivation of IF, we propose that knowledge
+about individual differences should be taken into consideration,
+even if strong assumptions are necessary. Moreover, it is not clear
+for any of these approaches in which ways historical biases can be
+tackled. We approach such issues from an explicit causal modeling
+perspective.
+
 % \subsection{Fairness}
 % Consider a scenario in which predictions must be fair. For instance, imagine a university in the United States (US) would like to know how successful an applicant is going to be after graduation, call this $Y$, given their current incoming features $X$ such as test scores, grade-point average (GPA). To predict success a modeler is given a dataset of $n$ applications with features $\{X^{(1)}, \ldots, X^{(n)} \}$ and measures of graduation success $\{Y^{(1)}, \ldots, Y^{(n)}\}$. However, historically  student admission \cite{kane1998racial,kidder2000portia} in universities in the US suffered from racial and gender biases. Thus, in addition we are given demographic and gender information for each individual $\{A^{(1)}, \ldots, A^{(n)}\}$ that we will use to ensure our model is fair.
 
@@ -35,75 +167,83 @@
 % \end{define}
 
 
-
-%\subsection{Causal Models and Counterfactuals}
+\subsection{Causal Models and Counterfactuals}
 \label{subsec:cmc}
 We follow % the framework of
 \citet{pearl:00}, and define a causal
 model as a triple $(U, V, F)$ of sets such that
 %
 \begin{itemize}
-\item $U$ is a set of latent {\bf background} variables\footnote{These are
-  sometimes called {\bf exogenous variables}, but the fact that members of $U$
-  might depend on each other is not relevant to what follows.}, generated by factors
-outside of our control, and in general do not depend on any protected attributes $A$ (unless  explicitly specified);
-\item $V$ is a set of {\bf endogenous} variables, each member is determined by
-  other variables in $U \cup V$;
+\item $U$ is a set of latent {\bf background} variables,%\footnote{These are
+  %sometimes called {\bf exogenous variables}, but the fact that members of $U$
+  %might depend on each other is not relevant to what follows.},
+  which factors not caused by any variable in the set $V$ of observable variables;
 \item $F$ is a set of functions $\{f_1, \dots, f_n\}$, one for each $V_i \in V$, such
 that $V_i = f_i(pa_i, U_{pa_i})$, $pa_i \subseteq V \backslash
 \{V_i\}$ and $U_{pa_i} \subseteq U$. Such equations are also known as
 {\bf structural equations} \citep{bol:89}.
 \end{itemize}
 %
-The notation ``$pa_i$'' refers to the ``parents'' of $V_i$ and is motivated by the assumption that the
-model factorizes according to a directed acyclic graph (DAG). That is, we can
-define a directed graph ${\mathcal G}=(U \cup V, \mathcal E )$ where each node is an
-element of $U \cup V$, and each edge from some $Z \subseteq U \cup V$ to $V_i$ indicates that $Z \in pa_i \cup U_{pa_i}$. By construction, $\mathcal G$ is
-acyclic.
 
-The model is causal in that, given a distribution $p(U)$
-over the background variables $U$, you can derive the distribution of
-a subset $Z \subseteq V$ following an {\bf intervention} on the
-complementary subset $V\setminus Z$.  Here,
-an {\bf intervention} on the variable $V_i$ of value $v$ refers to the substitution of
-equation $V_i = f_i(pa_i, U_{pa_i})$ with the equation $V_i =
-v$. This captures the idea of an agent, external to the
-system, modifying it by forcefully assigning value $v$ to $V_i$. This occurs in a randomized controlled trials where the value
-of $V_i$ is overridden by a treatment setting it to $v$, a value
-chosen at random, and thus independent of any other causes.% of the
+%The notation ``$pa_i$'' refers to the ``parents'' of $V_i$ and is
+%motivated by the assumption that the model factorizes according to a
+%directed acyclic graph (DAG). That is, we can define a directed graph
+%${\mathcal G}=(U \cup V, \mathcal E )$ where each node is an element
+%of $U \cup V$, and each edge from some $Z \subseteq U \cup V$ to $V_i$
+%indicates that $Z \in pa_i \cup U_{pa_i}$. By construction, $\mathcal
+%G$ is acyclic.
+
+The notation ``$pa_i$'' refers to the ``parents'' of $V_i$ and is
+motivated by the assumption that the model factorizes as a directed
+graph, here assumed to be a directed acyclic graph (DAG).  The model
+is causal in that, given a distribution $p(U)$ over the background
+variables $U$, we can derive the distribution of a subset $Z \subseteq
+V$ following an {\bf intervention} on $V\setminus Z$.  An 
+  intervention on variable $V_i$ is the substitution of equation $V_i
+= f_i(pa_i, U_{pa_i})$ with the equation $V_i = v$ for some $v$. This
+captures the idea of an agent, external to the system, modifying it by
+forcefully assigning value $v$ to $V_i$.
+%This occurs in a randomized
+%controlled trials where the value of $V_i$ is overridden by a
+%treatment setting it to $v$, a value chosen at random, and thus
+%independent of any other causes.% of the
 %system. % The do-calculus of \citet{pearl:00} provides a way to identify
 % features of interventional distributions %, where possible,
 % using only estimates of the joint distribution of $V$ and knowledge of
 % the causal DAG.
 
-In contrast with the independence constraints given by a DAG, the full
-specification of $F$ requires stronger assumptions but enables
-stronger claims. In particular, it allows for the
-calculation of {\bf counterfactual} quantities. % Without going into a
-% detailed coverage of the topic
-In brief, consider the following counterfactual
-statement, ``the value of $Y$ if $Z$ had taken value $z$'', for two endogenous
-variables $Z$ and $Y$ in a causal model. By assumption, the state of
-any endogenous variable is fully determined by
-the background variables and structural equations. The counterfactual is
-modeled as the solution for $Y$ for a given $U = u$ where the equations
-for $Z$ are replaced with $Z \!=\! z$.  We denote it by $Y_{Z \leftarrow z}(u)$
-\cite{pearl:00}, and sometimes as $Y_z$ if the context of the notation is clear.
+The specification of $F$ is a strong assumption but allows for the
+calculation of {\bf counterfactual} quantities.  In brief, consider
+the following counterfactual statement, ``the value of $Y$ if $Z$ had
+taken value $z$'', for two observable variables $Z$ and $Y$. By
+assumption, the state of any observable variable is fully determined
+by the background variables and structural equations. The
+counterfactual is modeled as the solution for $Y$ for a given $U = u$
+where the equations for $Z$ are replaced with $Z \!=\!  z$.  We denote
+it by $Y_{Z \leftarrow z}(u)$ \cite{pearl:00}, and sometimes as $Y_z$
+if the context of the notation is clear.
 
-Counterfactual inference, as specified by a causal model $(U, V, F)$ given evidence $W$,
-is the computation of probabilities
-$P(Y_{Z \leftarrow z}(U)\ |\ W \!=\! w)$, where $W$, $Z$ and $Y$ are
-subsets of $V$. Inference proceeds in three steps, as explained in
-more detail in Chapter 4 of \citet{pearl:16}:
-\begin{enumerate}
-\item Abduction: for a given prior on $U$, compute the posterior
-  distribution of $U$ given % the evidence
-  $W = w$;
-\item Action: substitute the equations for $Z$ with the interventional
-  values $z$, resulting in the modified set of equations $F_z$;
-\item Prediction: compute the implied distribution on the remaining
-  elements of $V$ using $F_z$ and the posterior $P(U\ | W = w)$.
-\end{enumerate}
+Counterfactual inference, as specified by a causal model $(U, V, F)$
+given evidence $W$, is the computation of probabilities $P(Y_{Z
+  \leftarrow z}(U)\ |\ W \!=\! w)$, where $W$, $Z$ and $Y$ are subsets
+of $V$. Inference proceeds in three steps, as explained in more detail
+in Chapter 4 of \citet{pearl:16}: 1. {\bf Abduction}: for a given
+prior on $U$, compute the posterior distribution of $U$ given the
+evidence $W = w$; 2. {\bf Action}: substitute the equations for $Z$
+with the interventional values $z$, resulting in the modified set of
+equations $F_z$; 3. {\bf Prediction}: compute the implied distribution
+on the remaining elements of $V$ using $F_z$ and the posterior $P(U\ |
+W = w)$.
+
+%\begin{enumerate}
+%\item Abduction: for a given prior on $U$, compute the posterior
+%  distribution of $U$ given % the evidence
+%  $W = w$;
+%\item Action: substitute the equations for $Z$ with the interventional
+%  values $z$, resulting in the modified set of equations $F_z$;
+%\item Prediction: compute the implied distribution on the remaining
+%  elements of $V$ using $F_z$ and the posterior $P(U\ | W = w)$.
+%\end{enumerate}
 
 
 

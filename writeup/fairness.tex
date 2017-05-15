@@ -35,47 +35,57 @@
 %\subsection{Definition}
 %Formally, a variable $Y$ is said to be counterfactually fair with
 %respect to a protected attribute $A$ if
-Given a causal model $(U, V, F)$, let $A\subseteq V$ be a set of protected
-attributes, $\hat Y \subseteq V$ a variable which will be the basis for
-any decision making, and $W$ the set of complementary measurements such that
-$W= V \setminus ( A \cup \{\hat Y\})$.
+Given a predictive problem with fairness considerations, where $A$, $X$ and $Y$
+represent the protected attributes, remaining attributes, and output of interest respectively,
+let us assume that we are given a causal model $(U, V, F)$, where $V \equiv A \cup X$.
+We postulate the following criterion for predictors of $Y$.
 \begin{define}[Counterfactual fairness]
-We say $\hat Y$ is {\bf counterfactually fair}
-if under any context uniquely defined by evidence $W = w$ and sensitive $A = a$,
+Predictor $\hat Y$ is {\bf counterfactually fair}
+if under any context $X = x$ and $A = a$,
   \label{eq:cf_definition}
 \begin{align}
-  P(\hat Y_{A \leftarrow a\ }(U) = y\ |\ W = w, A = a)  =%\nonumber\\ 
-  P(\hat Y_{A \leftarrow a'}(U) = y\ |\ W = w, A = a), 
+  P(\hat Y_{A \leftarrow a\ }(U) = y\ |\ X = x, A = a)  =%\nonumber\\ 
+  P(\hat Y_{A \leftarrow a'}(U) = y\ |\ X = x, A = a), 
 \end{align}
 for all $y$ and for any value $a'$ attainable by $A$.
 \end{define}
 %Simply put,
-This captures the idea that any decision based on the
-conditional distribution of $\hat Y$ would be the same despite  $A$ being
-different, given the full implications of $A$ having always been different.
-We can also see $\hat Y$ as satisfying ``counterfactual exchangeability''
-under this model.
-%This definition substantially differs from Fairness Through
-%Unawareness, as it considers the influence of attributes such as race
-%on other measured variables.
 
-An associated concept of causal fairness appears as Example 4.4.4 in
-\citet{pearl:16}. There, the authors condition instead on $W$, $A$,
-and the observed realization of $\hat Y$, and calculate the
-probability of the counterfactual realization differing from the
-factual\footnote{The result is an expression called the ``the
-  probability of sufficiency'' for $A$, capturing the notion that
-  switching $A$ to a different value would be sufficient to change
-  $\hat Y$ with some probability.}. This example conflates the
-recorded decision $\hat Y$ with the information $Y$ on which we should
-ideally base our decision making, a difference which we maintain.  Our
-framing makes the connection to other existing machine learning
-methods more explicit, as we discuss in Section \ref{sec:methods}.
-Evidence used to determine the state of background variables $U$
-should come from $A$ and $W$ alone, as in many setups we wish to
-predict some $Y$ as $\hat Y$, when $Y$ is unavailable at any point in
-our inference.
+Notice this definition is agnostic with respect to how good a predictor
+$\hat Y$ is, which we discuss in Section \ref{sec:methods}.
 
+The appeal of counterfactual fairness is its close relationship to 
+{\bf actual causes} \cite{halpern:16}, or token causality. Had other
+things been equal, $A$ should not be a cause of $\hat Y$ in any
+individual instance. In other words, changing $A$ while holding
+everything else the same will not change the distribution of $\hat
+Y$\footnote{Notice that we always assume counterfactuals to be
+  well-defined by the model. For instance, ``race'' can be taken as a
+  surrogate for ``race perception''.}. 
+
+\noindent {\bf Relation to individual fairness}. IF is agnostic with
+respect to its notion of similarity metric, which is both a strength
+(generality) and a weakness (no unified way of defining similarity).
+Counterfactuals and similarities are related, as in the classical
+notion of distances between ``worlds'' corresponding to different
+counterfactuals \cite{lewis:73}.  Put simply, if $\hat Y$ is a
+deterministic function of $W \subset A \cup X \cup U$, as in several
+of our examples to follow, then IF defined by treating equally two
+individuals with the same $W$ will also be counterfactually fair.
+
+\noindent {\bf Relation to \citet{pearl:16}}.  In
+Example 4.4.4 of \cite{pearl:16}, the authors condition instead on
+$X$, $A$, and the observed realization of $\hat Y$, and calculate the
+probability of the counterfactual realization $\hat Y_{A \leftarrow
+  a'}$ differing from the factual.
+%\footnote{The result is an expression
+%  called the ``the probability of sufficiency'' for $A$, capturing the
+%  notion that switching $A$ to a different value would be sufficient
+%  to change $\hat Y$ with some probability.}.
+This example conflates the predictor $\hat Y$ with the outcome $Y$, of
+which we remain agnostic in our definition but which is used in the
+construction of $\hat Y$ as in Section \ref{sec:methods}. Our framing
+makes the connection to machine learning more explicit.
 % We also emphasize that counterfactual fairness is an individual-level
 % definition. This is substantially different from the notion of ``causal independence''
 % as discussed in Section 4.3.1 of \cite{pearl:16}. Causal independence
@@ -94,79 +104,108 @@ We also emphasize that counterfactual fairness is an
 individual-level definition. This is substantially different
 from comparing different units that happen to share the
 same ``treatment'' and coincide on values of $X$, as discussed in
-Section 4.3.1 of \citep{pearl:16}. Here, differences in the value
-of $X$ must be caused by variations on $A$ only.
+Section 4.3.1 of \citep{pearl:16}. Differences between $X_a$ and $X_{a'}$
+must be caused by variations on $A$ only.
 
 \begin{figure}
   \begin{tabular}{p{0.5\columnwidth}|p{0.5\columnwidth}}
     \centerline{\includegraphics[width=0.5\columnwidth]{implications_fig.pdf}}&
-    \centerline{\includegraphics[width=0.5\columnwidth]{simple_models_no_q3}}
+    \centerline{\includegraphics[width=0.5\columnwidth]{simple_models_no_q3}}(d)
   \end{tabular}
-  \caption{\label{fig:ex1} {\bf Left:} (a) The graph corresponding to a causal model with $A$ being the protected attribute
-    and $Y$ some outcome of interest, with background variables assumed to be independent.
-    (b) Expanding the model to include an intermediate variable indicating whether the individual
-    is employed with two (latent) background variables $\textbf{Prejudiced}$ (if the person  offering the job is prejudiced) and $\textbf{Qualifications}$ (a measure of the individual's qualifications). (c) A twin network representation of this system \citep{pearl:00}
-    under two different counterfactual levels for $A$. This is created by copying nodes descending from $A$, which inherit unaffected parents from the factual world. {\bf Right:} Three causal models for different real-world fair prediction scenarios.\label{figure.simple_models} See section \ref{sec:count_fair} for discussion.}
+  \caption{\label{fig:ex1} {\bf Left:} (a) The graph corresponding to
+    a causal model with $A$ being the protected attribute and $Y$ some
+    outcome of interest, with background variables assumed to be
+    independent.  (b) Expanding the model to include an intermediate
+    variable indicating whether the individual is employed with two
+    (latent) background variables $\textbf{Prejudiced}$ (if the person
+    offering the job is prejudiced) and $\textbf{Qualifications}$ (a
+    measure of the individual's qualifications). (c) A twin network
+    representation of this system \citep{pearl:00} under two different
+    counterfactual levels for $A$. This is created by copying nodes
+    descending from $A$, which inherit unaffected parents from the
+    factual world. {\bf Right:} Three causal models for different
+    real-world fair prediction scenarios.\label{figure.simple_models}
+    See section \ref{sec:count_fair} for discussion.}
 \end{figure}
 
 \subsection{Implications}
 %
-As discussed by \cite{halpern:16}, it is unproductive to debate
-if a particular counterfactual definition is the ``correct'' one
-to satisfy socially constructed concepts such as blame and responsibility.
-The same applies to fairness. Instead, we discuss the
-implications of definition \eqref{eq:cf_definition} and some choices
-that arise in its application.
+One simple but important implication of the definition of counterfactual fairness is the following:
+%
+\begin{lem}
+  Let $\mathcal G$ be the causal graph of the given model $(U, V, F)$.
+  Then $\hat Y$ will be counterfactual fair if it is a function
+  of the non-descendants of $A$.
+\end{lem}
+%
+\begin{proof}
+ Let $W$ be any non-descendant of $A$ in $\mathcal G$. Then $W_{A
+   \leftarrow a}(U) = W_{A \leftarrow a'}(U)$ by the three inferential
+ steps in Section \ref{subsec:cmc}.  Hence, any function of the
+ non-descendants of $A$ is invariant with respect to the
+ counterfactual values of $A$, and so will be $P(Y_{A \leftarrow
+   a'}(U)\ |\ X = x, A = a)$.
+\end{proof}
 
-First, we wish to make explicit the difference between $\hat Y$, the
-predictor we use for fair decisions, and $Y$, the related state
-generated by an unfair world. For instance, $Y$ could be an indicator
-of whether a client defaults on a loan, while $\hat Y$ is the actual
-decision of giving the loan. Consider the DAG $A \rightarrow Y$ for a
-causal model where $V = \{A, Y\}$, and in Figure \ref{fig:ex1}(a) the
-DAG with explicit inclusion of set $U$ of independent background
-variables. Assume $Y$ is an objectively ideal measure used in decision
-making, such as a binary indicator that the individual defaults on a
-loan. In this setup, the mechanism $f_Y(A, U)$ is causally unfair,
-with the arrow $A \rightarrow Y$ being the result of a world that
-punishes individuals in a way that is out of their control. Figure
+This does not exclude a descendant $W$ of $A$ as a possible input to
+$\hat Y$. However, this will only be possible in the case where the
+overall functional dependence of $W$ on $A$ disappears, which will not
+happen in general. The practical implication is that $\hat Y$ can use
+all and only the non-descendants of $A$.
+
+\noindent{\bf Ancestral closure of protected attributes.} Suppose that
+a parent of a member of $A$ is not in $A$.  Counterfactual fairness
+allows for the use of it in the definition of $\hat Y$. If this seems
+counterintuitive, then we argue that the fault should be at the
+postulated set of protected attributes rather than with the definition
+of counterfactual fairness, and that typically we should expect set
+$A$ to be closed under ancestral relationships given by the causal
+graph. For instance, if {\it Race} is a protected attribute, and {\it
+  Father's race} is a parent of {\it Race}, then it should also be in
+$A$.
+
+\noindent{\bf Dealing with historical biases.} The explicit difference
+between $\hat Y$ and $Y$ allows us to tackle historical biases. For
+instance, let $Y$ be an indicator of whether a client defaults on a
+loan, while $\hat Y$ is the actual decision of giving the
+loan. Consider the DAG $A \rightarrow Y$, shown in Figure
+\ref{fig:ex1}(a) with the explicit inclusion of set $U$ of independent
+background variables. $Y$ is the objectively ideal measure for
+decision making, the binary indicator that the individual defaults on
+a loan. If $A$ is postulated to be a protected attribute, then the
+mechanism $f_Y(A, U)$ is causally unfair, with the arrow $A
+\rightarrow Y$ being (for instance) the result of a world that
+punishes individuals in a way that is out of their control Figure
 \ref{fig:ex1}(b) shows a more fine-grained model, where the path is
 mediated by a measure of whether the person is employed, which is
 itself caused by two background factors: one representing whether the
 person hiring is prejudiced, and the other the employee's
-qualifications. % Thus using knowledge of employment can also result in
-% unfair predictions.
-% as it is affected by
-% prejudice.
-In this world,
-$A$ is a cause of defaulting, even if mediated by other
-variables. The counterfactual fairness principle however forbids us
-from using $Y$: using the twin network of
-\citet{pearl:00}, we see in Figure \ref{fig:ex1}(c) that $Y_a$ and
-$Y_{a'}$ need not be identically distributed given the
-background variables.
+qualifications. In this world, $A$ is a cause of defaulting, even if
+mediated by other variables\footnote{For example, if the function
+  determining employment $f_E(A,P,Q) = I_{(Q > 0, P = 0 \text{ or } A
+    \neq a)}$ then an individual with sufficient qualifications and
+  prejudiced potential employer may have a different counterfactual
+  employment value for $A = a$ compared to $A = a'$, and a different
+  chance of default. }. The counterfactual fairness principle however
+forbids us from using $Y$: using the twin network of \citet{pearl:00},
+we see in Figure \ref{fig:ex1}(c) that $Y_a$ and $Y_{a'}$ need not be
+identically distributed given the background variables.
   % \footnote{We assume
   % that function $f_Y(A, U)$ is not pathological, that is, it will give
   % different outcomes for different values of $A$ other things being
   % equal. Moreover, we assume interventions in $A$ are well defined.
   % For instance, ``race'' here could be formulated as ``race
   % perception'', which can be due to, for instance, to
-  % racially-associated names in a C.V. or loan application.}
-For example, if the function determining employment
-$f_E(A,P,Q) = I_{(Q > 0, P = 0 \text{ or } A \neq a)}$ then an individual
-with sufficient qualifications and prejudiced potential employer
-may have a different counterfactual
-employment value for $A = a$ compared to $A = a'$, and a different chance of default.
+% racially-associated names in a C.V. or loan application.}
 
-
-In contrast, any function of variables not descendants of
-$A$ can be used a basis for fair decision making. This means,
-that any variable $\hat Y$ defined by $\hat Y = g(U)$ will be counterfactually
-fair for any function $g(\cdot)$. Hence, given a causal
-model, the functional defined by the function $g(\cdot)$ 
-minimizing some predictive error for $Y$ will satisfy the criterion.
-If $\hat Y$ must be randomized, it suffices that the
-stochastic component of it is independent of any descendant of $A$.
+In contrast, any function of variables not descendants of $A$ can be
+used a basis for fair decision making. This means, that any variable
+$\hat Y$ defined by $\hat Y = g(U)$ will be counterfactually fair for
+any function $g(\cdot)$. Hence, given a causal model, the functional
+defined by the function $g(\cdot)$ minimizing some predictive error
+for $Y$ will satisfy the criterion. We are essentially learning a
+projection of $Y$ into the space of fair decisions, removing historical
+biases as a by-product.
 
 % There are two issues to be clarified at this point. First,
 % it sounds potentially counter-intuitive that our definition
@@ -179,22 +218,6 @@ stochastic component of it is independent of any descendant of $A$.
 % in principle it is not harmful as implied by the model.
 
 % The second and more complicated issue concerns the fact that
-There is a subtlety to address here: by abduction,
-$U$ will typically depend on $A$, and hence so will $\hat Y$ when
-marginalizing over $U$.
-This seems to disagree with the intuition that our fair
-variable should be not be caused by $A$. However, this is a comparison
-{\it across individuals}, not within an individual, as discussed by
-Section 4.3.1 of \citep{pearl:16}. More intuitively, consider the
-simple case where $U$ is fully determined by $A$ and $X$ (which occurs
-in some important special cases).
-In this
-scenario, we proceed just as if we have {\it measured} $U$ from the
-beginning rather than performing abduction.
-We then generate $\hat Y$ from $g(U)$, so $U$ is the cause of
-$\hat Y$ and not $A$. 
-
-
 % However, it appears to be the case that $\hat Y$ and $A$ will be
 % ``causally dependent'' in general given $W$, meaning that $P(\hat Y =
 % y\ |\ do(A = a), W = w) \neq P(\hat Y = y\ |\ do(A = a'), W = w)$.
@@ -220,22 +243,115 @@ $\hat Y$ and not $A$.
 % should not be a matter of
 % concern for a criterion defined for individual level differences.
 
-Note that we can build counterfactually fair
-predictive models for some $\hat Y$ even if the 
-structural equations that generated $Y$ are unfair. The idea is that we
-are learning a projection of $Y$ into an alternate world where it
-would be fair, which we may think of as a
-``closest world'' defined by our class of models and the
-causal structure of the world\footnote{The notion of ``closest world''
-  is pervasive in the literature of counterfactual inference under
-  different meanings \citep{pearl:00, halpern:16}.  Here, the cost
-  function used to map fair variables to unfair outcomes also plays a
-  role, but this concerns a problem dependent utility function that
-  would be present anyway in the unfair prediction problem, and is
-  orthogonal to the causal assumptions.}.
+%%%%%%% ICML STUFF
+%Note that we can build counterfactually fair
+%predictive models for some $\hat Y$ even if the 
+%structural equations that generated $Y$ are unfair. The idea is that we
+%are learning a projection of $Y$ into an alternate world where it
+%would be fair, which we may think of as a
+%``closest world'' defined by our class of models and the
+%causal structure of the world\footnote{The notion of ``closest world''
+%  is pervasive in the literature of counterfactual inference under
+%  different meanings \citep{pearl:00, halpern:16}.  Here, the cost
+%  function used to map fair variables to unfair outcomes also plays a
+%  role, but this concerns a problem dependent utility function that
+%  would be present anyway in the unfair prediction problem, and is
+%  orthogonal to the causal assumptions.}.
+%%%%%%%% END OF ICML STUFF
 
+\subsection{Further Examples}
 
+To give further intuition for counterfactual fairness we will consider
+two real-world fair prediction scenarios: \textbf{insurance pricing}
+and \textbf{crime prediction}. Each of these correspond to one of the
+two causal graphs in Figure~\ref{figure.simple_models} (d). The
+Supplementary Material provides a more mathematical discussion of
+these examples with more detailed insights.
 
+\paragraph{Scenario 1: The Red Car.}
+Imagine a car insurance company wishes to price insurance for car
+owners by predicting their accident rate $Y$. They assume there is an
+unobserved factor corresponding to aggressive driving $U$, that (a)
+causes drivers to be more likely have an accident, and (b) causes
+individuals to prefer red cars (the observed variable $X$). Moreover,
+individuals belonging to a certain race $A$ are more likely to drive
+red cars. However, these individuals are no more likely to be
+aggressive or to get in accidents than any one else. We show this in
+Figure~\ref{figure.simple_models}(d) (\emph{Left}). Thus, using the red
+car feature $X$ to predict accident likelihood $Y$ would seem to be an
+unfair prediction because it may charge individuals of a certain race
+more than others, even though no race is more likely to have an
+accident. Counterfactual fairness agrees with this notion, as $X$
+cannot be added to $\hat Y$ but $U$ can. Interestingly, we can show
+(Supplementary Material) that in a linear model, regression $Y$ on
+$A$ and $X$ is equivalent to regressing on $U$, so off-the-shelf regression
+here is counterfactually fair, even if regressing $Y$ on $X$ alone is not.
+%
+\paragraph{Scenario 2: High Crime Regions.}
+%%%%% ICML STUFF
+%A local police precinct wants to know $Y$, whether a given house is to
+%be broken into in any given day. The probability of $Y = 1$ depends on many
+%unobserved factors ($U$) but also upon the neighborhood the house lies
+%in ($X$). However, different ethnic groups are more likely to live in
+%particular neighborhoods, and so neighborhood and break-in rates are
+%often correlated with the race $A$ of the house occupier. This can be
+%seen in Figure~\ref{figure.simple_models}(d) (\emph{Center}). Unlike the
+%previous case, a predictor $\hat Y$ trained using $X$ and $A$ is not
+%counterfactually fair. The only change from Scenario 1 is that now $Y$
+%depends on $X$ as follows: $Y \!=\! \gamma U + \theta X$. Now if we
+%solve for $\lambda_X,\lambda_A$ it can be shown that $\hat Y(X,a)
+%\!=\! (\gamma - \frac{\alpha^2 \theta v_A}{\beta v_U})U + \alpha
+%\theta a$. As this predictor depends on the values of $A$, $\hat
+%Y(X,a) \!\neq\! \hat Y(X,a')$ and thus $\hat Y(X,A)$ is not
+%counterfactually fair.
+%%%%% END ICML STUFF
+A local police precinct wants to know $Y$, whether a given house is to
+be broken into in any given day. The probability of $Y = 1$ depends on
+many unobserved factors ($U$) but also upon the neighborhood the house
+lies in ($X$). However, different ethnic groups are more likely to
+live in particular neighborhoods, and so neighborhood and break-in
+rates are often correlated with the race $A$ of the house
+occupier. This can be seen in Figure~\ref{figure.simple_models}(d)
+(\emph{Center}). The only change from Scenario 1 is that now $Y$
+depends on $X$ directly. If all structural equations are linear, then
+$U$ is a linear function of $A$ and $X$, and so, indirectly, a
+counterfactually fair $\hat Y$ can be expressed as a linear function
+of $A$ and $X$. However, this is different from assuming that $\hat Y$ can be
+any linear combination of $A$ and $X$. As a matter of fact, the solution for the
+unrestricted least-squares regression of $Y$ on $A$ and $X$ cannot be
+written as a function of $U$ only, as shown in the Supplementary Material.
+%Intuitively this is because the predictor $\hat Y(X,A)$ will be a
+% function of not only $U$, but also of the part of $X$ that directly
+% causes $Y$. This means that the change in $X$ caused by the
+% counterfactual change in $A$ from $a$ to $a'$ will cause a change in
+% $\hat Y(X,A)$ so that $\hat Y(X,a) \!\neq\! \hat Y(X,a')$.  In such
+% a scenario, although the likelihood of a particular person having
+% their house broken into does not depend upon race directly, it does
+% vary which a persons race and so is not counterfactually fair.
+
+The lesson from the last example is that in general we need a
+multistage procedure in which we derive latent variables $U$, and
+based on them we minimize some loss with respect to $Y$. This is the
+core of the algorithm discussed next.
+
+%%%%%%%% ICML STUFF
+%\paragraph{Scenario 3: University Success.}
+%A university wants to know if students will be successful
+%post-graduation $Y$. They have information such as: grade point
+%average (GPA), advanced placement (AP) exams results, and other
+%academic features $X$. The university believes however, that an
+%individual's gender $A$ may influence these features and their
+%post-graduation success $Y$ due to social discrimination. They also
+%believe that independently, an individual's latent talent $U$ causes
+%$X$ and $Y$. We show this in Figure~\ref{figure.simple_models}(d)
+%(\emph{Right}). We can again ask, is the predictor $\hat Y(X,A)$
+%counterfactually fair? In this case, the different between this and
+%Scenario 1 is that $Y$ is a function of $U$ and $A$ as follows: $Y
+%\!=\! \gamma U + \eta A$. We can again solve for $\lambda_X,\lambda_A$
+%and show that $\hat Y(X,a) \!=\! (\gamma - \frac{\alpha \eta
+%  v_A}{\beta v_U})U + \eta a$. Again $\hat Y(X,A)$ is a function of
+%$A$ so it cannot be counterfactually fair.
+%%%%%%%% END ICML STUFF
 
 % TODO. Here the main
 % definition is introduced, and how it relates to ``path deletion'',
@@ -257,116 +373,6 @@ causal structure of the world\footnote{The notion of ``closest world''
 % dependencies on $A$. {\em Center and Right:} Potentially unfair worlds
 % in which the state of $A$ can influence the state of $Y$ either
 % indirectly as in {\em center} or directly as in {\em Right}.
-
-\subsection{Examples}
-To give an intuition for counterfactual fairness we will consider three % real-world
-fair prediction scenarios: \textbf{insurance pricing}; \textbf{crime prediction}; \textbf{college admissions}. Each of these correspond to one of the three causal graphs in Figure~\ref{figure.simple_models}.%, and are discussed below.
-%
-\paragraph{Scenario 1: The Red Car.}
-Imagine a car insurance company wishes to price insurance for car owners by
-predicting their accident rate $Y$. They assume there is an
-unobserved factor corresponding to aggressive driving $U$, that (a) causes
-drivers to be more likely have an accident, and (b) causes individuals to prefer red cars (the observed
-variable $X$). Moreover, individuals belonging to a
-certain race $A$ are more likely to drive red cars. However, these individuals are no more likely to be aggressive or to get in accidents than any one else. We show this in Figure~\ref{figure.simple_models} (\emph{Left}).
-
-Thus, using the red car feature $X$ to predict accident likelihood $Y$
-would seem to be an unfair prediction because it may charge
-individuals of a certain race more than others, even though no
-  race is more likely to have an accident. Counterfactual fairness
-agrees with this notion.
-%
-\begin{lem}
-Consider the structure in Figure~\ref{figure.simple_models}
-(left). There exist model classes and loss functions where fitting a
-predictor to $X$ \emph{only} is not counterfactually fair, while the same
-algorithm will give a fair predictor using \emph{both} $A$ and $X$.
-\end{lem}
-%
-\begin{proof}
-As in the definition, we will consider the population case, where the
-joint distribution is known. Consider the case where the equations
-described by the model in Figure~\ref{figure.simple_models}
-(\emph{Left}) are deterministic and linear:
-\begin{align}
-X = \alpha A + \beta U, \;\;\;\; Y = \gamma U \nonumber
-\end{align}
-and the variance of $U$ is $v_U$, the variance of $A$ is $v_A$,
-and we assume all coefficients are non-zero.
-The predictor $\hat Y(X)$ defined by least-squares
-regression of $Y$ on \emph{only} $X$ is given by $\hat Y(X) \equiv \lambda X$, where $\lambda =
-Cov(X, Y) / Var(X) \!=\! \beta\gamma v_U / (\alpha^2 v_A + \beta^2 v_U) \neq 0$.
-
-We can test whether a predictor $\hat{Y}$ is counterfactually fair
-using the procedure described in Section~\ref{subsec:cmc}:
-%\begin{itemize}
-{\em (i)} Compute $U$ given observations of $X,Y,A$; %, by solving for $U$.
-{\em (ii)} Substitute the equations involving $A$ with an interventional value $a'$; 
-% (i.e., this says: `what happens if the race of an individual were changed')
-{\em (iii)} Compute the variables $X,Y$ with the interventional value $a'$. It is clear here that $\hat Y_a(U) \!=\! \lambda(\alpha a + \beta U) \neq
-\hat Y_{a'}(U)$. This predictor is not counterfactually fair. Thus, in this case fairness through unawareness actually perpetuates unfairness.
-
-Consider instead doing least-squares regression of $Y$ on $X$ \emph{and} $A$. Note that $\hat Y(X,A) \equiv \lambda_X X + \lambda_A A$ where $\lambda_X,\lambda_A$ can be derived as follows:
-\begin{align}
-\begin{pmatrix}
-\lambda_X \\
-\lambda_A
-\end{pmatrix} &=
-\begin{pmatrix}
-Var(X) & Cov(A,X) \\
-Cov(X,A) & Var(A)
-\end{pmatrix}^{-1}
-\begin{pmatrix}
-Cov(X,Y) \\
-Cov(A,Y)
-\end{pmatrix} \nonumber \\
-&=
-%\frac{1}{(\alpha^2 v_A + \beta^2 v_U)v_A - \alpha^2 v_A^2}
-\frac{1}{\beta^2 v_U v_A}
-\begin{pmatrix}
-v_A & -\alpha v_A \\
--\alpha v_A & \alpha^2 v_A + \beta^2 v_U
-\end{pmatrix}
-\begin{pmatrix}
-\beta \gamma v_U \\
-0
-\end{pmatrix} \nonumber \\
-&=
-\begin{pmatrix}
-\frac{\gamma}{\beta} \\
-\frac{-\alpha\gamma}{\beta}
-%(-\alpha\gamma) / \beta
-\end{pmatrix}
-\end{align}
-Now imagine we have observed $A\!=\!a$. This implies that $X = \alpha a + \beta U$ and our predictor is $\hat Y(X,a) = \frac{\gamma}{\beta}(\alpha a + \beta U) + \frac{-\alpha\gamma}{\beta} a = \gamma U$. Thus, if we substitute $a$ with a counterfactual $a'$ (the action step described in Section~\ref{background}) the predictor $\hat Y(X,A)$ is unchanged! This is because our predictor is constructed in such a way that any change in $X$ caused by a change in $A$ is cancelled out by the $\lambda_A$. Thus this predictor is counterfactually fair.
-% This is known to be equivalent to first getting the residuals $R_X$ of $X$ regressed on $A$
-% and regressing $Y$ on $R_X$ and $A$. Notice that $R_X \!=\! U$, and $A$ is independent of $U$
-% and $Y$. Hence, $\hat Y$ will be the least squares regression of
-% $Y$ on $U$, resulting on $\hat Y \!=\! \gamma U$, which is counterfactually fair.
-\end{proof}
-
-Note that if Figure~\ref{figure.simple_models} (\emph{Left}) is the true model for the real world then $\hat Y(X,A)$ will also satisfy demographic parity and equality of opportunity as $Y$ will be unaffected by $A$.
-
-The above lemma holds in a more general case for the structure given
-in Figure~\ref{figure.simple_models} (\emph{Left}): any non-constant estimator that
-depends only on $X$ is not counterfactually fair as changing $A$ always alters $X$.
-We also point out that the method used in the proof is a special case
-of a general method to building a predictor based on information deduced
-about $U$ that will be described in the next section. We note that, outside of this particular causal model in Figure~\ref{figure.simple_models} (\emph{Left}), the predictor $\hat Y(X,A)$ is not counterfactually fair, as described in the following scenarios.
-%
-%
-\paragraph{Scenario 2: High Crime Regions.} 
-A local police precinct wants to know how likely a given house is to be broken into, $Y$. This likelihood depends on many unobserved factors
-($U$) but also upon the neighborhood the house lies in ($X$). However, different ethnic groups are more likely to live in particular neighborhoods, and so neighborhood and break-in rates are often correlated with the 
-race $A$ of the house occupier. This can be seen in Figure~\ref{figure.simple_models} (\emph{Center}). Unlike the previous case, a predictor $\hat Y$ trained using $X$ and $A$ is not counterfactually fair. The only change from Scenario 1 is that now $Y$ depends on $X$ as follows: $Y \!=\! \gamma U + \theta X$. Now if we solve for $\lambda_X,\lambda_A$ it can be shown that $\hat Y(X,a) \!=\! (\gamma - \frac{\alpha^2 \theta v_A}{\beta v_U})U + \alpha \theta a$. As this predictor depends on the values of $A$, $\hat Y(X,a) \!\neq\! \hat Y(X,a')$ and thus $\hat Y(X,A)$ is not counterfactually fair.
-%Intuitively this is because the predictor $\hat Y(X,A)$ will be a function of not only $U$, but also of the part of $X$ that directly causes $Y$. This means that the change in $X$ caused by the counterfactual change in $A$ from $a$ to $a'$ will cause a change in $\hat Y(X,A)$ so that $\hat Y(X,a) \!\neq\! \hat Y(X,a')$.
-% In such a scenario, although the likelihood of a particular
-% person having their house broken into does not depend upon race
-% directly, it does vary which a persons race and so is not
-% counterfactually fair.
-
-\paragraph{Scenario 3: University Success.}
-A university wants to know if students will be successful post-graduation $Y$. They have information such as: grade point average (GPA), advanced placement (AP) exams results, and other academic features $X$. The university believes however, that an individual's gender $A$ may influence these features and their post-graduation success $Y$ due to social discrimination. They also believe that independently, an individual's latent talent $U$ casues $X$ and $Y$. We show this in Figure~\ref{figure.simple_models} (\emph{Right}). We can again ask, is the predictor $\hat Y(X,A)$ counterfactually fair? In this case, the different between this and Scenario 1 is that $Y$ is a function of $U$ and $A$ as follows: $Y \!=\! \gamma U + \eta A$. We can again solve for $\lambda_X,\lambda_A$ and show that $\hat Y(X,a) \!=\! (\gamma - \frac{\alpha \eta v_A}{\beta v_U})U + \eta a$. Again $\hat Y(X,A)$ is a function of $A$ so it cannot be counterfactually fair.
 
 %In Scenarios 2 and 3 in general $\hat Y(X,A)$ will also not satisfy demographic parity as $Y$ will be affected by $A$. In fact, we demonstrate in the next section that demographic parity is strictly more restrictive than counterfactual fairness.
 
