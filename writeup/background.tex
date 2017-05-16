@@ -23,20 +23,20 @@ adopted. Moreover, let $X$ denote the other observable attributes of any
 particular individual, $U$ the set of latent attributes, and let $Y$
 denote the outcome to be predicted, which itself might be contaminated
 with historical biases. Finally, $\hat Y$ is the {\it predictor}, a
-random variable that depends on $A, X$ and $U$, and which is given by
-a machine learning algorithm as a prediction for $Y$.
+random variable that depends on $A, X$ and $U$, and which is produced by
+a machine learning algorithm as a prediction of $Y$.
 
 \subsection{Fairness}
 
 The goal of fairness in machine learning is to design automated
 algorithms that make fair predictions across various demographic
 groups. This unfairness can arise in several ways. Consider for
-instance historically biased distributions, where individuals
-with different protected attributes $A$ may have many different
-attributes $X$ such as their current level of wealth. Disparities may be due to
-discriminative measures in hiring practices and perpetuated by lacking
-of educational opportunities in the typical geographical location of
-minorities.
+instance historically biased distributions, where individuals with
+different protected attributes $A$ may have different attributes
+$X$ such as their current level of wealth, which is then used for
+credit scoring. Disparities may be due to discriminative measures in
+hiring practices and perpetuated by reduced financial support
+for the education of minorities due to bad credit ratings.
 %In the case of {\bf selection unfairness}, an outcome such
 %as number of past arrests might be associated more strongly with particular demographics
 %groups due to their typical neighborhoods being targeted more frequently than average
@@ -65,9 +65,9 @@ There has been a wealth of recent work towards fair
 algorithms. % In large part, these methods have focused (and reasonably
 % so) on binary classification with a binary sensitive attributes
 % (CITE).
-These include fairness through unawareness \cite{grgiccase}, demographic
-parity/disparate impact \cite{zafar2015learning}, individual fairness
-\cite{dwork2012fairness,zemel2013learning,louizos2015variational,joseph2016rawlsian}, and
+These include fairness through unawareness \cite{grgiccase},
+individual fairness \cite{dwork2012fairness,zemel2013learning,louizos2015variational,joseph2016rawlsian},
+demographic parity/disparate impact \cite{zafar2015learning}, and
 equality of opportunity \cite{hardt2016equality,zafar2016fairness}.
 
 % A variety of algorithmic approaches to achieving fairness have been proposed.
@@ -75,17 +75,17 @@ equality of opportunity \cite{hardt2016equality,zafar2016fairness}.
 
 \begin{define}[Fairness Through Unawareness (FTU)]
   An algorithm is fair so long as any protected attributes $A$ are not
-  explicitly used in the decision-making process. Any mapping
-  $\hat{Y}: X \rightarrow Y$ that excludes $A$ satisfies this.
+  explicitly used in the decision-making process. 
   %(or other unfair attributes, see \citet{grgiccase}) satisfies this.
 \end{define}
-Initially proposed as a baseline method, the approach has found favor
-recently with more general approaches such as \citet{grgiccase}.  The
-approach has a compelling simplicity, but it has a clear shortcoming
-as elements of $X$ can contain discriminatory information analogous to $A$ that may
-not be obvious only through the assessment of their association. The need
-for expert knowledge in assessing the relationship between
-$A$ and $X$ was highlighted in the work on individual fairness:
+Any mapping $\hat{Y}: X \rightarrow Y$ that excludes $A$ satisfies
+this. Initially proposed as a baseline, the approach has found
+favor recently with more general approaches such as \citet{grgiccase}.
+Despite its compelling simplicity, FTU has a clear
+shortcoming as elements of $X$ can contain discriminatory information
+analogous to $A$ that may not be obvious at first. The need for expert
+knowledge in assessing the relationship between $A$ and $X$ was
+highlighted in the work on individual fairness:
 %and constructs a predictor $\hat
 %Y$ based on a feature vector $X$ that excludes $A$, and in the case of
 %\citet{grgiccase} other attributes labeled as unfair.
@@ -124,12 +124,12 @@ $P(\hat{Y} | A = 0) = P(\hat{Y} | A = 1)$. %\nonumber
 $P(\hat{Y}=1 | A=0,Y=1) = P(\hat{Y}=1 | A=1,Y=1)$. %\nonumber
 %\end{align}
 \end{define}
-These criteria can be incompatible in
-general, as discussed by \citet{kleinberg2016inherent} and \citet{berk:17}.
-Following the motivation of IF, we propose that knowledge
-about individual differences should be taken into consideration,
-even if strong assumptions are necessary. Moreover, it is not clear
-for any of these approaches in which ways historical biases can be
+These criteria can be incompatible in general, as discussed by
+\citet{kleinberg2016inherent} and \citet{berk:17}.  Following the
+motivation of IF, we propose that knowledge about individual
+differences should be taken into consideration, even if strong
+assumptions are necessary. Moreover, it is not immediately clear for
+any of these approaches in which ways historical biases can be
 tackled. We approach such issues from an explicit causal modeling
 perspective.
 
@@ -177,7 +177,7 @@ model as a triple $(U, V, F)$ of sets such that
 \item $U$ is a set of latent {\bf background} variables,%\footnote{These are
   %sometimes called {\bf exogenous variables}, but the fact that members of $U$
   %might depend on each other is not relevant to what follows.},
-  which factors not caused by any variable in the set $V$ of observable variables;
+  which are factors not caused by any variable in the set $V$ of {\bf observable} variables;
 \item $F$ is a set of functions $\{f_1, \dots, f_n\}$, one for each $V_i \in V$, such
 that $V_i = f_i(pa_i, U_{pa_i})$, $pa_i \subseteq V \backslash
 \{V_i\}$ and $U_{pa_i} \subseteq U$. Such equations are also known as
@@ -196,7 +196,7 @@ that $V_i = f_i(pa_i, U_{pa_i})$, $pa_i \subseteq V \backslash
 The notation ``$pa_i$'' refers to the ``parents'' of $V_i$ and is
 motivated by the assumption that the model factorizes as a directed
 graph, here assumed to be a directed acyclic graph (DAG).  The model
-is causal in that, given a distribution $p(U)$ over the background
+is causal in that, given a distribution $P(U)$ over the background
 variables $U$, we can derive the distribution of a subset $Z \subseteq
 V$ following an {\bf intervention} on $V\setminus Z$.  An 
   intervention on variable $V_i$ is the substitution of equation $V_i

@@ -51,27 +51,33 @@ for all $y$ and for any value $a'$ attainable by $A$.
 \end{define}
 %Simply put,
 
-Notice this definition is agnostic with respect to how good a predictor
-$\hat Y$ is, which we discuss in Section \ref{sec:methods}.
-
-The appeal of counterfactual fairness is its close relationship to 
-{\bf actual causes} \cite{halpern:16}, or token causality. Had other
+The appeal of counterfactual fairness is its close relationship to
+{\bf actual causes} \cite{halpern:16}, or token causality: other
 things been equal, $A$ should not be a cause of $\hat Y$ in any
 individual instance. In other words, changing $A$ while holding
 everything else the same will not change the distribution of $\hat
 Y$\footnote{Notice that we always assume counterfactuals to be
   well-defined by the model. For instance, ``race'' can be taken as a
-  surrogate for ``race perception''.}. 
+  surrogate for ``race perception''.}. We also emphasize that
+counterfactual fairness is an individual-level definition. This is
+substantially different from comparing different individuals that happen to
+share the same ``treatment'' $A = a$ and coincide on the values of
+$X$, as discussed in Section 4.3.1 of \citep{pearl:16} and the
+Supplementary Material\footnote{We strongly suggest that reviewers
+  look at it.}. Differences between $X_a$ and $X_{a'}$ must be caused
+by variations on $A$ only. Notice also that this definition is
+agnostic with respect to how good a predictor $\hat Y$ is, which we
+discuss in Section \ref{sec:methods}.
 
 \noindent {\bf Relation to individual fairness}. IF is agnostic with
 respect to its notion of similarity metric, which is both a strength
 (generality) and a weakness (no unified way of defining similarity).
 Counterfactuals and similarities are related, as in the classical
 notion of distances between ``worlds'' corresponding to different
-counterfactuals \cite{lewis:73}.  Put simply, if $\hat Y$ is a
+counterfactuals \cite{lewis:73}. Defining $\hat Y$ as a
 deterministic function of $W \subset A \cup X \cup U$, as in several
-of our examples to follow, then IF defined by treating equally two
-individuals with the same $W$ will also be counterfactually fair.
+of our examples to follow, then IF can be defined by treating equally two
+individuals with the same $W$ in a way that is also counterfactually fair.
 
 \noindent {\bf Relation to \citet{pearl:16}}.  In
 Example 4.4.4 of \cite{pearl:16}, the authors condition instead on
@@ -100,12 +106,6 @@ makes the connection to machine learning more explicit.
 % counterfactual fairness concerns the variation possible within an
 % individual depending on their value of $a$ and the descendents of
 % $A$ in the causal graph.
-We also emphasize that counterfactual fairness is an
-individual-level definition. This is substantially different
-from comparing different units that happen to share the
-same ``treatment'' and coincide on values of $X$, as discussed in
-Section 4.3.1 of \citep{pearl:16}. Differences between $X_a$ and $X_{a'}$
-must be caused by variations on $A$ only.
 
 \begin{figure}
   \begin{tabular}{p{0.5\columnwidth}|p{0.5\columnwidth}}
@@ -123,9 +123,9 @@ must be caused by variations on $A$ only.
     representation of this system \citep{pearl:00} under two different
     counterfactual levels for $A$. This is created by copying nodes
     descending from $A$, which inherit unaffected parents from the
-    factual world. {\bf Right:} Three causal models for different
+    factual world. (d) Two causal models for different
     real-world fair prediction scenarios.\label{figure.simple_models}
-    See section \ref{sec:count_fair} for discussion.}
+    See Section \ref{sec:count_fair} for discussion.}
 \end{figure}
 
 \subsection{Implications}
@@ -140,14 +140,13 @@ One simple but important implication of the definition of counterfactual fairnes
 %
 \begin{proof}
  Let $W$ be any non-descendant of $A$ in $\mathcal G$. Then $W_{A
-   \leftarrow a}(U) = W_{A \leftarrow a'}(U)$ by the three inferential
- steps in Section \ref{subsec:cmc}.  Hence, any function of the
- non-descendants of $A$ is invariant with respect to the
- counterfactual values of $A$, and so will be $P(Y_{A \leftarrow
-   a'}(U)\ |\ X = x, A = a)$.
+   \leftarrow a}(U)$ and $W_{A \leftarrow a'}(U)$ have the same
+ distribution by the three inferential steps in Section
+ \ref{subsec:cmc}.  Hence, the distribution of any function $\hat Y$ of the non-descendants of $A$
+ is invariant with respect to the counterfactual values of $A$.
 \end{proof}
 
-This does not exclude a descendant $W$ of $A$ as a possible input to
+This does not exclude using a descendant $W$ of $A$ as a possible input to
 $\hat Y$. However, this will only be possible in the case where the
 overall functional dependence of $W$ on $A$ disappears, which will not
 happen in general. The practical implication is that $\hat Y$ can use
@@ -171,18 +170,18 @@ loan, while $\hat Y$ is the actual decision of giving the
 loan. Consider the DAG $A \rightarrow Y$, shown in Figure
 \ref{fig:ex1}(a) with the explicit inclusion of set $U$ of independent
 background variables. $Y$ is the objectively ideal measure for
-decision making, the binary indicator that the individual defaults on
+decision making, the binary indicator of the event that the individual defaults on
 a loan. If $A$ is postulated to be a protected attribute, then the
-mechanism $f_Y(A, U)$ is causally unfair, with the arrow $A
+predictor $\hat Y = Y = f_Y(A, U)$ is not counterfactually fair, with the arrow $A
 \rightarrow Y$ being (for instance) the result of a world that
-punishes individuals in a way that is out of their control Figure
-\ref{fig:ex1}(b) shows a more fine-grained model, where the path is
+punishes individuals in a way that is out of their control. Figure
+\ref{fig:ex1}(b) shows a finer-grained model, where the path is
 mediated by a measure of whether the person is employed, which is
 itself caused by two background factors: one representing whether the
 person hiring is prejudiced, and the other the employee's
 qualifications. In this world, $A$ is a cause of defaulting, even if
 mediated by other variables\footnote{For example, if the function
-  determining employment $f_E(A,P,Q) = I_{(Q > 0, P = 0 \text{ or } A
+  determining employment $f_E(A,P,Q) \equiv I_{(Q > 0, P = 0 \text{ or } A
     \neq a)}$ then an individual with sufficient qualifications and
   prejudiced potential employer may have a different counterfactual
   employment value for $A = a$ compared to $A = a'$, and a different
@@ -199,13 +198,14 @@ identically distributed given the background variables.
 % racially-associated names in a C.V. or loan application.}
 
 In contrast, any function of variables not descendants of $A$ can be
-used a basis for fair decision making. This means, that any variable
+used a basis for fair decision making. This means that any variable
 $\hat Y$ defined by $\hat Y = g(U)$ will be counterfactually fair for
 any function $g(\cdot)$. Hence, given a causal model, the functional
 defined by the function $g(\cdot)$ minimizing some predictive error
-for $Y$ will satisfy the criterion. We are essentially learning a
-projection of $Y$ into the space of fair decisions, removing historical
-biases as a by-product.
+for $Y$ will satisfy the criterion, as proposed in Section
+\ref{sec:algorithm}. We are essentially learning a projection of $Y$
+into the space of fair decisions, removing historical biases as a
+by-product.
 
 % There are two issues to be clarified at this point. First,
 % it sounds potentially counter-intuitive that our definition
@@ -261,10 +261,10 @@ biases as a by-product.
 
 \subsection{Further Examples}
 
-To give further intuition for counterfactual fairness we will consider
+To give further intuition for counterfactual fairness, we will consider
 two real-world fair prediction scenarios: \textbf{insurance pricing}
 and \textbf{crime prediction}. Each of these correspond to one of the
-two causal graphs in Figure~\ref{figure.simple_models} (d). The
+two causal graphs in Figure~\ref{figure.simple_models}(d). The
 Supplementary Material provides a more mathematical discussion of
 these examples with more detailed insights.
 
@@ -277,15 +277,17 @@ individuals to prefer red cars (the observed variable $X$). Moreover,
 individuals belonging to a certain race $A$ are more likely to drive
 red cars. However, these individuals are no more likely to be
 aggressive or to get in accidents than any one else. We show this in
-Figure~\ref{figure.simple_models}(d) (\emph{Left}). Thus, using the red
-car feature $X$ to predict accident likelihood $Y$ would seem to be an
+Figure~\ref{figure.simple_models}(d) (\emph{Left}). Thus, using the
+red car feature $X$ to predict accident rate $Y$ would seem to be an
 unfair prediction because it may charge individuals of a certain race
 more than others, even though no race is more likely to have an
 accident. Counterfactual fairness agrees with this notion, as $X$
 cannot be added to $\hat Y$ but $U$ can. Interestingly, we can show
-(Supplementary Material) that in a linear model, regression $Y$ on
-$A$ and $X$ is equivalent to regressing on $U$, so off-the-shelf regression
-here is counterfactually fair, even if regressing $Y$ on $X$ alone is not.
+(Supplementary Material) that in a linear model, regression $Y$ on $A$
+and $X$ is equivalent to regressing on $U$, so off-the-shelf
+regression here is counterfactually fair. Regressing $Y$ on $X$ alone
+obeys the FTA criterion but is not counterfactually fair, so conditioning
+on $A$ \emph{adds} fairness.
 %
 \paragraph{Scenario 2: High Crime Regions.}
 %%%%% ICML STUFF
@@ -312,12 +314,12 @@ lies in ($X$). However, different ethnic groups are more likely to
 live in particular neighborhoods, and so neighborhood and break-in
 rates are often correlated with the race $A$ of the house
 occupier. This can be seen in Figure~\ref{figure.simple_models}(d)
-(\emph{Center}). The only change from Scenario 1 is that now $Y$
+(\emph{Right}). The only change from Scenario 1 is that now $Y$
 depends on $X$ directly. If all structural equations are linear, then
 $U$ is a linear function of $A$ and $X$, and so, indirectly, a
 counterfactually fair $\hat Y$ can be expressed as a linear function
 of $A$ and $X$. However, this is different from assuming that $\hat Y$ can be
-any linear combination of $A$ and $X$. As a matter of fact, the solution for the
+\emph{any} linear combination of $A$ and $X$. As a matter of fact, the solution for the
 unrestricted least-squares regression of $Y$ on $A$ and $X$ cannot be
 written as a function of $U$ only, as shown in the Supplementary Material.
 %Intuitively this is because the predictor $\hat Y(X,A)$ will be a

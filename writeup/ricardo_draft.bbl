@@ -1,0 +1,206 @@
+\begin{thebibliography}{32}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Berk et~al.(2017)Berk, Heidari, Jabbari, Kearns, and Roth]{berk:17}
+Berk, R., Heidari, H., Jabbari, S., Kearns, M., and Roth, A.
+\newblock Fairness in criminal justice risk assessments: The state of the art.
+\newblock \emph{arXiv preprint arXiv:1703.09207v1}, 2017.
+
+\bibitem[Bollen(1989)]{bol:89}
+Bollen, K.
+\newblock \emph{Structural {E}quations with {L}atent {V}ariables}.
+\newblock John Wiley \& Sons, 1989.
+
+\bibitem[Bollen \& (eds.)(1993)Bollen and (eds.)]{bollen:93}
+Bollen, K. and (eds.), J.~Long.
+\newblock \emph{Testing Structural Equation Models}.
+\newblock SAGE Publications, 1993.
+
+\bibitem[Bolukbasi et~al.(2016)Bolukbasi, Chang, Zou, Saligrama, and
+  Kalai]{bolukbasi2016man}
+Bolukbasi, Tolga, Chang, Kai-Wei, Zou, James~Y, Saligrama, Venkatesh, and
+  Kalai, Adam~T.
+\newblock Man is to computer programmer as woman is to homemaker? debiasing
+  word embeddings.
+\newblock In \emph{Advances in Neural Information Processing Systems}, pp.\
+  4349--4357, 2016.
+
+\bibitem[Brennan et~al.(2009)Brennan, Dieterich, and
+  Ehret]{brennan2009evaluating}
+Brennan, Tim, Dieterich, William, and Ehret, Beate.
+\newblock Evaluating the predictive validity of the compas risk and needs
+  assessment system.
+\newblock \emph{Criminal Justice and Behavior}, 36\penalty0 (1):\penalty0
+  21--40, 2009.
+
+\bibitem[Calders \& Verwer(2010)Calders and Verwer]{calders2010three}
+Calders, Toon and Verwer, Sicco.
+\newblock Three naive bayes approaches for discrimination-free classification.
+\newblock \emph{Data Mining and Knowledge Discovery}, 21\penalty0 (2):\penalty0
+  277--292, 2010.
+
+\bibitem[DeDeo(2014)]{dedeo2014wrong}
+DeDeo, Simon.
+\newblock Wrong side of the tracks: Big data and protected categories.
+\newblock \emph{arXiv preprint arXiv:1412.4643}, 2014.
+
+\bibitem[Dwork et~al.(2012)Dwork, Hardt, Pitassi, Reingold, and
+  Zemel]{dwork2012fairness}
+Dwork, Cynthia, Hardt, Moritz, Pitassi, Toniann, Reingold, Omer, and Zemel,
+  Richard.
+\newblock Fairness through awareness.
+\newblock In \emph{Proceedings of the 3rd Innovations in Theoretical Computer
+  Science Conference}, pp.\  214--226. ACM, 2012.
+
+\bibitem[Grgic-Hlaca et~al.(2016)Grgic-Hlaca, Zafar, Gummadi, and
+  Weller]{grgiccase}
+Grgic-Hlaca, Nina, Zafar, Muhammad~Bilal, Gummadi, Krishna~P, and Weller,
+  Adrian.
+\newblock The case for process fairness in learning: Feature selection for fair
+  decision making.
+\newblock \emph{NIPS Symposium on Machine Learning and the Law}, 2016.
+
+\bibitem[Halpern(2016)]{halpern:16}
+Halpern, J.
+\newblock \emph{Actual Causality}.
+\newblock MIT Press, 2016.
+
+\bibitem[Hardt et~al.(2016)Hardt, Price, Srebro, et~al.]{hardt2016equality}
+Hardt, Moritz, Price, Eric, Srebro, Nati, et~al.
+\newblock Equality of opportunity in supervised learning.
+\newblock In \emph{Advances in Neural Information Processing Systems}, pp.\
+  3315--3323, 2016.
+
+\bibitem[Johnson et~al.(2016)Johnson, Foster, and Stine]{johnson2016impartial}
+Johnson, Kory~D, Foster, Dean~P, and Stine, Robert~A.
+\newblock Impartial predictive modeling: Ensuring fairness in arbitrary models.
+\newblock \emph{arXiv preprint arXiv:1608.00528}, 2016.
+
+\bibitem[Joseph et~al.(2016)Joseph, Kearns, Morgenstern, Neel, and
+  Roth]{joseph2016rawlsian}
+Joseph, Matthew, Kearns, Michael, Morgenstern, Jamie, Neel, Seth, and Roth,
+  Aaron.
+\newblock Rawlsian fairness for machine learning.
+\newblock \emph{arXiv preprint arXiv:1610.09559}, 2016.
+
+\bibitem[Kamiran \& Calders(2009)Kamiran and Calders]{kamiran2009classifying}
+Kamiran, Faisal and Calders, Toon.
+\newblock Classifying without discriminating.
+\newblock In \emph{Computer, Control and Communication, 2009. IC4 2009. 2nd
+  International Conference on}, pp.\  1--6. IEEE, 2009.
+
+\bibitem[Kamiran \& Calders(2012)Kamiran and Calders]{kamiran2012data}
+Kamiran, Faisal and Calders, Toon.
+\newblock Data preprocessing techniques for classification without
+  discrimination.
+\newblock \emph{Knowledge and Information Systems}, 33\penalty0 (1):\penalty0
+  1--33, 2012.
+
+\bibitem[Kamishima et~al.(2011)Kamishima, Akaho, and
+  Sakuma]{kamishima2011fairness}
+Kamishima, Toshihiro, Akaho, Shotaro, and Sakuma, Jun.
+\newblock Fairness-aware learning through regularization approach.
+\newblock In \emph{Data Mining Workshops (ICDMW), 2011 IEEE 11th International
+  Conference on}, pp.\  643--650. IEEE, 2011.
+
+\bibitem[Khandani et~al.(2010)Khandani, Kim, and Lo]{khandani2010consumer}
+Khandani, Amir~E, Kim, Adlar~J, and Lo, Andrew~W.
+\newblock Consumer credit-risk models via machine-learning algorithms.
+\newblock \emph{Journal of Banking \& Finance}, 34\penalty0 (11):\penalty0
+  2767--2787, 2010.
+
+\bibitem[Kleinberg et~al.(2016)Kleinberg, Mullainathan, and
+  Raghavan]{kleinberg2016inherent}
+Kleinberg, Jon, Mullainathan, Sendhil, and Raghavan, Manish.
+\newblock Inherent trade-offs in the fair determination of risk scores.
+\newblock \emph{arXiv preprint arXiv:1609.05807}, 2016.
+
+\bibitem[Lewis(1973)]{lewis:73}
+Lewis, D.
+\newblock \emph{Counterfactuals}.
+\newblock Harvard University Press, 1973.
+
+\bibitem[Louizos et~al.(2015)Louizos, Swersky, Li, Welling, and
+  Zemel]{louizos2015variational}
+Louizos, Christos, Swersky, Kevin, Li, Yujia, Welling, Max, and Zemel, Richard.
+\newblock The variational fair autoencoder.
+\newblock \emph{arXiv preprint arXiv:1511.00830}, 2015.
+
+\bibitem[Mahoney \& Mohen(2007)Mahoney and Mohen]{mahoney2007method}
+Mahoney, John~F and Mohen, James~M.
+\newblock Method and system for loan origination and underwriting, October~23
+  2007.
+\newblock US Patent 7,287,008.
+
+\bibitem[Mooij et~al.(2009)Mooij, Janzing, Peters, and Scholkopf]{mooij:09}
+Mooij, J., Janzing, D., Peters, J., and Scholkopf, B.
+\newblock Regression by dependence minimization and its application to causal
+  inference in additive noise models.
+\newblock In \emph{Proceedings of the 26th Annual International Conference on
+  Machine Learning}, pp.\  745--752, 2009.
+
+\bibitem[Pearl(2000)]{pearl:00}
+Pearl, J.
+\newblock \emph{Causality: {M}odels, {R}easoning and {I}nference}.
+\newblock Cambridge University Press, 2000.
+
+\bibitem[Pearl et~al.(2016)Pearl, Glymour, and Jewell]{pearl:16}
+Pearl, J., Glymour, M., and Jewell, N.
+\newblock \emph{Causal Inference in Statistics: a Primer}.
+\newblock Wiley, 2016.
+
+\bibitem[Pearl et~al.(2009)]{pearl2009causal}
+Pearl, Judea et~al.
+\newblock Causal inference in statistics: An overview.
+\newblock \emph{Statistics Surveys}, 3:\penalty0 96--146, 2009.
+
+\bibitem[Peters et~al.(2014)Peters, Mooij, Janzing, and
+  Sch{\"o}lkopf]{peters:14}
+Peters, J., Mooij, J.~M., Janzing, D., and Sch{\"o}lkopf, B.
+\newblock Causal discovery with continuous additive noise models.
+\newblock \emph{Journal of Machine Learning Research}, 15:\penalty0 2009--2053,
+  2014.
+\newblock URL \url{http://jmlr.org/papers/v15/peters14a.html}.
+
+\bibitem[Stan{\ }Development{\ }Team(2016)]{rstan}
+Stan{\ }Development{\ }Team.
+\newblock Rstan: the r interface to stan, 2016.
+\newblock R package version 2.14.1.
+
+\bibitem[Wightman(1998)]{wightman1998lsac}
+Wightman, Linda~F.
+\newblock Lsac national longitudinal bar passage study. lsac research report
+  series.
+\newblock 1998.
+
+\bibitem[Zafar et~al.(2015)Zafar, Valera, Rodriguez, and
+  Gummadi]{zafar2015learning}
+Zafar, Muhammad~Bilal, Valera, Isabel, Rodriguez, Manuel~Gomez, and Gummadi,
+  Krishna~P.
+\newblock Learning fair classifiers.
+\newblock \emph{arXiv preprint arXiv:1507.05259}, 2015.
+
+\bibitem[Zafar et~al.(2016)Zafar, Valera, Rodriguez, and
+  Gummadi]{zafar2016fairness}
+Zafar, Muhammad~Bilal, Valera, Isabel, Rodriguez, Manuel~Gomez, and Gummadi,
+  Krishna~P.
+\newblock Fairness beyond disparate treatment \& disparate impact: Learning
+  classification without disparate mistreatment.
+\newblock \emph{arXiv preprint arXiv:1610.08452}, 2016.
+
+\bibitem[Zemel et~al.(2013)Zemel, Wu, Swersky, Pitassi, and
+  Dwork]{zemel2013learning}
+Zemel, Richard~S, Wu, Yu, Swersky, Kevin, Pitassi, Toniann, and Dwork, Cynthia.
+\newblock Learning fair representations.
+\newblock \emph{ICML (3)}, 28:\penalty0 325--333, 2013.
+
+\bibitem[Zliobaite(2015)]{zliobaite2015survey}
+Zliobaite, Indre.
+\newblock A survey on measuring indirect discrimination in machine learning.
+\newblock \emph{arXiv preprint arXiv:1511.00148}, 2015.
+
+\end{thebibliography}

@@ -1,25 +1,28 @@
 %!TEX root=ricardo_draft.tex
 % ml is now everywhere
-Machine learning has spread to fields as diverse as credit scoring \cite{khandani2010consumer}, crime prediction \cite{brennan2009evaluating}, and loan assessment \cite{mahoney2007method}. As
-machine learning enters these new areas it is necessary for the
-modeler to think beyond the simple objective of maximizing prediction
-accuracy, and to consider the societal impact of their work.
+Machine learning has spread to fields as diverse as credit scoring
+\cite{khandani2010consumer}, crime prediction
+\cite{brennan2009evaluating}, and loan assessment
+\cite{mahoney2007method}. As machine learning enters these new areas
+it is necessary for the modeler to think beyond the simple objective
+of maximizing prediction accuracy, and to consider the societal impact
+of their work. 
 
 % in these new ml fields, we cannot discriminate
 % discrimination can happen in multiple ways
 % - direct discrimination
-For many of these applications, it is crucial to
-ask if the predictions of a model are
-\emph{fair}. For instance, imagine a bank wishes to predict if an individual should be given
-a loan to buy a house. The bank wishes to use historical repayment data, alongside  individual data. If they simply learn a model
-that  predicts whether the
-loan will be paid back, it may unjustly favor
-applicants of particular subgroups, due to past and
-present prejudices. The Obama Administration released a report
-describing this which urged data scientists to
-analyze ``how technologies can deliberately or inadvertently
-perpetuate, exacerbate, or mask
-discrimination".\footnote{https://obamawhitehouse.archives.gov/blog/2016/05/04/big-risks-big-opportunities-intersection-big-data-and-civil-rights}
+For many of these applications, it is crucial to ask if the
+predictions of a model are \emph{fair}. For instance, imagine a bank
+wishes to predict if an individual should be given a loan to buy a
+house. The bank wishes to use historical repayment data, alongside
+individual data. If they simply learn a model that predicts whether
+the loan will be paid back, it may unjustly favor applicants of
+particular subgroups, due to past and present prejudices. The Obama
+Administration released a report describing this which urged data
+scientists to analyze ``how technologies can deliberately or
+inadvertently perpetuate, exacerbate, or mask
+discrimination".
+\footnote{https://obamawhitehouse.archives.gov/blog/2016/05/04/big-risks-big-opportunities-intersection-big-data-and-civil-rights}
 
 As a result, there has been immense interest in designing
 algorithms that make fair predictions
@@ -34,7 +37,7 @@ practitioner, law-maker, judge, or anyone else who is interested in
 implementing algorithms that control for discrimination, it can be
 difficult to decide which definition of fairness to choose for the
 task at hand. Indeed, we demonstrate that depending on the
-relationship between a sensitive attribute and the data, certain
+relationship between a {\it protected attribute} and the data, certain
 definitions of fairness can actually \emph{increase discrimination}.
 In perhaps the most closely related work, \citet{johnson2016impartial}
 give similar arguments but from a non-causal perspective.
@@ -55,18 +58,55 @@ give similar arguments but from a non-causal perspective.
 % 
 
 % In this work,
-We describe how techniques from causal inference can be effective tools for designing fair algorithms and argue, as in \citet{dedeo2014wrong}, that it is essential to properly address causality.
-Specifically, we
-% develop a technique to
-leverage the causal framework of 
-\citet{pearl2009causal} to model the relationship between sensitive
-attributes and data. Our contributions are as follows:
-\begin{enumerate}
-    \item We model questions of fairness within a causal framework. This allows us to directly model \emph{how} unfairness affects the data at hand.
-    \item We introduce \emph{counterfactual fairness}, which enforces that a distribution over possible predictions for an individual should remain unchanged, in a world where an individual's sensitive attribute had been different from birth.
-    \item We analyze how enforcing existing definitions of fairness for different data may correspond or be in conflict with counterfactual fairness. In particular, we show that depending on the underlying state of the world some definitions of fairness may be inappropriate.
-    \item We devise techniques for learning predictors that are counterfactually fair and demonstrate their use in several examples.
-\end{enumerate}
+
+In this paper, we introduce the first explicitly formal causal model
+approach for casting problems of fair predictions with explicit
+counterfactual assumptions. Specifically, we leverage the causal framework of
+\citet{pearl2009causal} to model the relationship between protected
+attributes and data. We describe how techniques from causal
+inference can be effective tools for designing fair algorithms and
+argue, as in \citet{dedeo2014wrong}, that it is essential to properly
+address causality.
+
+In Section \ref{sec:background}, we provide a summary of basic
+concepts in fairness and causal modeling. In Section
+\ref{sec:count_fair}, we provide the formal definition of
+\emph{counterfactual fairness}, which enforces that a distribution
+over possible predictions for an individual should remain unchanged,
+in a world where an individual's protected attributes had been
+different in a causal sense. In Section \ref{sec:methods}, we describe an
+algorithm to implement this definition, while distinguishing it from
+existing approaches.  In Section \ref{sec:experiments}, we illustrate
+the algorithm with a case of fair assessment of law school success.
+
+%%%%%%% ICML TEXT
+%In this paper, we introduce the first explicitly formal causal model
+%approach for casting problems of fair predictions with explicit
+%counterfactual assumptions. We describe how techniques from causal
+%inference can be effective tools for designing fair algorithms and
+%argue, as in \citet{dedeo2014wrong}, that it is essential to properly
+%address causality.  Specifically, we leverage the causal framework of
+%\citet{pearl2009causal} to model the relationship between sensitive
+%attributes and data. Our contributions are as follows:
+%\begin{enumerate}
+%    \item We model questions of fairness within a causal
+%      framework. This allows us to directly model \emph{how}
+%      unfairness affects the data at hand.
+%    \item We introduce \emph{counterfactual fairness}, which enforces
+%      that a distribution over possible predictions for an individual
+%      should remain unchanged, in a world where an individual's
+%      sensitive attribute had been different from birth.
+%    \item We analyze how enforcing existing definitions of fairness
+%      for different data may correspond or be in conflict with
+%      counterfactual fairness. In particular, we show that depending
+%      on the underlying state of the world some definitions of
+%      fairness may be inappropriate.
+%    \item We devise techniques for learning predictors that are
+%      counterfactually fair and demonstrate their use in several
+%      examples.
+%\end{enumerate}
+%%%%%%%% END ICML TEXT
+
 %We demonstrate that by explicitly representing fairness within a causal model it becomes easy to critique different definitions of fairness as well the prediction methods that aim to accomplish these notions of fairness.
 
 
