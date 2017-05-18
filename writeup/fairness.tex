@@ -290,9 +290,9 @@ is a descendent of $A$ but $U$ is not. Interestingly, we can show
 (Supplementary Material) that in a linear model, regression $Y$ on $A$
 and $X$ is equivalent to regressing on $U$, so off-the-shelf
 regression here is counterfactually fair. Regressing $Y$ on $X$ alone
-obeys the FTA criterion but is not counterfactually fair, so omitting
-$A$ (race blindness) may \emph{introduce} unfairness into an otherwise
-fair world.
+obeys the FTA criterion but is not counterfactually fair, so
+{\em omitting $A$ (FTU) may introduce unfairness into
+  an otherwise fair world.}
 %
 \paragraph{Scenario 2: High Crime Regions.}
 %%%%% ICML STUFF
@@ -312,21 +312,42 @@ fair world.
 %Y(X,a) \!\neq\! \hat Y(X,a')$ and thus $\hat Y(X,A)$ is not
 %counterfactually fair.
 %%%%% END ICML STUFF
-A city government wants to know the yearly crime rate $Y$ in each
-neighborhood $X$. Racial demographics are
-also available, and for simplicity suppose these are encoded as a binary
-$A$ indicating a minority-majority neighborhood.
-The past data on crime rates depends on differential rates of policing
-which disproportionately affect minority neighborhoods.
-This can be seen in Figure~\ref{figure.simple_models}(d)
-(\emph{Right}). Unlike Scenario 1, $Y$ now
-depends on $X$ directly. If all structural equations are linear, then
-$U$ is a linear function of $A$ and $X$, and so, indirectly, a
-counterfactually fair $\hat Y$ can be expressed as a linear function
-of $A$ and $X$. However, this is different from assuming that $\hat Y$ can be
-\emph{any} linear combination of $A$ and $X$. As a matter of fact, the solution for the
-unrestricted least-squares regression of $Y$ on $A$ and $X$ cannot be
-written as a function of $U$ only, as shown in the Supplementary Material.
+A city government wants to estimate crime rates by neighborhood to
+allocate policing resources. Its analyst constructed training data
+by merging (1) a registry of residents containing their neighborhood $X$
+and race $A$, with (2) police records of arrests, giving each resident a
+binary label with $Y = 1$ indicating a criminal arrest record.
+Due to historically segregated housing, the location $X$ 
+depends on $A$.
+Locations $X$ with more police resources have larger numbers of
+arrests $Y$.
+And finally, $U$ represents the totality of socioeconomic factors
+and policing practices that both influence where an individual may
+live and how likely they are to be arrested and charged.
+This can all be seen in Figure~\ref{figure.simple_models}(d)
+(\emph{Right}).
+
+In this example,
+higher observed arrest rates in some neighborhoods
+are due to greater policing there, not because people of different races
+are any more or less likely to break the law.
+The label $Y = 0$ does not
+mean someone has never committed a crime, but rather that they have not
+been caught.
+{\em If individuals in the training data have not already had equal
+  opportunity, algorithms enforcing EO will not remedy such unfairness}.
+In contrast, a counterfactually fair approach would model
+differential enforcement rates using $U$ and base predictions
+on this information rather than on $Y$ directly.
+
+% Unlike Scenario 1, $Y$ now
+% depends on $X$ directly. If all structural equations are linear, then
+% $U$ is a linear function of $A$ and $X$, and so, indirectly, a
+% counterfactually fair $\hat Y$ can be expressed as a linear function
+% of $A$ and $X$. However, this is different from assuming that $\hat Y$ can be
+% \emph{any} linear combination of $A$ and $X$. As a matter of fact, the solution for the
+% unrestricted least-squares regression of $Y$ on $A$ and $X$ cannot be
+% written as a function of $U$ only, as shown in the Supplementary Material.
 %Intuitively this is because the predictor $\hat Y(X,A)$ will be a
 % function of not only $U$, but also of the part of $X$ that directly
 % causes $Y$. This means that the change in $X$ caused by the
@@ -336,9 +357,9 @@ written as a function of $U$ only, as shown in the Supplementary Material.
 % their house broken into does not depend upon race directly, it does
 % vary which a persons race and so is not counterfactually fair.
 
-The lesson from the last example is that in general we need a
-multistage procedure in which we derive latent variables $U$, and
-based on them we minimize some loss with respect to $Y$. This is the
+In general, we need a
+multistage procedure in which we first derive latent variables $U$, and
+then based on them we minimize some loss with respect to $Y$. This is the
 core of the algorithm discussed next.
 
 %%%%%%%% ICML STUFF
