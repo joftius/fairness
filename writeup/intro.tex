@@ -18,11 +18,11 @@ house. The bank wishes to use historical repayment data, alongside
 individual data. If they simply learn a model that predicts whether
 the loan will be paid back, it may unjustly favor applicants of
 particular subgroups, due to past and present prejudices. The Obama
-Administration released a report describing this which urged data
+Administration released a report\footnote{https://obamawhitehouse.archives.gov/blog/2016/05/04/big-risks-big-opportunities-intersection-big-data-and-civil-rights}
+describing this which urged data
 scientists to analyze ``how technologies can deliberately or
 inadvertently perpetuate, exacerbate, or mask
-discrimination".
-\footnote{https://obamawhitehouse.archives.gov/blog/2016/05/04/big-risks-big-opportunities-intersection-big-data-and-civil-rights}
+discrimination."
 
 As a result, there has been immense interest in designing
 algorithms that make fair predictions
@@ -30,7 +30,7 @@ algorithms that make fair predictions
 % Most
 % of these works focus on formalizing fairness into a numeric
 % definition and satisfying it with customized algorithms.
-In large part, the initial work on fairness in machine learning has
+In large part, the literature has
 focused on formalizing fairness into quantitative definitions and using them to solve a
 discrimination problem in a certain dataset. Unfortunately, for a
 practitioner, law-maker, judge, or anyone else who is interested in
@@ -39,8 +39,7 @@ difficult to decide which definition of fairness to choose for the
 task at hand. Indeed, we demonstrate that depending on the
 relationship between a {\it protected attribute} and the data, certain
 definitions of fairness can actually \emph{increase discrimination}.
-In perhaps the most closely related work, \citet{johnson2016impartial}
-give similar arguments but from a non-causal perspective.
+
 
 % we propose a way to model data that allows a practitioner to assess what definitions of fairness are right for the problem at hand, and algorithms to ensure fairness
 % OR
@@ -56,7 +55,6 @@ give similar arguments but from a non-causal perspective.
 % - Modeling helps us see where the weaknesses are in our assumptions and definitions (maybe not new)
 % We don't want to see if every definition is counterfactually fair because then we're like everyone else, saying our definition is best
 % 
-
 % In this work,
 
 In this paper, we introduce the first explicitly formal causal model
@@ -66,13 +64,15 @@ counterfactual assumptions. Specifically, we leverage the causal framework of
 attributes and data. We describe how techniques from causal
 inference can be effective tools for designing fair algorithms and
 argue, as in \citet{dedeo2014wrong}, that it is essential to properly
-address causality.
+address causality in fairness.
+In perhaps the most closely related work, \citet{johnson2016impartial}
+make similar arguments but from a non-causal perspective.
 
 In Section \ref{sec:background}, we provide a summary of basic
 concepts in fairness and causal modeling. In Section
 \ref{sec:count_fair}, we provide the formal definition of
 \emph{counterfactual fairness}, which enforces that a distribution
-over possible predictions for an individual should remain unchanged,
+over possible predictions for an individual should remain unchanged
 in a world where an individual's protected attributes had been
 different in a causal sense. In Section \ref{sec:methods}, we describe an
 algorithm to implement this definition, while distinguishing it from

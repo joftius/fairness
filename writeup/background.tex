@@ -20,8 +20,9 @@ defined differently by each notion of fairness discussed. The decision
 of whether an attribute is protected or not is taken as a primitive in
 any given problem, regardless of the definition of fairness
 adopted. Moreover, let $X$ denote the other observable attributes of any
-particular individual, $U$ the set of latent attributes, and let $Y$
-denote the outcome to be predicted, which itself might be contaminated
+particular individual, $U$ the set of relevant latent attributes
+which are not observed, and let
+$Y$ denote the outcome to be predicted, which itself might be contaminated
 with historical biases. Finally, $\hat Y$ is the {\it predictor}, a
 random variable that depends on $A, X$ and $U$, and which is produced by
 a machine learning algorithm as a prediction of $Y$.
@@ -61,7 +62,7 @@ for the education of minorities due to bad credit ratings.
 %\end{description}
 %%%%%%%%%%%%%% END ICML TEXT
 
-There has been a wealth of recent work towards fair
+There has been a wealth of recent work on fair
 algorithms. % In large part, these methods have focused (and reasonably
 % so) on binary classification with a binary sensitive attributes
 % (CITE).
@@ -69,6 +70,8 @@ These include fairness through unawareness \cite{grgiccase},
 individual fairness \cite{dwork2012fairness,zemel2013learning,louizos2015variational,joseph2016rawlsian},
 demographic parity/disparate impact \cite{zafar2015learning}, and
 equality of opportunity \cite{hardt2016equality,zafar2016fairness}.
+For simplicity we often assume $A$ is encoded as a binary attribute,
+but this can be generalized.
 
 % A variety of algorithmic approaches to achieving fairness have been proposed.
 %\begin{description}
@@ -125,9 +128,10 @@ $P(\hat{Y}=1 | A=0,Y=1) = P(\hat{Y}=1 | A=1,Y=1)$. %\nonumber
 %\end{align}
 \end{define}
 These criteria can be incompatible in general, as discussed by
-\citet{kleinberg2016inherent} and \citet{berk:17}.  Following the
-motivation of IF, we propose that knowledge about individual
-differences should be taken into consideration, even if strong
+\citet{kleinberg2016inherent, berk:17} {\color{red} Chouldechova}.  Following the
+motivation of IF and \cite{johnson2016impartial}, we propose that knowledge
+about relationships between all
+attributes should be taken into consideration, even if strong
 assumptions are necessary. Moreover, it is not immediately clear for
 any of these approaches in which ways historical biases can be
 tackled. We approach such issues from an explicit causal modeling
@@ -202,7 +206,8 @@ V$ following an {\bf intervention} on $V\setminus Z$.  An
   intervention on variable $V_i$ is the substitution of equation $V_i
 = f_i(pa_i, U_{pa_i})$ with the equation $V_i = v$ for some $v$. This
 captures the idea of an agent, external to the system, modifying it by
-forcefully assigning value $v$ to $V_i$.
+forcefully assigning value $v$ to $V_i$,
+for example as in a randomized experiment.
 %This occurs in a randomized
 %controlled trials where the value of $V_i$ is overridden by a
 %treatment setting it to $v$, a value chosen at random, and thus

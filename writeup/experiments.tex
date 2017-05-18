@@ -161,8 +161,8 @@ the RMSE of the \textbf{Full} model. As our models satisfy
 counterfactual fairness, they trade off some accuracy. Our first model
 \textbf{Fair $K$} uses weaker assumptions and thus the RMSE is
 highest. Using the Level 3 assumptions, as in \textbf{Fair Add} we
-produce a counterfactually fair model that trades lower RMSE for
-slightly weaker assumptions.
+produce a counterfactually fair model that trades
+slightly stronger assumptions for lower RMSE.
 
 
 \paragraph{Counterfactual fairness.}
@@ -177,7 +177,7 @@ variables. We will fit models to both the original and counterfactual
 sampled data and plot how the distribution of predicted FYA changes
 for both baseline models. Figure~\ref{figure.counterfactual} shows
 this, where each row corresponds to a baseline predictor and each
-column corresponds to the couterfactual change. In each plot, the blue
+column corresponds to the counterfactual change. In each plot, the blue
 distribution is density of predicted FYA for the original data and the
 red distribution is this density for the counterfactual data. If a
 model is counterfactually fair we would expect these distributions to

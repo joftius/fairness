@@ -1,10 +1,11 @@
 % !TEX root=ricardo_draft.tex
 
 As discussed in the previous Section, we need to relate $\hat Y$ to
-$Y$ if the predictor is to be useful, and that we will restrict to
+$Y$ if the predictor is to be useful, and  we restrict
 $\hat Y$ to be a (parameterized) function of the non-descendants of
-$A$ in the causal graph. An algorithm is introduced in Section
-\ref{sec:algorithm}, followed by a discussion of the assumptions that
+$A$ in the causal graph following
+Lemma~\ref{lem:nondescend}. We next introduce an algorithm, then
+discuss assumptions that
 can be used to express counterfactuals.
 
 \subsection{Algorithm}
@@ -13,7 +14,7 @@ can be used to express counterfactuals.
 Let $\hat Y \equiv g_\theta(U, X_{\nsucc A})$ be a predictor
 parameterized by $\theta$, such as a logistic regression or a neural
 network, and where $X_{\nsucc A} \subseteq X$ are non-descendants of
-$A$. Given a loss function $l(\cdot, \cdot)$ such as squared loss of
+$A$. Given a loss function $l(\cdot, \cdot)$ such as squared loss or
 log-likelihood, and training data $\mathcal D \equiv \{(A^{(i)}, X^{(i)}, Y^{(i)})\}$
 for $i = 1, 2, \dots, n$, we define $L(\theta) \equiv \sum_{i =
   1}^n \mathbb E[l(y^{(i)}, g_\theta(U^{(i)}, x^{(i)}_{\nsucc
@@ -24,7 +25,7 @@ a^{(i)})$ where $P_{\mathcal M}(U\ |\ x, a)$ is the conditional
 distribution of the background variables as given by a causal model
 $\mathcal M$ that is available by assumption. If this expectation
 cannot be calculated analytically, Markov chain Monte Carlo (MCMC) can
-be used to approximate it, resulting in the following algorithm.
+be used to approximate it as in the following algorithm.
   
 \begin{algorithmic}[1]
 \Procedure{FairLearning}{$\mathcal D, \mathcal M$}\Comment{Learned parameters $\hat \theta$}  
@@ -44,7 +45,7 @@ x^\star)$.
 
 \noindent{\bf Deconvolution perspective.} The algorithm can be
 understood as a deconvolution approach that, given observables $A \cup
-X$, extracts its latent sources and pipeline them into a predictive
+X$, extracts its latent sources and pipelines them into a predictive
 model. We advocate that \emph{counterfactual assumptions must underlie
   all approaches that claim to extract the sources of variation of the
   data as ``fair'' latent components}. As an example,
@@ -78,10 +79,10 @@ increasing strength:
 \noindent {\bf Level 1.}  Build $\hat Y$ using only the observable
 non-descendants of $A$.  This only requires partial causal ordering
 and no further causal assumptions, but in many problems there will be
-few, if any, observables which are not descendants of demographic
-factors.
+few, if any, observables which are not descendants of sensitive
+demographic factors.
   
-\noindent {\bf Level 2.} We postulate background latent variables that
+\noindent {\bf Level 2.} Postulate background latent variables that
 act as non-deterministic causes of observable variables, based on
 explicit domain knowledge and learning algorithms\footnote{In some
   domains, it is actually common to build a model entirely around
@@ -89,7 +90,7 @@ explicit domain knowledge and learning algorithms\footnote{In some
   among observed variables \citep{bol:89}.}. Information about $X$ is
 passed to $\hat Y$ via $P(U\ |\ x, a)$.
 
-\noindent {\bf Level 3.} We postulate a fully deterministic model with
+\noindent {\bf Level 3.} Postulate a fully deterministic model with
 latent variables. For instance, the distribution $P(V_i\ |\ V_1,
 \dots, V_{i - 1})$ can be treated as an additive error model, $V_i
 \!=\! f_i(V_1, \dots, V_{i - 1}) \!+\! e_i$ \citep{peters:14}. The

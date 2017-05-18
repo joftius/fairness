@@ -51,14 +51,16 @@ for all $y$ and for any value $a'$ attainable by $A$.
 \end{define}
 %Simply put,
 
-The appeal of counterfactual fairness is its close relationship to
-{\bf actual causes} \cite{halpern:16}, or token causality: other
-things been equal, $A$ should not be a cause of $\hat Y$ in any
-individual instance. In other words, changing $A$ while holding
-everything else the same will not change the distribution of $\hat
-Y$\footnote{Notice that we always assume counterfactuals to be
-  well-defined by the model. For instance, ``race'' can be taken as a
-  surrogate for ``race perception''.}. We also emphasize that
+This is closely related to
+{\bf actual causes} \cite{halpern:16}, or token causality in the sense
+that, to be fair, $A$ should not be a cause of $\hat Y$ in any
+individual instance. In other words, changing $A$ while holding things
+which are not causally dependent on $A$ constant
+will not change the distribution of $\hat Y$.
+% \footnote{Notice that we always assume counterfactuals to be
+%  well-defined by the model. For instance, ``race'' can be taken as a
+%  surrogate for ``perceived race.''}
+We also emphasize that
 counterfactual fairness is an individual-level definition. This is
 substantially different from comparing different individuals that happen to
 share the same ``treatment'' $A = a$ and coincide on the values of
@@ -133,6 +135,7 @@ makes the connection to machine learning more explicit.
 One simple but important implication of the definition of counterfactual fairness is the following:
 %
 \begin{lem}
+  \label{lem:nondescend}
   Let $\mathcal G$ be the causal graph of the given model $(U, V, F)$.
   Then $\hat Y$ will be counterfactual fair if it is a function
   of the non-descendants of $A$.
@@ -148,9 +151,9 @@ One simple but important implication of the definition of counterfactual fairnes
 
 This does not exclude using a descendant $W$ of $A$ as a possible input to
 $\hat Y$. However, this will only be possible in the case where the
-overall functional dependence of $W$ on $A$ disappears, which will not
-happen in general. The practical implication is that $\hat Y$ can use
-all and only the non-descendants of $A$.
+overall dependence of $\hat Y$ on $A$ disappears, which will not
+happen in general. Hence, Lemma~\ref{lem:nondescend} provides the most
+straightforward way to achieve counterfactual fairness.
 
 \noindent{\bf Ancestral closure of protected attributes.} Suppose that
 a parent of a member of $A$ is not in $A$.  Counterfactual fairness
@@ -160,7 +163,7 @@ postulated set of protected attributes rather than with the definition
 of counterfactual fairness, and that typically we should expect set
 $A$ to be closed under ancestral relationships given by the causal
 graph. For instance, if {\it Race} is a protected attribute, and {\it
-  Father's race} is a parent of {\it Race}, then it should also be in
+  Mother's race} is a parent of {\it Race}, then it should also be in
 $A$.
 
 \noindent{\bf Dealing with historical biases.} The explicit difference
@@ -260,6 +263,7 @@ by-product.
 %%%%%%%% END OF ICML STUFF
 
 \subsection{Further Examples}
+\label{sec:further_examples}
 
 To give further intuition for counterfactual fairness, we will consider
 two real-world fair prediction scenarios: \textbf{insurance pricing}
@@ -269,7 +273,7 @@ Supplementary Material provides a more mathematical discussion of
 these examples with more detailed insights.
 
 \paragraph{Scenario 1: The Red Car.}
-Imagine a car insurance company wishes to price insurance for car
+A car insurance company wishes to price insurance for car
 owners by predicting their accident rate $Y$. They assume there is an
 unobserved factor corresponding to aggressive driving $U$, that (a)
 causes drivers to be more likely have an accident, and (b) causes
@@ -282,12 +286,13 @@ red car feature $X$ to predict accident rate $Y$ would seem to be an
 unfair prediction because it may charge individuals of a certain race
 more than others, even though no race is more likely to have an
 accident. Counterfactual fairness agrees with this notion, as $X$
-cannot be added to $\hat Y$ but $U$ can. Interestingly, we can show
+is a descendent of $A$ but $U$ is not. Interestingly, we can show
 (Supplementary Material) that in a linear model, regression $Y$ on $A$
 and $X$ is equivalent to regressing on $U$, so off-the-shelf
 regression here is counterfactually fair. Regressing $Y$ on $X$ alone
-obeys the FTA criterion but is not counterfactually fair, so conditioning
-on $A$ \emph{adds} fairness.
+obeys the FTA criterion but is not counterfactually fair, so omitting
+$A$ (race blindness) may \emph{introduce} unfairness into an otherwise
+fair world.
 %
 \paragraph{Scenario 2: High Crime Regions.}
 %%%%% ICML STUFF
@@ -307,14 +312,14 @@ on $A$ \emph{adds} fairness.
 %Y(X,a) \!\neq\! \hat Y(X,a')$ and thus $\hat Y(X,A)$ is not
 %counterfactually fair.
 %%%%% END ICML STUFF
-A local police precinct wants to know $Y$, whether a given house is to
-be broken into in any given day. The probability of $Y = 1$ depends on
-many unobserved factors ($U$) but also upon the neighborhood the house
-lies in ($X$). However, different ethnic groups are more likely to
-live in particular neighborhoods, and so neighborhood and break-in
-rates are often correlated with the race $A$ of the house
-occupier. This can be seen in Figure~\ref{figure.simple_models}(d)
-(\emph{Right}). The only change from Scenario 1 is that now $Y$
+A city government wants to know the yearly crime rate $Y$ in each
+neighborhood $X$. Racial demographics are
+also available, and for simplicity suppose these are encoded as a binary
+$A$ indicating a minority-majority neighborhood.
+The past data on crime rates depends on differential rates of policing
+which disproportionately affect minority neighborhoods.
+This can be seen in Figure~\ref{figure.simple_models}(d)
+(\emph{Right}). Unlike Scenario 1, $Y$ now
 depends on $X$ directly. If all structural equations are linear, then
 $U$ is a linear function of $A$ and $X$, and so, indirectly, a
 counterfactually fair $\hat Y$ can be expressed as a linear function

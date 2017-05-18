@@ -6,7 +6,7 @@
 \section*{S1 Population Level vs Individual Level Causal Effects}
 \label{sec:individual}
 
-As discussed in Section \ref{sec:count_fair}, counterfactual fairness
+As discussed in Section~\ref{sec:count_fair}, counterfactual fairness
 is an individual-level definition. This is fundamentally different
 from comparing different units that happen to share the same
 “treatment” $A = a$ and coincide on the values of $X$. To see in
@@ -45,10 +45,11 @@ X = A + U.
 
 The ACE quantifies what happens among people with $U = x -
 a$ against people with $U' = x - a'$. If, for instance, $\hat Y =
-\lambda U$ for $\lambda \neq 0$, then the effect is $\lambda(a - a')
-\neq 0$.
+\lambda U$ for $\lambda \neq 0$, then the effect \eqref{eq:ace}
+is $\lambda(a - a') \neq 0$.
 
-Contrary to that, the counterfactual difference is zero. That is,
+Contrary to that, the counterfactual difference is zero.
+That is,
 \[
 \mathbb{E}[\hat Y_{A \leftarrow a}(U)\ |\ A = a, X = x] -
 \mathbb{E}[\hat Y_{A \leftarrow a'}(U)\ |\ A = a, X = x] =
@@ -68,19 +69,19 @@ predictor should be not be caused by $A$. However, this once again is
 a comparison {\it across individuals}, not within an individual. 
 
 It is this balance among $(A, X, U)$ that explains, in the examples
-of Section \ref{sec:further_examples}, why some predictors are
+of Section~\ref{sec:further_examples}, why some predictors are
 counterfactually fair even though they are functions of the same
 variables $\{A, X\}$ used by unfair predictors: such functions must
 correspond to particular ways of balancing the observables that, by
-way of the causal assumptions, correspond to using non-descendants of
-$A$ only.
+way of the causal assumptions, cancel out the effect of $A$.
 
 \noindent {\bf More on conditioning and alternative definitions.} As discussed in
 Example 4.4.4 of \citet{pearl:16}, a different proposal for
 assessing fairness can be defined via the following concept:
 \begin{define}[Probability of sufficiency]
-  We define the probability of event $A = a$ being a \emph{sufficient cause} for our
-  decision $\hat Y$, contrasted against $A = a'$, as
+  We define the probability of event $\{ A = a \}$ being a
+  \emph{sufficient cause} for our
+  decision $\hat Y$, contrasted against $\{ A = a' \}$, as
 \begin{align}
   P(\hat Y_{A \leftarrow a'\ }(U) \neq y\ |\ X = x, A = a, \hat Y = y).
 \end{align}
@@ -101,7 +102,7 @@ use $Y$ to learn a causal model, we cannot use it to collect training
 data evidence for $U$ {\it as the outcome $Y$ will not be available to
   us at prediction time}. For this reason, we claim that while
 probability of sufficiency is useful as a way of assessing an existing
-decision making process, and it is not as natural as counterfactual
+decision making process, it is not as natural as counterfactual
 fairness in the context of machine learning.
 
 \noindent {\bf Approximate fairness and model validation.} The notion
@@ -133,8 +134,8 @@ sample sizes is the primary question to be studied in an empirical
 study of a new concept, where we control for the correctness of the
 assumptions. Although sensitivity analysis is important, there are
 many degrees of freedom on how this can be done. Robustness issues are
-better addressed by extensions focusing on approximate versions of the
-concept introduced here.
+better addressed by extensions focusing on approximate versions of 
+counterfactual fairness. This will be covered in later work.
 
 \section*{S2 Relation to Demographic Parity}
 %
@@ -292,11 +293,6 @@ changing $A$ always alters $X$.
 %used in the proof is a special case of a general method to building a
 %predictor based on information deduced about $U$ that will be
 %described in the next section.
-
-We note that, outside of this
-particular causal model in Figure~\ref{figure.simple_models}
-(d)(\emph{Left}), the predictor $\hat Y(X,A)$ is not counterfactually
-fair, as described in the following scenarios. 
 
 \paragraph{Scenario 2: High Crime Regions Revisited.}
 
