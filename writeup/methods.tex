@@ -18,7 +18,7 @@ $A$. Given a loss function $l(\cdot, \cdot)$ such as squared loss or
 log-likelihood, and training data $\mathcal D \equiv \{(A^{(i)}, X^{(i)}, Y^{(i)})\}$
 for $i = 1, 2, \dots, n$, we define $L(\theta) \equiv \sum_{i =
   1}^n \mathbb E[l(y^{(i)}, g_\theta(U^{(i)}, x^{(i)}_{\nsucc
-    A})\ |\ x^{(i)}, a^{(i)}] / n$ as the empirical loss to be
+    A}))\ |\ x^{(i)}, a^{(i)}] / n$ as the empirical loss to be
 minimized with respect to $\theta$.  Each expectation is with respect
 to random variable $U^{(i)} \sim P_{\mathcal M}(U\ |\ x^{(i)},
 a^{(i)})$ where $P_{\mathcal M}(U\ |\ x, a)$ is the conditional
@@ -59,7 +59,7 @@ A = a, X) \approx P_{fair}(U\ | A = a', X)$. But {\it this is neither
 $X$ given $A$ and $U$ must be justified by a causal mechanism, and
 that being the case, $P(U\ |\ A, X)$ requires no postprocessing. As a
 matter of fact, model $\mathcal M$ can be learned by penalizing
-empirical dependence measures between $U$ and $A$ given $X$
+empirical dependence measures between $U$ and $pa_i$ for a given $V_i$
 (e.g. \citet{mooij:09}), but this concerns $\mathcal M$ and not $\hat Y$,
 and is motivated by explicit assumptions about structural equations,
 as described next.
@@ -79,7 +79,7 @@ increasing strength:
 \noindent {\bf Level 1.}  Build $\hat Y$ using only the observable
 non-descendants of $A$.  This only requires partial causal ordering
 and no further causal assumptions, but in many problems there will be
-few, if any, observables which are not descendants of sensitive
+few, if any, observables which are not descendants of protected
 demographic factors.
   
 \noindent {\bf Level 2.} Postulate background latent variables that
@@ -91,9 +91,9 @@ explicit domain knowledge and learning algorithms\footnote{In some
 passed to $\hat Y$ via $P(U\ |\ x, a)$.
 
 \noindent {\bf Level 3.} Postulate a fully deterministic model with
-latent variables. For instance, the distribution $P(V_i\ |\ V_1,
-\dots, V_{i - 1})$ can be treated as an additive error model, $V_i
-\!=\! f_i(V_1, \dots, V_{i - 1}) \!+\! e_i$ \citep{peters:14}. The
+latent variables. For instance, the distribution $P(V_i\ |\ pa_i)$
+can be treated as an additive error model, $V_i
+\!=\! f_i(pa_i) \!+\! e_i$ \citep{peters:14}. The
 error term $e_i$ then becomes an input to $\hat Y$ as calculated from
 the observed variables. This maximizes the information extracted by
 the fair predictor $\hat Y$.

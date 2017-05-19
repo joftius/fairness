@@ -1,0 +1,49 @@
+This is BibTeX, Version 0.99d (TeX Live 2016)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: ricardo_draft.aux
+The style file: icml2017.bst
+Database file #1: rbas.bib
+Database file #2: bibliography.bib
+Warning--empty journal in wightman1998lsac
+You've used 33 entries,
+            2773 wiz_defined-function locations,
+            768 strings with 10017 characters,
+and the built_in function-call counts, 15023 in all, are:
+= -- 1299
+> -- 906
+< -- 21
++ -- 309
+- -- 276
+* -- 1151
+:= -- 2316
+add.period$ -- 103
+call.type$ -- 33
+change.case$ -- 184
+chr.to.int$ -- 33
+cite$ -- 67
+duplicate$ -- 728
+empty$ -- 1228
+format.name$ -- 319
+if$ -- 3161
+int.to.chr$ -- 1
+int.to.str$ -- 1
+missing$ -- 37
+newline$ -- 174
+num.names$ -- 132
+pop$ -- 416
+preamble$ -- 1
+purify$ -- 157
+quote$ -- 0
+skip$ -- 564
+stack$ -- 0
+substring$ -- 423
+swap$ -- 93
+text.length$ -- 6
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 333
+warning$ -- 1
+while$ -- 130
+width$ -- 0
+write$ -- 420
+(There was 1 warning)

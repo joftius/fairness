@@ -154,7 +154,7 @@ One simple but important implication of the definition of counterfactual fairnes
 \begin{lem}
   \label{lem:nondescend}
   Let $\mathcal G$ be the causal graph of the given model $(U, V, F)$.
-  Then $\hat Y$ will be counterfactual fair if it is a function
+  Then $\hat Y$ will be counterfactually fair if it is a function
   of the non-descendants of $A$.
 \end{lem}
 %
@@ -307,7 +307,7 @@ is a descendent of $A$ but $U$ is not. Interestingly, we can show
 (Supplementary Material) that in a linear model, regression $Y$ on $A$
 and $X$ is equivalent to regressing on $U$, so off-the-shelf
 regression here is counterfactually fair. Regressing $Y$ on $X$ alone
-obeys the FTA criterion but is not counterfactually fair, so
+obeys the FTU criterion but is not counterfactually fair, so
 {\em omitting $A$ (FTU) may introduce unfairness into
   an otherwise fair world.}
 %
@@ -354,7 +354,7 @@ been caught.
   opportunity, algorithms enforcing EO will not remedy such unfairness}.
 In contrast, a counterfactually fair approach would model
 differential enforcement rates using $U$ and base predictions
-on this information rather than on $Y$ directly.
+on this information rather than on $X$ directly.
 
 % Unlike Scenario 1, $Y$ now
 % depends on $X$ directly. If all structural equations are linear, then
