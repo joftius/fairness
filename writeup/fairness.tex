@@ -110,11 +110,8 @@ makes the connection to machine learning more explicit.
 % $A$ in the causal graph.
 
 \begin{figure}
-  \begin{tabular}{p{0.5\columnwidth}|p{0.5\columnwidth}}
-    \centerline{\includegraphics[width=0.5\columnwidth]{implications_fig.pdf}}&
-    \centerline{\includegraphics[width=0.5\columnwidth]{simple_models_no_q3}}(d)
-  \end{tabular}
-  \caption{\label{fig:ex1} {\bf Left:} (a) The graph corresponding to
+\centerline{\includegraphics[width=\textwidth]{best_of_both.pdf}}
+\caption{\label{fig:ex1} (a) The graph corresponding to
     a causal model with $A$ being the protected attribute and $Y$ some
     outcome of interest, with background variables assumed to be
     independent.  (b) Expanding the model to include an intermediate
@@ -125,10 +122,30 @@ makes the connection to machine learning more explicit.
     representation of this system \citep{pearl:00} under two different
     counterfactual levels for $A$. This is created by copying nodes
     descending from $A$, which inherit unaffected parents from the
-    factual world. (d) Two causal models for different
+    factual world. (d),(e) Two causal models for different
     real-world fair prediction scenarios.\label{figure.simple_models}
     See Section \ref{sec:count_fair} for discussion.}
 \end{figure}
+% \begin{figure}
+%   \begin{tabular}{p{0.5\columnwidth}|p{0.5\columnwidth}}
+%     \centerline{\includegraphics[width=0.5\columnwidth]{implications_fig.pdf}}&
+%     \centerline{\includegraphics[width=0.5\columnwidth]{simple_models_no_q3}}(d)
+%   \end{tabular}
+%   \caption{\label{fig:ex1} {\bf Left:} (a) The graph corresponding to
+%     a causal model with $A$ being the protected attribute and $Y$ some
+%     outcome of interest, with background variables assumed to be
+%     independent.  (b) Expanding the model to include an intermediate
+%     variable indicating whether the individual is employed with two
+%     (latent) background variables $\textbf{Prejudiced}$ (if the person
+%     offering the job is prejudiced) and $\textbf{Qualifications}$ (a
+%     measure of the individual's qualifications). (c) A twin network
+%     representation of this system \citep{pearl:00} under two different
+%     counterfactual levels for $A$. This is created by copying nodes
+%     descending from $A$, which inherit unaffected parents from the
+%     factual world. (d) Two causal models for different
+%     real-world fair prediction scenarios.\label{figure.simple_models}
+%     See Section \ref{sec:count_fair} for discussion.}
+% \end{figure}
 
 \subsection{Implications}
 %
@@ -268,7 +285,7 @@ by-product.
 To give further intuition for counterfactual fairness, we will consider
 two real-world fair prediction scenarios: \textbf{insurance pricing}
 and \textbf{crime prediction}. Each of these correspond to one of the
-two causal graphs in Figure~\ref{figure.simple_models}(d). The
+two causal graphs in Figure~\ref{figure.simple_models}(d),(e). The
 Supplementary Material provides a more mathematical discussion of
 these examples with more detailed insights.
 
@@ -281,7 +298,7 @@ individuals to prefer red cars (the observed variable $X$). Moreover,
 individuals belonging to a certain race $A$ are more likely to drive
 red cars. However, these individuals are no more likely to be
 aggressive or to get in accidents than any one else. We show this in
-Figure~\ref{figure.simple_models}(d) (\emph{Left}). Thus, using the
+Figure~\ref{figure.simple_models}(d). Thus, using the
 red car feature $X$ to predict accident rate $Y$ would seem to be an
 unfair prediction because it may charge individuals of a certain race
 more than others, even though no race is more likely to have an
@@ -324,8 +341,7 @@ arrests $Y$.
 And finally, $U$ represents the totality of socioeconomic factors
 and policing practices that both influence where an individual may
 live and how likely they are to be arrested and charged.
-This can all be seen in Figure~\ref{figure.simple_models}(d)
-(\emph{Right}).
+This can all be seen in Figure~\ref{figure.simple_models}(e).
 
 In this example,
 higher observed arrest rates in some neighborhoods

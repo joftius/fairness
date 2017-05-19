@@ -12,8 +12,6 @@ stopandfrisk[,nacols] <- NULL
 
 # many NAs but don't want to be excluded, so set to 0
 cols <- which(apply(stopandfrisk, 2, function(col) mean(is.na(col))) > .05)
-
-
 stopandfrisk[,cols][is.na(stopandfrisk[,cols])] <- 0
 
 #stopandfrisk[,c("year", "linecm", "dob", "datestop", "revcmd", "ser_num",
@@ -69,13 +67,13 @@ stopandfrisk$force <- apply(stopandfrisk[,pf_cols], 1, function(x) (any(x == 1))
 
 # Truncate long tailed predictors / omit weird outliers
 # question: > or >= ?
-stopandfrisk$perobs5 <- stopandfrisk$perobs >= 5
-stopandfrisk$perobs[stopandfrisk$perobs5] <- 5 
-stopandfrisk$perstop10 <- stopandfrisk$perstop >= 10
-stopandfrisk$perstop[stopandfrisk$perstop10] <- 10
-stopandfrisk <- stopandfrisk[stopandfrisk$age > 11,]
-stopandfrisk <- stopandfrisk[stopandfrisk$age <= 65,]
-stopandfrisk$weight[stopandfrisk$weight > 300] <- 300
-stopandfrisk <- stopandfrisk[stopandfrisk$weight >= 80,]
-stopandfrisk <- stopandfrisk[stopandfrisk$height >= 55,]
+#stopandfrisk$perobs5 <- stopandfrisk$perobs >= 5
+#stopandfrisk$perobs[stopandfrisk$perobs5] <- 5 
+#stopandfrisk$perstop10 <- stopandfrisk$perstop >= 10
+#stopandfrisk$perstop[stopandfrisk$perstop10] <- 10
+#stopandfrisk <- stopandfrisk[stopandfrisk$age > 11,]
+#stopandfrisk <- stopandfrisk[stopandfrisk$age <= 65,]
+#stopandfrisk$weight[stopandfrisk$weight > 300] <- 300
+#stopandfrisk <- stopandfrisk[stopandfrisk$weight >= 80,]
+#stopandfrisk <- stopandfrisk[stopandfrisk$height >= 55,]
 
