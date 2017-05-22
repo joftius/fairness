@@ -63,12 +63,22 @@ In Level 2, we postulate that a latent variable: a student's
 graph corresponding to this model is shown in
 Figure~\ref{figure.law_school}, (\textbf{Level 2}). This is a
 short-hand for the distributions:
+% NIPS VERSION BELOW
+% \[
+% \begin{array}{cc}
+%   \mbox{GPA} \sim {\cal N}(b_{G} + w_{G}^K K + w_{G}^R R + w_{G}^S S, \sigma_{G}),&  \hspace{0.2in}
+%   \mbox{FYA} \sim {\cal N}(w_{F}^K K + w_{F}^R R + w_{F}^S S, 1),\\
+%   \mbox{LSAT} \sim \textrm{Poisson}(\exp(b_{L} + w_{L}^K K + w_{L}^R R + w_{L}^S S)),& \hspace{0.2in}
+%   \mbox{K} \sim {\cal N}(0,1)
+% \end{array}
+% \]
+% ARXIV VERSION BELOW
 \[
-\begin{array}{cc}
-  \mbox{GPA} \sim {\cal N}(b_{G} + w_{G}^K K + w_{G}^R R + w_{G}^S S, \sigma_{G}),&  \hspace{0.2in}
-  \mbox{FYA} \sim {\cal N}(w_{F}^K K + w_{F}^R R + w_{F}^S S, 1),\\
-  \mbox{LSAT} \sim \textrm{Poisson}(\exp(b_{L} + w_{L}^K K + w_{L}^R R + w_{L}^S S)),& \hspace{0.2in}
-  \mbox{K} \sim {\cal N}(0,1)
+\begin{array}{ll}
+  &\mbox{GPA} \sim {\cal N}(b_{G} + w_{G}^K K + w_{G}^R R + w_{G}^S S, \sigma_{G}),
+  \;\;\mbox{FYA} \sim {\cal N}(w_{F}^K K + w_{F}^R R + w_{F}^S S, 1),\\
+  &\mbox{LSAT} \sim \textrm{Poisson}(\exp(b_{L} + w_{L}^K K + w_{L}^R R + w_{L}^S S)), 
+  \;\;\mbox{K} \sim {\cal N}(0,1)
 \end{array}
 \]
 %\begin{align}
@@ -87,7 +97,7 @@ predictor constructed using $K$, \textbf{Fair $K$}.
 
 \begin{figure}[th]
   \begin{tabular}{p{0.5\columnwidth}p{0.5\columnwidth}}
-    \centerline{\includegraphics[width=0.4\columnwidth]{law_school_model}}
+    \centerline{\includegraphics[width=0.5\columnwidth]{law_school_model}}
     &
       \centerline{\includegraphics[width=0.5\columnwidth]{counterfactual}}
   \end{tabular}
