@@ -39,6 +39,16 @@ features such as race and sex to make predictions;
 race and sex as features. For comparison, we generate predictors $\hat
 Y$ for all models using logistic regression.
 
+\begin{figure}[t!]
+  \begin{tabular}{p{0.5\columnwidth}p{0.5\columnwidth}}
+    \centerline{\includegraphics[width=0.5\columnwidth]{law_school_model}}
+    &
+      \centerline{\includegraphics[width=0.5\columnwidth]{counterfactual}}
+  \end{tabular}
+  \caption{{\bf Left:} A causal model for the problem of predicting law school success fairly.\label{figure.law_school}
+  {\bf Right:} Density plots of predicted $\mbox{FYA}_a$ and $\mbox{FYA}_{a'}$.\label{figure.counterfactual}
+}
+\end{figure}
 
 \paragraph{Fair prediction.}
 As described in Section~\ref{sec:limit-guide-model}, there are three
@@ -95,16 +105,11 @@ programming language Stan \cite{rstan} to learn $K$. We call the
 predictor constructed using $K$, \textbf{Fair $K$}.
 
 
-\begin{figure}[th]
-  \begin{tabular}{p{0.5\columnwidth}p{0.5\columnwidth}}
-    \centerline{\includegraphics[width=0.5\columnwidth]{law_school_model}}
-    &
-      \centerline{\includegraphics[width=0.5\columnwidth]{counterfactual}}
-  \end{tabular}
-  \caption{{\bf Left:} A causal model for the problem of predicting law school success fairly.\label{figure.law_school}
-  {\bf Right:} Density plots of predicted $\mbox{FYA}_a$ and $\mbox{FYA}_{a'}$.\label{figure.counterfactual}
-}
-\end{figure}
+
+
+
+
+
 
 \begin{table}
 \centering

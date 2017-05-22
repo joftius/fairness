@@ -109,23 +109,7 @@ makes the connection to machine learning more explicit.
 % individual depending on their value of $a$ and the descendents of
 % $A$ in the causal graph.
 
-\begin{figure}
-\centerline{\includegraphics[width=\textwidth]{best_of_both.pdf}}
-\caption{\label{fig:ex1} (a) The graph corresponding to
-    a causal model with $A$ being the protected attribute and $Y$ some
-    outcome of interest, with background variables assumed to be
-    independent.  (b) Expanding the model to include an intermediate
-    variable indicating whether the individual is employed with two
-    (latent) background variables $\textbf{Prejudiced}$ (if the person
-    offering the job is prejudiced) and $\textbf{Qualifications}$ (a
-    measure of the individual's qualifications). (c) A twin network
-    representation of this system \citep{pearl:00} under two different
-    counterfactual levels for $A$. This is created by copying nodes
-    descending from $A$, which inherit unaffected parents from the
-    factual world. (d),(e) Two causal models for different
-    real-world fair prediction scenarios.\label{figure.simple_models}
-    See Section \ref{sec:count_fair} for discussion.}
-\end{figure}
+
 % \begin{figure}
 %   \begin{tabular}{p{0.5\columnwidth}|p{0.5\columnwidth}}
 %     \centerline{\includegraphics[width=0.5\columnwidth]{implications_fig.pdf}}&
@@ -165,6 +149,24 @@ One simple but important implication of the definition of counterfactual fairnes
  \ref{subsec:cmc}.  Hence, the distribution of any function $\hat Y$ of the non-descendants of $A$
  is invariant with respect to the counterfactual values of $A$.
 \end{proof}
+
+\begin{figure}
+\centerline{\includegraphics[width=\textwidth]{best_of_both.pdf}}
+\caption{\label{fig:ex1} (a) The graph corresponding to
+    a causal model with $A$ being the protected attribute and $Y$ some
+    outcome of interest, with background variables assumed to be
+    independent.  (b) Expanding the model to include an intermediate
+    variable indicating whether the individual is employed with two
+    (latent) background variables $\textbf{Prejudiced}$ (if the person
+    offering the job is prejudiced) and $\textbf{Qualifications}$ (a
+    measure of the individual's qualifications). (c) A twin network
+    representation of this system \citep{pearl:00} under two different
+    counterfactual levels for $A$. This is created by copying nodes
+    descending from $A$, which inherit unaffected parents from the
+    factual world. (d),(e) Two causal models for different
+    real-world fair prediction scenarios.\label{figure.simple_models}
+    See Section \ref{sec:count_fair} for discussion.}
+\end{figure}
 
 This does not exclude using a descendant $W$ of $A$ as a possible input to
 $\hat Y$. However, this will only be possible in the case where the
