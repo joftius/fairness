@@ -3,7 +3,7 @@
 
 %%%% TODO!!! ADD COMMENT THAT WE NEED Y TO LEARN THE CAUSAL MODEL!!!!!
 
-\section*{S1 Population Level vs Individual Level Causal Effects}
+\section*{S1 - Population Level vs Individual Level Causal Effects}
 \label{sec:individual}
 
 As discussed in Section~\ref{sec:count_fair}, counterfactual fairness
@@ -137,7 +137,7 @@ many degrees of freedom on how this can be done. Robustness issues are
 better addressed by extensions focusing on approximate versions of 
 counterfactual fairness. This will be covered in later work.
 
-\section*{S2 Relation to Demographic Parity}
+\section*{S2 - Relation to Demographic Parity}
 %
 Consider the graph $A \rightarrow X \rightarrow Y$. In general, if
 $\hat Y$ is a function of $X$ only, then $\hat Y$ need not obey
@@ -174,7 +174,7 @@ Thus, counterfactual fairness can be thought of as a counterfactual
 analog of demographic parity, as present in the Red Car example further discussed
 in the next section.
 
-\section*{S3 Examples Revisited}
+\section*{S3 - Examples Revisited}
 
 In Section \ref{sec:further_examples}, we discussed two examples. We
 reintroduce them here briefly, add a third example, and explain some
@@ -272,7 +272,7 @@ a = \gamma U$. Thus, if we substitute $a$ with a counterfactual $a'$
 (the action step described in Section~\ref{subsec:cmc}) the predictor
 $\hat Y(X,A)$ is unchanged. This is because our predictor is
 constructed in such a way that any change in $X$ caused by a change in
-$A$ is cancelled out by the $\lambda_A$. Thus this predictor is
+$A$ is canceled out by the $\lambda_A$. Thus this predictor is
 counterfactually fair.
 % This is known to be equivalent to first getting the residuals $R_X$ of $X$ regressed on $A$
 % and regressing $Y$ on $R_X$ and $A$. Notice that $R_X \!=\! U$, and $A$ is independent of $U$
@@ -371,7 +371,7 @@ a function of $A$ not explained by $U$, so it cannot be counterfactually fair.
 %
 %{lr@{$\pm$}lr@{$\pm$}lr@{$\pm$}l}
 
-\section*{S4 Case Study: Criminality vs. Perceived Criminality}
+\section*{S4 - Case Study: Criminality vs. Perceived Criminality}
 \label{sec:true-vs.-perceived}
 
 We test our approach on a problem of \emph{separating actual and
