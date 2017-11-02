@@ -3,47 +3,44 @@
 Machine learning has spread to fields as diverse as credit scoring
 \cite{khandani2010consumer}, crime prediction
 \cite{brennan2009evaluating}, and loan assessment
-\cite{mahoney2007method}. Decisions in these areas may have ethical
-or legal implications, so it is necessary for the modeler to think
-beyond the objective of maximizing prediction accuracy
-and consider the societal impact of their work. 
+\cite{mahoney2007method}. Decisions in these areas may have ethical or
+legal implications, so it is necessary for the modeler to think beyond
+the objective of maximizing prediction accuracy and consider the
+societal impact of their work.
 % in these new ml fields, we cannot discriminate
 % discrimination can happen in multiple ways
 % - direct discrimination
 For many of these applications, it is crucial to ask if the
-predictions of a model are \emph{fair}.
-Training data can contain unfairness for reasons having to do
-with historical prejudices or other factors outside an individual's
-control.
+predictions of a model are \emph{fair}.  Training data can contain
+unfairness for reasons having to do with historical prejudices or
+other factors outside an individual's control.
 % For instance, imagine a bank
 % wishes to predict if an individual should be given a loan to buy a
 % house. The bank wishes to use historical repayment data, alongside
 % individual data. If they simply learn a model that predicts whether
 % the loan will be paid back, it may unjustly favor applicants of
 % particular subgroups, due to past and present prejudices.
-In 2016, the Obama
-administration released a report\footnote{https://obamawhitehouse.archives.gov/blog/2016/05/04/big-risks-big-opportunities-intersection-big-data-and-civil-rights}
-which urged data
-scientists to analyze ``how technologies can deliberately or
-inadvertently perpetuate, exacerbate, or mask
+In 2016, the Obama administration released a
+report\footnote{https://obamawhitehouse.archives.gov/blog/2016/05/04/big-risks-big-opportunities-intersection-big-data-and-civil-rights}
+which urged data scientists to analyze ``how technologies can
+deliberately or inadvertently perpetuate, exacerbate, or mask
 discrimination."
 
-There has been much recent interest in designing
-algorithms that make fair predictions
-\cite{hardt2016equality,dwork2012fairness,joseph2016rawlsian,kamishima2011fairness,zliobaite2015survey,zafar2016fairness,zafar2015learning,grgiccase,kleinberg2016inherent,calders2010three,kamiran2012data,bolukbasi2016man,kamiran2009classifying,zemel2013learning,louizos2015variational}. 
+There has been much recent interest in designing algorithms that make
+fair predictions
+\cite{hardt2016equality,dwork2012fairness,joseph2016rawlsian,kamishima2011fairness,zliobaite2015survey,zafar2016fairness,zafar2015learning,grgiccase,kleinberg:17,calders2010three,kamiran2012data,bolukbasi2016man,kamiran2009classifying,zemel2013learning,louizos2015variational}.
 % Most
 % of these works focus on formalizing fairness into a numeric
 % definition and satisfying it with customized algorithms.
-In large part, the literature has
-focused on formalizing fairness into quantitative definitions and using them to solve a
-discrimination problem in a certain dataset. Unfortunately, for a
-practitioner, law-maker, judge, or anyone else who is interested in
-implementing algorithms that control for discrimination, it can be
-difficult to decide {\em which} definition of fairness to choose for the
-task at hand. Indeed, we demonstrate that depending on the
-relationship between a protected attribute and the data, certain
-definitions of fairness can actually \emph{increase discrimination}.
-
+In large part, the literature has focused on formalizing fairness into
+quantitative definitions and using them to solve a discrimination
+problem in a certain dataset. Unfortunately, for a practitioner,
+law-maker, judge, or anyone else who is interested in implementing
+algorithms that control for discrimination, it can be difficult to
+decide {\em which} definition of fairness to choose for the task at
+hand. Indeed, we demonstrate that depending on the relationship
+between a protected attribute and the data, certain definitions of
+fairness can actually \emph{increase discrimination}.
 
 % we propose a way to model data that allows a practitioner to assess what definitions of fairness are right for the problem at hand, and algorithms to ensure fairness
 % OR
@@ -61,24 +58,24 @@ definitions of fairness can actually \emph{increase discrimination}.
 % 
 % In this work,
 
-In this paper, we introduce the first explicitly causal 
-approach to address fairness.
-Specifically, we leverage the causal framework of
+In this paper, we introduce the first explicitly causal approach to
+address fairness.  Specifically, we leverage the causal framework of
 \citet{pearl2009causal} to model the relationship between protected
-attributes and data. We describe how techniques from causal
-inference can be effective tools for designing fair algorithms and
-argue, as in \citet{dedeo2014wrong}, that it is essential to properly
-address causality in fairness.
-In perhaps the most closely related work, \citet{johnson2016impartial}
-make similar arguments but from a non-causal perspective.
+attributes and data. We describe how techniques from causal inference
+can be effective tools for designing fair algorithms and argue, as in
+\citet{dedeo2014wrong}, that it is essential to properly address
+causality in fairness. In perhaps the most closely related prior work,
+\citet{johnson2016impartial} make similar arguments but from a
+non-causal perspective. An alternative use of causal modeling in
+the context of fairness is introduced independently by \citep{kilbertus:17}.
 
 In Section \ref{sec:background}, we provide a summary of basic
 concepts in fairness and causal modeling. In Section
 \ref{sec:count_fair}, we provide the formal definition of
 \emph{counterfactual fairness}, which enforces that a distribution
-over possible predictions for an individual should remain unchanged
-in a world where an individual's protected attributes had been
-different in a causal sense. In Section \ref{sec:methods}, we describe an
+over possible predictions for an individual should remain unchanged in
+a world where an individual's protected attributes had been different
+in a causal sense. In Section \ref{sec:methods}, we describe an
 algorithm to implement this definition, while distinguishing it from
 existing approaches.  In Section \ref{sec:experiments}, we illustrate
 the algorithm with a case of fair assessment of law school success.

@@ -51,12 +51,12 @@ for all $y$ and for any value $a'$ attainable by $A$.
 \end{define}
 %Simply put,
 
-This is closely related to
-{\bf actual causes} \cite{halpern:16}, or token causality in the sense
-that, to be fair, $A$ should not be a cause of $\hat Y$ in any
-individual instance. In other words, changing $A$ while holding things
-which are not causally dependent on $A$ constant
-will not change the distribution of $\hat Y$.
+This notion is closely related to {\bf actual causes}
+\cite{halpern:16}, or token causality in the sense that, to be fair,
+$A$ should not be a cause of $\hat Y$ in any individual instance. In
+other words, changing $A$ while holding things which are not causally
+dependent on $A$ constant will not change the distribution of $\hat
+Y$.
 % \footnote{Notice that we always assume counterfactuals to be
 %  well-defined by the model. For instance, ``race'' can be taken as a
 %  surrogate for ``perceived race.''}
@@ -65,8 +65,7 @@ counterfactual fairness is an individual-level definition. This is
 substantially different from comparing different individuals that happen to
 share the same ``treatment'' $A = a$ and coincide on the values of
 $X$, as discussed in Section 4.3.1 of \citep{pearl:16} and the
-Supplementary Material\footnote{We strongly suggest that reviewers
-  look at it.}. Differences between $X_a$ and $X_{a'}$ must be caused
+Supplementary Material. Differences between $X_a$ and $X_{a'}$ must be caused
 by variations on $A$ only. Notice also that this definition is
 agnostic with respect to how good a predictor $\hat Y$ is, which we
 discuss in Section \ref{sec:methods}.
@@ -109,7 +108,25 @@ makes the connection to machine learning more explicit.
 % individual depending on their value of $a$ and the descendents of
 % $A$ in the causal graph.
 
-
+\begin{figure}
+\centerline{\includegraphics[width=\textwidth]{best_of_both.pdf}}
+\caption{\label{fig:ex1}
+    (a), (b) Two causal models for different
+    real-world fair prediction scenarios.\label{figure.simple_models}
+    See Section \ref{sec:further_examples} for discussion.
+    (c) The graph corresponding to
+    a causal model with $A$ being the protected attribute and $Y$ some
+    outcome of interest, with background variables assumed to be
+    independent. (d) Expanding the model to include an intermediate
+    variable indicating whether the individual is employed with two
+    (latent) background variables $\textbf{Prejudiced}$ (if the person
+    offering the job is prejudiced) and $\textbf{Qualifications}$ (a
+    measure of the individual's qualifications). (e) A twin network
+    representation of this system \citep{pearl:00} under two different
+    counterfactual levels for $A$. This is created by copying nodes
+    descending from $A$, which inherit unaffected parents from the
+    factual world.}
+\end{figure}
 % \begin{figure}
 %   \begin{tabular}{p{0.5\columnwidth}|p{0.5\columnwidth}}
 %     \centerline{\includegraphics[width=0.5\columnwidth]{implications_fig.pdf}}&
@@ -131,6 +148,175 @@ makes the connection to machine learning more explicit.
 %     See Section \ref{sec:count_fair} for discussion.}
 % \end{figure}
 
+\subsection{Examples}
+\label{sec:further_examples}
+
+To provide an intuition for counterfactual fairness, we will consider
+two real-world fair prediction scenarios: \textbf{insurance pricing}
+and \textbf{crime prediction}. Each of these correspond to one of the
+two causal graphs in Figure~\ref{figure.simple_models}(a),(b). The
+Supplementary Material provides a more mathematical discussion of
+these examples with more detailed insights.
+
+\paragraph{Scenario 1: The Red Car.}
+A car insurance company wishes to price insurance for car owners by
+predicting their accident rate $Y$. They assume there is an unobserved
+factor corresponding to aggressive driving $U$, that (a) causes
+drivers to be more likely have an accident, and (b) causes individuals
+to prefer red cars (the observed variable $X$). Moreover, individuals
+belonging to a certain race $A$ are more likely to drive red
+cars. However, these individuals are no more likely to be aggressive
+or to get in accidents than any one else. We show this in
+Figure~\ref{figure.simple_models}(a). Thus, using the red car feature
+$X$ to predict accident rate $Y$ would seem to be an unfair prediction
+because it may charge individuals of a certain race more than others,
+even though no race is more likely to have an accident. Counterfactual
+fairness agrees with this notion: changing $A$ while holding $U$ fixed
+will also change $X$ and, consequently, $\hat Y$. Interestingly, we
+can show (Supplementary Material) that in a linear model, regressing
+$Y$ on $A$ and $X$ is equivalent to regressing on $U$, so
+off-the-shelf regression here is counterfactually fair. Regressing $Y$
+on $X$ alone obeys the FTU criterion but is not counterfactually fair,
+so {\em omitting $A$ (FTU) may introduce unfairness into an otherwise
+  fair world.}
+%
+\paragraph{Scenario 2: High Crime Regions.}
+%%%%% ICML STUFF
+%A local police precinct wants to know $Y$, whether a given house is to
+%be broken into in any given day. The probability of $Y = 1$ depends on many
+%unobserved factors ($U$) but also upon the neighborhood the house lies
+%in ($X$). However, different ethnic groups are more likely to live in
+%particular neighborhoods, and so neighborhood and break-in rates are
+%often correlated with the race $A$ of the house occupier. This can be
+%seen in Figure~\ref{figure.simple_models}(d) (\emph{Center}). Unlike the
+%previous case, a predictor $\hat Y$ trained using $X$ and $A$ is not
+%counterfactually fair. The only change from Scenario 1 is that now $Y$
+%depends on $X$ as follows: $Y \!=\! \gamma U + \theta X$. Now if we
+%solve for $\lambda_X,\lambda_A$ it can be shown that $\hat Y(X,a)
+%\!=\! (\gamma - \frac{\alpha^2 \theta v_A}{\beta v_U})U + \alpha
+%\theta a$. As this predictor depends on the values of $A$, $\hat
+%Y(X,a) \!\neq\! \hat Y(X,a')$ and thus $\hat Y(X,A)$ is not
+%counterfactually fair.
+%%%%% END ICML STUFF
+A city government wants to estimate crime rates by neighborhood to
+allocate policing resources. Its analyst constructed training data by
+merging (1) a registry of residents containing their neighborhood $X$
+and race $A$, with (2) police records of arrests, giving each resident
+a binary label with $Y = 1$ indicating a criminal arrest record.  Due
+to historically segregated housing, the location $X$ depends on $A$.
+Locations $X$ with more police resources have larger numbers of
+arrests $Y$.  And finally, $U$ represents the totality of
+socioeconomic factors and policing practices that both influence where
+an individual may live and how likely they are to be arrested and
+charged.  This can all be seen in
+Figure~\ref{figure.simple_models}(b).
+
+In this example, higher observed arrest rates in some neighborhoods
+are due to greater policing there, not because people of different
+races are any more or less likely to break the law.  The label $Y = 0$
+does not mean someone has never committed a crime, but rather that
+they have not been caught.  {\em If individuals in the training data
+  have not already had equal opportunity, algorithms enforcing EO will
+  not remedy such unfairness}.  In contrast, a counterfactually fair
+approach would model differential enforcement rates using $U$ and base
+predictions on this information rather than on $X$ directly.
+
+% Unlike Scenario 1, $Y$ now
+% depends on $X$ directly. If all structural equations are linear, then
+% $U$ is a linear function of $A$ and $X$, and so, indirectly, a
+% counterfactually fair $\hat Y$ can be expressed as a linear function
+% of $A$ and $X$. However, this is different from assuming that $\hat Y$ can be
+% \emph{any} linear combination of $A$ and $X$. As a matter of fact, the solution for the
+% unrestricted least-squares regression of $Y$ on $A$ and $X$ cannot be
+% written as a function of $U$ only, as shown in the Supplementary Material.
+%Intuitively this is because the predictor $\hat Y(X,A)$ will be a
+% function of not only $U$, but also of the part of $X$ that directly
+% causes $Y$. This means that the change in $X$ caused by the
+% counterfactual change in $A$ from $a$ to $a'$ will cause a change in
+% $\hat Y(X,A)$ so that $\hat Y(X,a) \!\neq\! \hat Y(X,a')$.  In such
+% a scenario, although the likelihood of a particular person having
+% their house broken into does not depend upon race directly, it does
+% vary which a persons race and so is not counterfactually fair.
+
+In general, we need a multistage procedure in which we first derive
+latent variables $U$, and then based on them we minimize some loss
+with respect to $Y$. This is the core of the algorithm discussed next.
+
+%%%%%%%% ICML STUFF
+%\paragraph{Scenario 3: University Success.}
+%A university wants to know if students will be successful
+%post-graduation $Y$. They have information such as: grade point
+%average (GPA), advanced placement (AP) exams results, and other
+%academic features $X$. The university believes however, that an
+%individual's gender $A$ may influence these features and their
+%post-graduation success $Y$ due to social discrimination. They also
+%believe that independently, an individual's latent talent $U$ causes
+%$X$ and $Y$. We show this in Figure~\ref{figure.simple_models}(d)
+%(\emph{Right}). We can again ask, is the predictor $\hat Y(X,A)$
+%counterfactually fair? In this case, the different between this and
+%Scenario 1 is that $Y$ is a function of $U$ and $A$ as follows: $Y
+%\!=\! \gamma U + \eta A$. We can again solve for $\lambda_X,\lambda_A$
+%and show that $\hat Y(X,a) \!=\! (\gamma - \frac{\alpha \eta
+%  v_A}{\beta v_U})U + \eta a$. Again $\hat Y(X,A)$ is a function of
+%$A$ so it cannot be counterfactually fair.
+%%%%%%%% END ICML STUFF
+
+% TODO. Here the main
+% definition is introduced, and how it relates to ``path deletion'',
+% including the core example of $A \rightarrow X \rightarrow Y$, with
+% two latent variables $U_x \rightarrow X$ and $U_y \rightarrow Y$,
+% arguing that one might judge that the path from $A$ to $Y$ via is due
+% to an unfair mechanism and that we need a notion of ``closest world''.
+
+% When describing counterfactual fairness, it is important to
+% distinguish between a counterfactually fair {\em world} in which the
+% variable $Y$ we are interested in predicting is inherently
+% counterfactually fair with respect to the protected attributes $A$,
+% and a counterfactually fair {\em predictor} $\hat Y$, guaranteed to
+% be counterfactually fair, regardless of the behavior of $Y$.
+
+% Figure~\ref{figure.simple_models} shows possible worlds. {\em Left:} A
+% counterfactually fair world in which the state of $Y$ has no
+% dependencies on $A$. {\em Center and Right:} Potentially unfair worlds
+% in which the state of $A$ can influence the state of $Y$ either
+% indirectly as in {\em center} or directly as in {\em Right}.
+
+%In Scenarios 2 and 3 in general $\hat Y(X,A)$ will also not satisfy
+%demographic parity as $Y$ will be affected by $A$. In fact, we
+%demonstrate in the next section that demographic parity is strictly
+%more restrictive than counterfactual fairness.
+
+%  The world on the right shows $Y'$ a
+% causally fair variable that doesn't depend on $A$ being directly
+% corrupted by a bias relating to $A$, resulting in an observation
+% $Y$. In this case, learning a causally fair approximation of $Y$ can
+% recover the true variable $Y'$ (up to noise).
+
+% \subsection{Examples} To get an intuition for what the different
+% definitions of fairness imply, we will revisit the examples of
+% figure \ref{figure.simple_models}.  begin by describing a few
+% possible real-world scenarios. For each of these we will describe
+% what counterfactually-fair and counterfactually-unfair predictors
+% look like.
+
+% \paragraph{Scenario 1: The Red Car.}  Imagine a car insurance
+% company wants a quick, anonymous way to determine how to price
+% insurance for different car owners by predicting their accident
+% likelihood $Y$. They've noticed that there is a correlation between
+% driving a red car $X$ and a higher rate of automobile
+% accidents. Thus they would like to increase the insurance for all
+% red car drivers.
+
+% Imagine what's really going on is shown in
+% Figure~\ref{figure.simple_models} (\emph{Left}). The correlation
+% between have a red car $X$ and accidents $Y$ is due to an
+% `aggressiveness' factor $U$: aggressiveness causes individuals to be
+% in accidents more often, and it also attracts them to red
+% cars. Unfortunately, the red car feature $X$ is also affected by an
+% individual's race $A$.
+
+% TODO. Here the examples and their motivation can be as follows:
+
 \subsection{Implications}
 %
 One simple but important implication of the definition of counterfactual fairness is the following:
@@ -150,29 +336,15 @@ One simple but important implication of the definition of counterfactual fairnes
  is invariant with respect to the counterfactual values of $A$.
 \end{proof}
 
-\begin{figure}
-\centerline{\includegraphics[width=\textwidth]{best_of_both.pdf}}
-\caption{\label{fig:ex1} (a) The graph corresponding to
-    a causal model with $A$ being the protected attribute and $Y$ some
-    outcome of interest, with background variables assumed to be
-    independent.  (b) Expanding the model to include an intermediate
-    variable indicating whether the individual is employed with two
-    (latent) background variables $\textbf{Prejudiced}$ (if the person
-    offering the job is prejudiced) and $\textbf{Qualifications}$ (a
-    measure of the individual's qualifications). (c) A twin network
-    representation of this system \citep{pearl:00} under two different
-    counterfactual levels for $A$. This is created by copying nodes
-    descending from $A$, which inherit unaffected parents from the
-    factual world. (d),(e) Two causal models for different
-    real-world fair prediction scenarios.\label{figure.simple_models}
-    See Section \ref{sec:count_fair} for discussion.}
-\end{figure}
-
-This does not exclude using a descendant $W$ of $A$ as a possible input to
-$\hat Y$. However, this will only be possible in the case where the
-overall dependence of $\hat Y$ on $A$ disappears, which will not
-happen in general. Hence, Lemma~\ref{lem:nondescend} provides the most
-straightforward way to achieve counterfactual fairness.
+This does not exclude using a descendant $W$ of $A$ as a possible
+input to $\hat Y$. However, this will only be possible in the case
+where the overall dependence of $\hat Y$ on $A$ disappears, which will
+not happen in general. Hence, Lemma~\ref{lem:nondescend} provides the
+most straightforward way to achieve counterfactual fairness. In some
+scenarios, it is desirable to define path-specific variations of
+counterfactual fairness that allow for the inclusion of some descendants
+of $A$, as discussed by \cite{nabi:17,kilbertus:17} and the
+Supplementary Material.
 
 \noindent{\bf Ancestral closure of protected attributes.} Suppose that
 a parent of a member of $A$ is not in $A$.  Counterfactual fairness
@@ -185,32 +357,39 @@ graph. For instance, if {\it Race} is a protected attribute, and {\it
   Mother's race} is a parent of {\it Race}, then it should also be in
 $A$.
 
-\noindent{\bf Dealing with historical biases.} The explicit difference
-between $\hat Y$ and $Y$ allows us to tackle historical biases. For
-instance, let $Y$ be an indicator of whether a client defaults on a
-loan, while $\hat Y$ is the actual decision of giving the
-loan. Consider the DAG $A \rightarrow Y$, shown in Figure
-\ref{fig:ex1}(a) with the explicit inclusion of set $U$ of independent
-background variables. $Y$ is the objectively ideal measure for
-decision making, the binary indicator of the event that the individual defaults on
-a loan. If $A$ is postulated to be a protected attribute, then the
-predictor $\hat Y = Y = f_Y(A, U)$ is not counterfactually fair, with the arrow $A
-\rightarrow Y$ being (for instance) the result of a world that
-punishes individuals in a way that is out of their control. Figure
-\ref{fig:ex1}(b) shows a finer-grained model, where the path is
-mediated by a measure of whether the person is employed, which is
-itself caused by two background factors: one representing whether the
-person hiring is prejudiced, and the other the employee's
-qualifications. In this world, $A$ is a cause of defaulting, even if
-mediated by other variables\footnote{For example, if the function
-  determining employment $f_E(A,P,Q) \equiv I_{(Q > 0, P = 0 \text{ or } A
-    \neq a)}$ then an individual with sufficient qualifications and
-  prejudiced potential employer may have a different counterfactual
-  employment value for $A = a$ compared to $A = a'$, and a different
-  chance of default. }. The counterfactual fairness principle however
-forbids us from using $Y$: using the twin network of \citet{pearl:00},
-we see in Figure \ref{fig:ex1}(c) that $Y_a$ and $Y_{a'}$ need not be
-identically distributed given the background variables.
+\noindent{\bf Dealing with historical biases and an existing
+  fairness paradox.} The explicit difference between $\hat Y$ and $Y$
+allows us to tackle historical biases. For instance, let $Y$ be an
+indicator of whether a client defaults on a loan, while $\hat Y$ is
+the actual decision of giving the loan. Consider the DAG $A
+\rightarrow Y$, shown in Figure \ref{fig:ex1}(c) with the explicit
+inclusion of set $U$ of independent background variables. $Y$ is the
+objectively ideal measure for decision making, the binary indicator of
+the event that the individual defaults on a loan. If $A$ is postulated
+to be a protected attribute, then the predictor $\hat Y = Y = f_Y(A,
+U)$ is not counterfactually fair, with the arrow $A \rightarrow Y$
+being (for instance) the result of a world that punishes individuals
+in a way that is out of their control. Figure \ref{fig:ex1}(d) shows a
+finer-grained model, where the path is mediated by a measure of
+whether the person is employed, which is itself caused by two
+background factors: one representing whether the person hiring is
+prejudiced, and the other the employee's qualifications. In this
+world, $A$ is a cause of defaulting, even if mediated by other
+variables\footnote{For example, if the function determining employment
+  $f_E(A,P,Q) \equiv I_{(Q > 0, P = 0 \text{ or } A \neq a)}$ then an
+  individual with sufficient qualifications and prejudiced potential
+  employer may have a different counterfactual employment value for $A
+  = a$ compared to $A = a'$, and a different chance of default. }. The
+counterfactual fairness principle however forbids us from using $Y$:
+using the twin network
+\footnote{In a nutshell, this is a graph that simultaneously depicts
+  ``multiple worlds'' parallel to the factual realizations. In
+  this graph, all multiple worlds share the same background variables,
+  but with different consequences in the remaining variables depending
+  on which counterfactual assigments are provided.} of
+\citet{pearl:00}, we see in Figure \ref{fig:ex1}(e) that $Y_a$ and
+$Y_{a'}$ need not be identically distributed given the background
+variables.
   % \footnote{We assume
   % that function $f_Y(A, U)$ is not pathological, that is, it will give
   % different outcomes for different values of $A$ other things being
@@ -228,6 +407,33 @@ for $Y$ will satisfy the criterion, as proposed in Section
 \ref{sec:algorithm}. We are essentially learning a projection of $Y$
 into the space of fair decisions, removing historical biases as a
 by-product.
+
+Counterfactual fairness also provides an answer to some problems on
+the incompatibility of fairness criteria. In particular, consider the
+following problem raised independently by different authors (e.g.,
+\cite{chouldechova:17, kleinberg:17}), illustrated below for the
+binary case: ideally, we would like our predictors to obey both
+Equality of Opportunity and the {\it predictive parity} criterion
+defined by satisfying
+\[
+P(Y = 1\ |\ \hat Y = 1, A = 1) = P(Y = 1\ |\ \hat Y = 1, A = 0),
+\]
+\noindent as well as the corresponding equation for $\hat Y = 0$. It
+has been shown that if $Y$ and $A$ are marginally associated (e.g.,
+recidivism and race are associated) and $Y$ is not a deterministic
+function of $\hat Y$, then the two criteria cannot be
+reconciled. Counterfactual fairness throws a light in this scenario,
+suggesting that both EO and predictive parity may be insufficient if
+$Y$ and $A$ are associated: assuming that $A$ and $Y$ are unconfounded (as
+expected for demographic attributes), this is the result of $A$ being
+a cause of $Y$. By counterfactual fairness, we should {\it not} want
+to use $Y$ as a basis for our decisions, instead aiming at some function
+$Y_{\perp_A}$ of variables which are not caused by $A$ but are
+predictive of $Y$. $\hat Y$ is defined in such a way that is an
+estimate of the ``closest'' $Y_{\perp_A}$ to $Y$ according to some
+preferred risk function. {\it This makes the incompatibility between EO and
+  predictive parity irrelevant}, as $A$ and $Y_{\perp_A}$ will be
+independent by construction given the model assumptions.
 
 % There are two issues to be clarified at this point. First,
 % it sounds potentially counter-intuitive that our definition
@@ -280,166 +486,6 @@ by-product.
 %  would be present anyway in the unfair prediction problem, and is
 %  orthogonal to the causal assumptions.}.
 %%%%%%%% END OF ICML STUFF
-
-\subsection{Further Examples}
-\label{sec:further_examples}
-
-To give further intuition for counterfactual fairness, we will consider
-two real-world fair prediction scenarios: \textbf{insurance pricing}
-and \textbf{crime prediction}. Each of these correspond to one of the
-two causal graphs in Figure~\ref{figure.simple_models}(d),(e). The
-Supplementary Material provides a more mathematical discussion of
-these examples with more detailed insights.
-
-\paragraph{Scenario 1: The Red Car.}
-A car insurance company wishes to price insurance for car
-owners by predicting their accident rate $Y$. They assume there is an
-unobserved factor corresponding to aggressive driving $U$, that (a)
-causes drivers to be more likely have an accident, and (b) causes
-individuals to prefer red cars (the observed variable $X$). Moreover,
-individuals belonging to a certain race $A$ are more likely to drive
-red cars. However, these individuals are no more likely to be
-aggressive or to get in accidents than any one else. We show this in
-Figure~\ref{figure.simple_models}(d). Thus, using the
-red car feature $X$ to predict accident rate $Y$ would seem to be an
-unfair prediction because it may charge individuals of a certain race
-more than others, even though no race is more likely to have an
-accident. Counterfactual fairness agrees with this notion, as $X$
-is a descendant of $A$ but $U$ is not. Interestingly, we can show
-(Supplementary Material) that in a linear model, regression $Y$ on $A$
-and $X$ is equivalent to regressing on $U$, so off-the-shelf
-regression here is counterfactually fair. Regressing $Y$ on $X$ alone
-obeys the FTU criterion but is not counterfactually fair, so
-{\em omitting $A$ (FTU) may introduce unfairness into
-  an otherwise fair world.}
-%
-\paragraph{Scenario 2: High Crime Regions.}
-%%%%% ICML STUFF
-%A local police precinct wants to know $Y$, whether a given house is to
-%be broken into in any given day. The probability of $Y = 1$ depends on many
-%unobserved factors ($U$) but also upon the neighborhood the house lies
-%in ($X$). However, different ethnic groups are more likely to live in
-%particular neighborhoods, and so neighborhood and break-in rates are
-%often correlated with the race $A$ of the house occupier. This can be
-%seen in Figure~\ref{figure.simple_models}(d) (\emph{Center}). Unlike the
-%previous case, a predictor $\hat Y$ trained using $X$ and $A$ is not
-%counterfactually fair. The only change from Scenario 1 is that now $Y$
-%depends on $X$ as follows: $Y \!=\! \gamma U + \theta X$. Now if we
-%solve for $\lambda_X,\lambda_A$ it can be shown that $\hat Y(X,a)
-%\!=\! (\gamma - \frac{\alpha^2 \theta v_A}{\beta v_U})U + \alpha
-%\theta a$. As this predictor depends on the values of $A$, $\hat
-%Y(X,a) \!\neq\! \hat Y(X,a')$ and thus $\hat Y(X,A)$ is not
-%counterfactually fair.
-%%%%% END ICML STUFF
-A city government wants to estimate crime rates by neighborhood to
-allocate policing resources. Its analyst constructed training data
-by merging (1) a registry of residents containing their neighborhood $X$
-and race $A$, with (2) police records of arrests, giving each resident a
-binary label with $Y = 1$ indicating a criminal arrest record.
-Due to historically segregated housing, the location $X$ 
-depends on $A$.
-Locations $X$ with more police resources have larger numbers of
-arrests $Y$.
-And finally, $U$ represents the totality of socioeconomic factors
-and policing practices that both influence where an individual may
-live and how likely they are to be arrested and charged.
-This can all be seen in Figure~\ref{figure.simple_models}(e).
-
-In this example,
-higher observed arrest rates in some neighborhoods
-are due to greater policing there, not because people of different races
-are any more or less likely to break the law.
-The label $Y = 0$ does not
-mean someone has never committed a crime, but rather that they have not
-been caught.
-{\em If individuals in the training data have not already had equal
-  opportunity, algorithms enforcing EO will not remedy such unfairness}.
-In contrast, a counterfactually fair approach would model
-differential enforcement rates using $U$ and base predictions
-on this information rather than on $X$ directly.
-
-% Unlike Scenario 1, $Y$ now
-% depends on $X$ directly. If all structural equations are linear, then
-% $U$ is a linear function of $A$ and $X$, and so, indirectly, a
-% counterfactually fair $\hat Y$ can be expressed as a linear function
-% of $A$ and $X$. However, this is different from assuming that $\hat Y$ can be
-% \emph{any} linear combination of $A$ and $X$. As a matter of fact, the solution for the
-% unrestricted least-squares regression of $Y$ on $A$ and $X$ cannot be
-% written as a function of $U$ only, as shown in the Supplementary Material.
-%Intuitively this is because the predictor $\hat Y(X,A)$ will be a
-% function of not only $U$, but also of the part of $X$ that directly
-% causes $Y$. This means that the change in $X$ caused by the
-% counterfactual change in $A$ from $a$ to $a'$ will cause a change in
-% $\hat Y(X,A)$ so that $\hat Y(X,a) \!\neq\! \hat Y(X,a')$.  In such
-% a scenario, although the likelihood of a particular person having
-% their house broken into does not depend upon race directly, it does
-% vary which a persons race and so is not counterfactually fair.
-
-In general, we need a
-multistage procedure in which we first derive latent variables $U$, and
-then based on them we minimize some loss with respect to $Y$. This is the
-core of the algorithm discussed next.
-
-%%%%%%%% ICML STUFF
-%\paragraph{Scenario 3: University Success.}
-%A university wants to know if students will be successful
-%post-graduation $Y$. They have information such as: grade point
-%average (GPA), advanced placement (AP) exams results, and other
-%academic features $X$. The university believes however, that an
-%individual's gender $A$ may influence these features and their
-%post-graduation success $Y$ due to social discrimination. They also
-%believe that independently, an individual's latent talent $U$ causes
-%$X$ and $Y$. We show this in Figure~\ref{figure.simple_models}(d)
-%(\emph{Right}). We can again ask, is the predictor $\hat Y(X,A)$
-%counterfactually fair? In this case, the different between this and
-%Scenario 1 is that $Y$ is a function of $U$ and $A$ as follows: $Y
-%\!=\! \gamma U + \eta A$. We can again solve for $\lambda_X,\lambda_A$
-%and show that $\hat Y(X,a) \!=\! (\gamma - \frac{\alpha \eta
-%  v_A}{\beta v_U})U + \eta a$. Again $\hat Y(X,A)$ is a function of
-%$A$ so it cannot be counterfactually fair.
-%%%%%%%% END ICML STUFF
-
-% TODO. Here the main
-% definition is introduced, and how it relates to ``path deletion'',
-% including the core example of $A \rightarrow X \rightarrow Y$, with
-% two latent variables $U_x \rightarrow X$ and $U_y \rightarrow Y$,
-% arguing that one might judge that the path from $A$ to $Y$ via is due
-% to an unfair mechanism and that we need a notion of ``closest world''.
-
-
-% When describing counterfactual fairness, it is important to
-% distinguish between a counterfactually fair {\em world} in which the
-% variable $Y$ we are interested in predicting is inherently
-% counterfactually fair with respect to the protected attributes $A$,
-% and a counterfactually fair {\em predictor} $\hat Y$, guaranteed to
-% be counterfactually fair, regardless of the behavior of $Y$.
-
-% Figure~\ref{figure.simple_models} shows possible worlds. {\em Left:} A
-% counterfactually fair world in which the state of $Y$ has no
-% dependencies on $A$. {\em Center and Right:} Potentially unfair worlds
-% in which the state of $A$ can influence the state of $Y$ either
-% indirectly as in {\em center} or directly as in {\em Right}.
-
-%In Scenarios 2 and 3 in general $\hat Y(X,A)$ will also not satisfy demographic parity as $Y$ will be affected by $A$. In fact, we demonstrate in the next section that demographic parity is strictly more restrictive than counterfactual fairness.
-
-%  The world on the right shows $Y'$ a
-% causally fair variable that doesn't depend on $A$ being directly
-% corrupted by a bias relating to $A$, resulting in an observation
-% $Y$. In this case, learning a causally fair approximation of $Y$ can
-% recover the true variable $Y'$ (up to noise).
-
-
-% \subsection{Examples}
-% To get an intuition for what the different definitions of fairness imply, we will
-% revisit the examples of figure \ref{figure.simple_models}.
-% begin by describing a few possible real-world scenarios. For each of these we will describe what counterfactually-fair and counterfactually-unfair predictors look like.
-
-% \paragraph{Scenario 1: The Red Car.}
-% Imagine a car insurance company wants a quick, anonymous way to determine how to price insurance for different car owners by predicting their accident likelihood $Y$. They've noticed that there is a correlation between driving a red car $X$ and a higher rate of automobile accidents. Thus they would like to increase the insurance for all red car drivers. 
-
-% Imagine what's really going on is shown in Figure~\ref{figure.simple_models} (\emph{Left}). The correlation between have a red car $X$ and accidents $Y$ is due to an `aggressiveness' factor $U$: aggressiveness causes individuals to be in accidents more often, and it also attracts them to red cars. Unfortunately, the red car feature $X$ is also affected by an individual's race $A$. 
-
-% TODO. Here the examples and their motivation can be as follows:
 
 % \begin{itemize}
 % \item something analogous to the red car example: $A$ is not a cause of

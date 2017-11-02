@@ -10,68 +10,31 @@
 
 This section provides a basic account of two separate areas of
 research in machine learning, which are formally unified in this
-paper. We suggest \citet{berk:17} and \citet{pearl:16} as references for
-further reading.
-
+paper. We suggest \citet{berk:17} and \citet{pearl:16} as references.
 Throughout this paper, we will use the following notation.  Let $A$
 denote the set of {\it protected attributes} of an individual,
 variables that must not be discriminated against in a formal sense
 defined differently by each notion of fairness discussed. The decision
 of whether an attribute is protected or not is taken as a primitive in
 any given problem, regardless of the definition of fairness
-adopted. Moreover, let $X$ denote the other observable attributes of any
-particular individual, $U$ the set of relevant latent attributes
-which are not observed, and let
-$Y$ denote the outcome to be predicted, which itself might be contaminated
-with historical biases. Finally, $\hat Y$ is the {\it predictor}, a
-random variable that depends on $A, X$ and $U$, and which is produced by
-a machine learning algorithm as a prediction of $Y$.
+adopted. Moreover, let $X$ denote the other observable attributes of
+any particular individual, $U$ the set of relevant latent attributes
+which are not observed, and let $Y$ denote the outcome to be
+predicted, which itself might be contaminated with historical
+biases. Finally, $\hat Y$ is the {\it predictor}, a random variable
+that depends on $A, X$ and $U$, and which is produced by a machine
+learning algorithm as a prediction of $Y$.
 
 \subsection{Fairness}
 
-The goal of fairness in machine learning is to design automated
-algorithms that make fair predictions across various demographic
-groups. This unfairness can arise in several ways. Consider for
-instance historically biased distributions, where individuals with
-different protected attributes $A$ may have different attributes
-$X$ such as their current level of wealth, which is then used for
-credit scoring. Disparities may be due to discriminative measures in
-hiring practices and perpetuated by reduced financial support
-for the education of minorities due to bad credit ratings.
-%In the case of {\bf selection unfairness}, an outcome such
-%as number of past arrests might be associated more strongly with particular demographics
-%groups due to their typical neighborhoods being targeted more frequently than average
-%by police searches.
-%%%%%%%%%%%%%% ICML text
-%\item {\bf Historically biased distributions:} Individuals with
-%  different protected attributes $A$ may have many different
-%  attributes due to current and historic biases (e.g., racial
-%  inequality caused by things like colonialism, slavery, a history of
-%  discrimination in hiring and housing etc.). %Importantly, these
-%  differences may lead to unfairness% , even
-%% if you use different covariates to make predictions for each group
-%\item {\bf Selection unfairness:} The training data could contain
-%  selection bias. For instance, if we are using a dataset describing
-%  who paid loans back in full in order to train a loan prediction
-%  algorithm, it may be that loans were unfairly distributed. Since we
-%  can't see whether people will pay back a loan if they didn't receive
-%  one, our algorithms may be biased by this sampling.
-%\item {\bf Prediction unfairness:} The learned classifier could use
-%  either protected attributes such as race or correlated attributes as
-%  features, and learn a biased predictor.
-%\end{description}
-%%%%%%%%%%%%%% END ICML TEXT
-
-There has been a wealth of recent work on fair
-algorithms. % In large part, these methods have focused (and reasonably
-% so) on binary classification with a binary sensitive attributes
-% (CITE).
-These include fairness through unawareness \cite{grgiccase},
-individual fairness \cite{dwork2012fairness,zemel2013learning,louizos2015variational,joseph2016rawlsian},
-demographic parity/disparate impact \cite{zafar2015learning}, and
-equality of opportunity \cite{hardt2016equality,zafar2016fairness}.
-For simplicity we often assume $A$ is encoded as a binary attribute,
-but this can be generalized.
+There has been much recent work on fair algorithms.  These include
+fairness through unawareness \cite{grgiccase}, individual fairness
+\cite{dwork2012fairness,zemel2013learning,louizos2015variational,
+  joseph2016rawlsian}, demographic parity/disparate impact
+\cite{zafar2015learning}, and equality of opportunity
+\cite{hardt2016equality,zafar2016fairness}.  For simplicity we often
+assume $A$ is encoded as a binary attribute, but this can be
+generalized.
 
 % A variety of algorithmic approaches to achieving fairness have been proposed.
 %\begin{description}
@@ -128,7 +91,7 @@ $P(\hat{Y}=1 | A=0,Y=1) = P(\hat{Y}=1 | A=1,Y=1)$. %\nonumber
 %\end{align}
 \end{define}
 These criteria can be incompatible in general, as discussed in
-\cite{kleinberg2016inherent, berk:17, chouldechova2017fair}.  Following the
+\cite{kleinberg:17, berk:17, chouldechova:17}.  Following the
 motivation of IF and \cite{johnson2016impartial}, we propose that knowledge
 about relationships between all
 attributes should be taken into consideration, even if strong

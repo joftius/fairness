@@ -1,4 +1,4 @@
-\documentclass{article}[12pt]
+\documentclass{article}
 
 % if you need to pass options to natbib, use, e.g.:
 \PassOptionsToPackage{numbers, sort&compress}{natbib}
@@ -7,10 +7,8 @@
 % to avoid loading the natbib package, add option nonatbib:
 % \usepackage[nonatbib]{nips_2017}
 
-%\usepackage{nips_2017}
-
 % to compile a camera-ready version, add the [final] option, e.g.:
-% \usepackage[final]{nips_2017}
+\usepackage[final]{nips_2017}
 
 \usepackage[utf8]{inputenc} % allow utf-8 input
 \usepackage[T1]{fontenc}    % use 8-bit T1 fonts
@@ -29,32 +27,16 @@
 \usepackage{graphicx}
 \usepackage{subcaption}
 \usepackage{wrapfig}
-\usepackage{natbib}
-\usepackage{authblk}
 %\usepackage[nonatbib]{nips_2016}
 \newtheorem{assumption}{Assumption}
 \newtheorem{define}{Definition}
 \newtheorem{thm}{Theorem}
 \newtheorem{lem}{Lemma}
 \newtheorem{coro}{Corollary}
-\newcommand*\samethanks[1][\value{footnote}]{\footnotemark[#1]}
-
 \title{Counterfactual Fairness}
-\author[1,2]{Matt J. Kusner\thanks{Equal contribution, author order decided randomly.}}
-\author[1,3]{Joshua R. Loftus\samethanks}
-\author[1,4]{Chris Russell\samethanks}
-\author[1,5]{Ricardo Silva}
-\affil[1]{Alan Turing Institute}
-\affil[2]{University of Warwick}
-\affil[3]{University of Cambridge}
-\affil[4]{University of Surrey}
-\affil[5]{University College London}
-%\author{Matt J. Kusner\footnote{}, Joshua R. Loftus, Chris Russell, Ricardo Silva}
-\date{}
 %\newcommand\independent{\protect\mathpalette{\protect\independenT}{\perp}}
 \def\independenT#1#2{\mathrel{\rlap{$#1#2$}\mkern2mu{#1#2}}}
 \newcommand\cff{{\sc cff}}
-%\footnote{Equal contribution, author order decided randomly.}
 % Code blocks%
 \usepackage{listings}
 \usepackage{color}
@@ -86,6 +68,27 @@
   tabsize=3
 }
 
+\author{
+  Matt Kusner\\
+  The Alan Turing Institute and \\
+  University of Warwick \\
+  \texttt{mkusner@turing.ac.uk} \\
+  \And
+  Joshua Loftus\thanks{This work was done while JL
+     was a Research Fellow at the Alan Turing Institute.} \\
+  New York University\\
+  \texttt{loftus@nyu.edu} \\
+  \And
+  Chris Russell \\
+  The Alan Turing Institute and \\
+  University of Surrey\\
+  \texttt{crussell@turing.ac.uk} \\
+  \And
+  Ricardo Silva \\
+  The Alan Turing Institute and \\
+  University College London\\
+  \texttt{ricardo@stats.ucl.ac.uk} \\
+}
 
 \begin{document}
 \maketitle
@@ -176,6 +179,12 @@ address \emph{how} unfairness is occurring in the task at hand. By
 providing such causal tools for addressing fairness questions we hope
 we can provide practitioners with customized techniques for solving a
 wide array of fairness modeling problems.
+
+\subsubsection*{Acknowledgments}
+
+This work was supported by the Alan Turing Institute under the EPSRC
+grant EP/N510129/1. We thank the anonymous reviewers for helpful
+comments.
 
 \bibliography{rbas,bibliography}
 \bibliographystyle{icml2017}

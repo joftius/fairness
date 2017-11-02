@@ -3,7 +3,7 @@
 
 %%%% TODO!!! ADD COMMENT THAT WE NEED Y TO LEARN THE CAUSAL MODEL!!!!!
 
-\section*{S1 - Population Level vs Individual Level Causal Effects}
+\section*{S1 Population Level vs Individual Level Causal Effects}
 \label{sec:individual}
 
 As discussed in Section~\ref{sec:count_fair}, counterfactual fairness
@@ -84,6 +84,7 @@ assessing fairness can be defined via the following concept:
   decision $\hat Y$, contrasted against $\{ A = a' \}$, as
 \begin{align}
   P(\hat Y_{A \leftarrow a'\ }(U) \neq y\ |\ X = x, A = a, \hat Y = y).
+  \label{eq:sufficiency}
 \end{align}
 \end{define}
 
@@ -108,10 +109,9 @@ fairness in the context of machine learning.
 \noindent {\bf Approximate fairness and model validation.} The notion
 of probability of sufficiency raises the question on how to define
 approximate, or high probability, counterfactual fairness. This is an
-important question but for reasons of conciseness and focus we defer
-it entirely to future work. Before defining an approximation, it is
-important to first expose in detail what the exact definition is,
-which is the goal of this paper.
+important question that we address in \citep{russell:17}. Before
+defining an approximation, it is important to first expose in detail
+what the exact definition is, which is the goal of this paper.
 
 We also do not address the validation of the causal assumptions used
 by the input causal model of the {\sc FairLearning} algorithm in
@@ -137,7 +137,42 @@ many degrees of freedom on how this can be done. Robustness issues are
 better addressed by extensions focusing on approximate versions of 
 counterfactual fairness. This will be covered in later work.
 
-\section*{S2 - Relation to Demographic Parity}
+\noindent {\bf Stricter version.} For completeness of exposition,
+notice that the definition of counterfactual fairness could be
+strengthened to
+\begin{align}
+  \label{eq:stricter}
+  P(\{\hat Y_{A \leftarrow a}(U) = \hat Y_{A \leftarrow a'}(U)\} = 1\ |\ X = x, A = a).
+\end{align}
+
+\noindent This is different from the original definition in the case
+where $\hat Y(U)$ is a random variable with a different source of
+randomness for different counterfactuals (for instance, if $\hat Y$ is
+given by some black-box function of $U$ with added noise that is
+independent across each countefactual value of $A$). In such a
+situation, the event $\{\hat Y_{A \leftarrow a}(U) = \hat Y_{A
+  \leftarrow a'}(U)\}$ will itself have probability zero even if
+$P(\hat Y_{A \leftarrow a}(U) = y\ |\ X = x, A = a) = P(\hat Y_{A
+  \leftarrow a'}(U) = y\ |\ X = x, A = a)$ for all $y$. We do not
+consider version (\ref{eq:stricter}) as in our view it does not feel
+as elegant as the original, and it is also unclear whether adding an
+independent source of randomness fed to $\hat Y$ would itself be
+considered unfair. Moreover, if $\hat Y(U)$ is assumed to be a
+deterministic function of $U$ and $X$, as in {\sc FairLearning}, then
+the two definitions are the same\footnote{Notice that $\hat Y(U)$ is
+  itself a random variable if $U$ is, but the source of randomness,
+  $U$, is the same across all counterfactuals.}. Informally, this
+stricter definition corresponds to a notion of ``almost surely
+equality'' as opposed to ``equality in distribution.'' Without
+assuming that $\hat Y$ is a deterministic function of $U$ and $X$,
+even the stricter version does not protect us against measure zero events
+where the counterfactuals are different. The definition of
+counterfactual fairness concisely emphasizes that $U$ can be a random
+variable, and clarifies which conditional distribution it follows. Hence, it is our
+preferred way of introducing the concept even though it does not
+explicit suggests whether $\hat Y(U)$ has random inputs besides $U$.
+
+\section*{S2 Relation to Demographic Parity}
 %
 Consider the graph $A \rightarrow X \rightarrow Y$. In general, if
 $\hat Y$ is a function of $X$ only, then $\hat Y$ need not obey
@@ -174,7 +209,7 @@ Thus, counterfactual fairness can be thought of as a counterfactual
 analog of demographic parity, as present in the Red Car example further discussed
 in the next section.
 
-\section*{S3 - Examples Revisited}
+\section*{S3 Examples Revisited}
 
 In Section \ref{sec:further_examples}, we discussed two examples. We
 reintroduce them here briefly, add a third example, and explain some
@@ -199,15 +234,15 @@ as shown in the following Lemma.
   %
 \begin{lem}
 Consider a linear model with the structure in
-Figure~\ref{figure.simple_models}(d).  Fitting a linear predictor to
+Figure~\ref{figure.simple_models}(a).  Fitting a linear predictor to
 $X$ \emph{only} is not counterfactually fair, while the same algorithm
 will produce a fair predictor using \emph{both} $A$ and $X$.
 \end{lem}
-%
+
 \begin{proof}
 As in the definition, we will consider the population case, where the
 joint distribution is known. Consider the case where the equations
-described by the model in Figure~\ref{figure.simple_models}(d)
+described by the model in Figure~\ref{figure.simple_models}(a)
 are deterministic and linear:
 \begin{align}
 X = \alpha A + \beta U, \;\;\;\; Y = \gamma U. \nonumber
@@ -221,6 +256,7 @@ predictor follows the concept of fairness through unawareness.
 
 We can test whether a predictor $\hat{Y}$ is counterfactually fair
 by using the procedure described in Section~\ref{subsec:cmc}:
+
 %\begin{itemize}
 {\em (i)} Compute $U$ given observations of $X,Y,A$; %, by solving for $U$.
 {\em (ii)} Substitute the equations involving $A$ with an interventional value $a'$; 
@@ -234,6 +270,7 @@ perpetuates unfairness.
 Consider instead doing least-squares regression of $Y$ on $X$
 \emph{and} $A$. Note that $\hat Y(X,A) \equiv \lambda_X X + \lambda_A
 A$ where $\lambda_X,\lambda_A$ can be derived as follows:
+
 \begin{align}
 \begin{pmatrix}
 \lambda_X \\
@@ -272,7 +309,7 @@ a = \gamma U$. Thus, if we substitute $a$ with a counterfactual $a'$
 (the action step described in Section~\ref{subsec:cmc}) the predictor
 $\hat Y(X,A)$ is unchanged. This is because our predictor is
 constructed in such a way that any change in $X$ caused by a change in
-$A$ is canceled out by the $\lambda_A$. Thus this predictor is
+$A$ is cancelled out by the $\lambda_A$. Thus this predictor is
 counterfactually fair.
 % This is known to be equivalent to first getting the residuals $R_X$ of $X$ regressed on $A$
 % and regressing $Y$ on $R_X$ and $A$. Notice that $R_X \!=\! U$, and $A$ is independent of $U$
@@ -280,13 +317,13 @@ counterfactually fair.
 % $Y$ on $U$, resulting on $\hat Y \!=\! \gamma U$, which is counterfactually fair.
 \end{proof}
 
-Note that if Figure~\ref{figure.simple_models}(d) is the
+Note that if Figure~\ref{figure.simple_models}(a) is the
 true model for the real world then $\hat Y(X,A)$ will also satisfy
 demographic parity and equality of opportunity as $\hat Y$ will be
 unaffected by $A$. 
 
 The above lemma holds in a more general case for the structure given
-in Figure~\ref{figure.simple_models}(d): any non-constant
+in Figure~\ref{figure.simple_models}(a): any non-constant
 estimator that depends only on $X$ is not counterfactually fair as
 changing $A$ always alters $X$.
 %We also point out that the method
@@ -319,7 +356,7 @@ individual's gender $A$ may influence these features and their
 post-graduation success $Y$ due to social discrimination. They also
 believe that independently, an individual's latent talent $U$ causes
 $X$ and $Y$. The structure is similar to
-Figure~\ref{figure.simple_models}(d), with the extra
+Figure~\ref{figure.simple_models}(a), with the extra
 edge $A \rightarrow Y$. We can again ask, is the predictor $\hat
 Y(X,A)$ counterfactually fair? In this case, the different between
 this and Scenario 1 is that $Y$ is a function of $U$ and $A$ as
@@ -371,7 +408,140 @@ a function of $A$ not explained by $U$, so it cannot be counterfactually fair.
 %
 %{lr@{$\pm$}lr@{$\pm$}lr@{$\pm$}l}
 
-\section*{S4 - Case Study: Criminality vs. Perceived Criminality}
+\section*{S4 Analysis of Individual Pathways}
+\label{sec:pathways}
+
+By way of an example, consider the following adaptation of the
+scenario concerning claims of gender bias in UC Berkeley's admission
+process in the 1970s, commonly used a textbook example of Simpson's
+Paradox. For each candidate student's application, we have $A$ as a
+binary indicator of whether the applicant is female, $X$ as the choice
+of course to apply for, and $Y$ a binary indicator of whether the
+application was successful or not.  Let us postulate the causal graph
+that includes the edges $A \rightarrow X$ and $X \rightarrow Y$ only.
+We observe that $A$ and $Y$ are negatively associated, which in first
+instance might suggest discrimination, as gender is commonly accepted
+here as a protected attribute for college admission. However, in the
+postulated model it turns out that $A$ and $Y$ are causally independent given
+$X$. More specifically, women tend to choose more competitive courses
+(those with higher rejection rate) than men when applying.  Our
+judgement is that the higher rejection among female than male
+applicants is acceptable, if the mechanism $A \rightarrow X$ is
+interpreted as a choice which is under the control of the applicant.
+That is, free-will overrides whatever possible cultural background conditions
+that led to this discrepancy. In the framework of counterfactual
+fairness, we could claim that $A$ is not a protected attribute to
+begin with once we understand how the world works, and that including
+$A$ in the predictor of success is irrelevant anyway once we include
+$X$ in the classifier.
+
+However, consider the situation where there is an edge $A \rightarrow
+Y$, interpreted purely as the effect of discrimination after causally
+controlling for $X$.  While it is now reasonable to postulate $A$ to
+be a protected attribute, we can still judge that $X$ is not an unfair
+outcome: there is no need to ``deconvolve'' $A$ out of $X$ to obtain
+an estimate of the other causes $U_X$ in the $A \rightarrow X$
+mechanism. This suggests a simple modification of the definition of
+counterfactual fairness. First, given the causal graph $\mathcal G$ assumed to
+encode the causal relationships in our system, define $\mathcal P_{\mathcal G_A}$ as
+the set of all directed paths from $A$ to $Y$ in $\mathcal G$ which
+are postulated to correspond to all unfair chains of events where $A$
+causes $Y$. Let $X_{\mathcal P^c_{\mathcal G_A}} \subseteq X$ be the
+subset of covariates not present in any path in $\mathcal P_{\mathcal
+  G_A}$. Also, for any vector $x$, let $x_s$ represent the
+corresponding subvector indexed by $S$. The corresponding uppercase
+version $X_S$ is used for random vectors.
+
+\begin{define}[(Path-dependent) counterfactual fairness]
+  Predictor $\hat Y$ is {\bf (path-dependent) counterfactually fair}
+  with respect to path set $\mathcal P_{\mathcal G_A}$ if under any
+  context $X = x$ and $A = a$,
+  \label{eq:cf_definition}
+\begin{align}
+  P(\hat Y_{A \leftarrow a, X_{\mathcal P^c_{\mathcal G_A}} \leftarrow\ x_{\mathcal P^c_{\mathcal G_A}}}(U) = y\ |\ X = x, A = a)  =
+  \nonumber\\ 
+  P(\hat Y_{A \leftarrow a', X_{\not \mathcal P^c_{\mathcal G_A}} \leftarrow\ x_{ \mathcal P^c_{\mathcal G_A}}}(U) = y\ |\ X = x, A = a), 
+\end{align}
+for all $y$ and for any value $a'$ attainable by $A$.
+\end{define}
+
+This notion is related to {\it controlled direct effects}
+\citep{pearl:16}, where we intervene on some paths from $A$ to $Y$,
+but not others. Paths in $\mathcal P_{\mathcal G_A}$ are considered
+here to be the ``direct'' paths, and we condition on $X$ and $A$
+similarly to the definition of probability of sufficiency
+(\ref{eq:sufficiency}). This definition is the same as the original
+counterfactual fairness definition for the case where $\mathcal
+P^c_{\mathcal G_A} = \emptyset$. Its interpretation is analogous to
+the original, indicating that for any $X_0 \in X_{\mathcal
+  P^c_{\mathcal G_A}}$ we are allowed to propagate information from
+the factual assigment $A = a$, along with what we learned about the
+background causes $U_{X_0}$, in order to reconstruct $X_0$. The
+contribution of $A$ is considered acceptable in this case and does not
+need to be ``deconvolved.''  The implication is that any member of
+$X_{\not \mathcal P^c_{\mathcal G_A}}$ can be included in the
+definition of $\hat Y$. In the example of college applications, we are
+allowed to use the choice of course $X$ even though $A$ is a
+confounder for $X$ and $Y$. We are still not allowed to use $A$
+directly, bypassing the background variables.
+
+As discussed by \cite{nabi:17}, there are some counterfactual
+manipulations useable in a causal definition of fairness that can be
+performed by exploiting only independence constraints among the
+counterfactuals: that is, without requiring the explicit description
+of structural equations or other models for latent variables. A
+contrast between the two approaches is left for future work, although
+we stress that they are in some sense complementary: we are motivated
+mostly by problems such as the one in Figure \ref{fig:ex1}(d), where
+many of the mediators themselves are considered to be unfairly
+affected by the protected attribute, and independence constraints
+among counterfactuals alone are less likely to be useful in
+identifying constraints for the fitting of a fair predictor.
+
+\begin{figure}[th]
+\begin{center}
+\centerline{\includegraphics[width=3in]{stop_and_frisk_model3.pdf}}
+\caption{A causal model for the stop and frisk dataset.\label{figure.stop_and_frisk}}
+\end{center}
+\end{figure}
+
+\section*{S5 The Multifaceted Dynamics of Fairness}
+\label{sec:dynamics}
+
+One particularly interesting question was raised by one of the
+reviewers: what is the effect of continuing discrimination after fair
+decisions are made?  For instance, consider the case where banks
+enforce a fair allocation of loans for business owners regardless of,
+say, gender. This does not mean such businesses will thrive at a
+balanced rate if customers continue to avoid female owned business at
+a disproportionate rate for unfair reasons. Is there anything useful
+that can be said about this issue from a causal perspective?
+
+The work here proposed regards only what we can influence by changing
+how machine learning-aided decision making takes place at specific
+problems. It cannot change directly how society as a whole carry on
+with their biases. Ironically, it may sound unfair to banks to enforce
+the allocation of resources to businesses at a rate that does not
+correspond to the probability of their respective success, even if the
+owners of the corresponding businesses are not to be blamed by
+that. One way of conciliating the different perspectives is by
+modeling how a fair allocation of loans, even if it does not come
+without a cost, can nevertheless increase the proportion of successful
+female businesses compared to the current baseline. This change can by
+itself have an indirect effect on the culture and behavior of a
+society, leading to diminishing continuing discrimination by a
+feedback mechanism, as in affirmative action. We believe that in the
+long run isolated acts of fairness are benefitial even if we do not
+have direct control on all sources of unfairness in any specific
+problem.  Causal modeling can help on creating arguments about the
+long run impact of individual contributions as e.g. a type of
+macroeconomic assessment. There are many challenges, and we should not
+pretend that precise answers can be obtained, but in theory we should
+aim at educated quantitative assessments validating how a systemic
+improvement in society can emerge from localized ways of addressing
+fairness.
+
+\section*{S6 Case Study: Criminality vs. Perceived Criminality}
 \label{sec:true-vs.-perceived}
 
 We test our approach on a problem of \emph{separating actual and
@@ -385,16 +555,18 @@ prejudices based on appearance). Finally we judge how well our
 counterfactually fair `criminality' score satisfies demographic
 parity.
 
-\begin{figure*}[!t]
+\begin{figure}[!th]
 \begin{center}
-\centerline{\includegraphics[width=\textwidth]{stop_and_frisk_graphs.png}}
-\caption{Understanding criminality. The above maps show the
-  decomposition of stop and search data in New York into factors based
-  on perceived criminality (a race dependent variable) and latent
-  criminality (a race neutral measure). See
-  section~\ref{sec:true-vs.-perceived}.  \label{figure.criminality}\vspace{-7ex}}
+%\vspace{-1ex}
+\centerline{\includegraphics[width=4in]{stopandfrisk_output.pdf}}
+\vspace{-2ex}
+\caption{Distributions of estimated latent perception and criminality
+  scores for the stop and frisk
+  dataset.
+\label{figure.stop_and_frisk_output}}
+%\vspace{-2ex}
 \end{center}
-\end{figure*}
+\end{figure}
 
 Since 2002, the New York Police Department (NYPD) has recorded
 information about every time a police officer has stopped someone. The
@@ -408,9 +580,50 @@ model which decomposes these records into two latent factors, one
 which depends on the race and appearance of the individual being
 stopped, labeled \emph{Perceived Criminality}, and one which does not,
 labeled \emph{Criminality}, and which could be used as a basis for
-counterfactually fair decisions. The full details of this experiment,
-including the DAG, are given in the supplementary materials. We now
-describe a spatial analysis of the estimated latent factors.
+counterfactually fair decisions. We now describe a spatial analysis of
+the estimated latent factors.
+
+\paragraph{Model.}
+We model this stop-and-frisk data using the graph in
+Figure~\ref{figure.stop_and_frisk}. Specifically, we posit main causes
+for the observations: \emph{Arrest} (if an individual was arrested),
+\emph{Summons} (an individual was called to a court-summons),
+\emph{Weapon} (an individual was found to be carrying a weapon),
+\emph{Force} (some sort of force was used during the stop),
+\emph{Frisked}, and \emph{Searched}. The first cause of these
+observations is some measure of an individual's latent
+\emph{Criminality}, which we do not observe. We believe there is an
+additional cause, an individual's perceived criminality,
+\emph{Perception}, also unobserved. This second factor is introduced
+as we believe that these observations may be biased based on an
+officer's perception of whether an individual is likely a criminal or
+not. This perception is affected by an individual's \emph{Appearance}
+and their \emph{Race}. In this sense \emph{Criminality} is
+counterfactually fair, while \emph{Perception} models how race affects
+each of the other observed variables.
+
+\paragraph{Criminality and perception distributions.}
+After fitting this model to the data we can look at the distribution
+of \emph{Criminality} and \emph{Perception} across different races,
+shown as box plots in Figure~\ref{figure.stop_and_frisk_output}. We see that
+the median criminality for each race is nearly identical, while the
+distributions are somewhat different, demonstrating that
+\emph{Criminality} approaches demographic parity. The differences that
+due exist may be due to unobserved confounding variables that are
+affected by race or unmodeled noise in the data. On the right
+\emph{Perception} varies considerably by race with white individuals
+having the lowest perceived criminality while black and black Hispanic
+individuals have the highest.
+
+\begin{figure*}[!t]
+\begin{center}
+\centerline{\includegraphics[width=\textwidth]{stop_and_frisk_graphs.png}}
+\caption{Understanding criminality. The above maps show the
+  decomposition of stop and search data in New York into factors based
+  on perceived criminality (a race dependent variable) and latent
+  criminality (a race neutral measure). \label{figure.criminality}}
+\end{center}
+\end{figure*}
 
 \paragraph{Visualization on a map of New York City.}
 Each of the stops can be mapped to longitude and latitude points for
@@ -435,9 +648,6 @@ Figure~\ref{figure.criminality}. Certain areas of town such as central
 Brooklyn, central Bronx, and southern Queens have very high
 criminality and almost all stops are by members of Group A (circled in
 yellow).
-
-
-
 
 %\subsection{Model criticism}
 %%% Local Variables:

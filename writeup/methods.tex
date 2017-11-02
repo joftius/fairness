@@ -57,7 +57,7 @@ to the model posterior $P(U\ |\ A, X)$ while satisfying $P_{fair}(U\ |
 A = a, X) \approx P_{fair}(U\ | A = a', X)$. But {\it this is neither
   necessary nor sufficient for counterfactual fairness}. The model for
 $X$ given $A$ and $U$ must be justified by a causal mechanism, and
-that being the case, $P(U\ |\ A, X)$ requires no post-processing. As a
+that being the case, $P(U\ |\ A, X)$ requires no postprocessing. As a
 matter of fact, model $\mathcal M$ can be learned by penalizing
 empirical dependence measures between $U$ and $pa_i$ for a given $V_i$
 (e.g. \citet{mooij:09}), but this concerns $\mathcal M$ and not $\hat Y$,
@@ -68,13 +68,24 @@ as described next.
 \label{sec:limit-guide-model}
 
 Model $\mathcal M$ must be provided to algorithm {\sc FairLearning}.
-Causal models always require strong assumptions, but counterfactuals
-in particular are typically presented in terms of structural equations
-which are in general unfalsifiable. We point out that we do not need
-to specify a fully deterministic model, and structural equations can
-be relaxed as conditional distributions. In particular, the concept of
-counterfactual fairness holds under three levels of assumptions of
-increasing strength:
+Although this is well understood, it is worthwhile remembering that
+causal models always require strong assumptions, even more so when
+making counterfactual claims \cite{dawid:00}. Counterfactuals
+assumptions such as structural equations are in general unfalsifiable
+even if interventional data for all variables is available. This is
+because there are infinitely many structural equations compatible with
+the same observable distribution \cite{pearl:00}, be it observational
+or interventional. Having passed testable implications, the remaining
+components of a counterfactual model should be understood as
+conjectures formulated according to the best of our knowledge. Such
+models should be deemed provisional and prone to modifications if, for
+example, new data containing measurement of variables previously
+hidden contradict the current model.
+
+We point out that we do not need to specify a fully deterministic
+model, and structural equations can be relaxed as conditional
+distributions. In particular, the concept of counterfactual fairness
+holds under three levels of assumptions of increasing strength:
 
 \noindent {\bf Level 1.}  Build $\hat Y$ using only the observable
 non-descendants of $A$.  This only requires partial causal ordering
@@ -97,6 +108,69 @@ can be treated as an additive error model, $V_i
 error term $e_i$ then becomes an input to $\hat Y$ as calculated from
 the observed variables. This maximizes the information extracted by
 the fair predictor $\hat Y$.
+
+\subsection{Further Considerations on Designing the Input Causal Model}
+\label{sec:pragmatic}
+
+One might ask what we can lose by defining causal fairness measures involving
+only non-counterfactual causal quantities, such as enforcing $P(\hat Y =
+1\ |\ do(A = a)) = P(\hat Y = 1\ |\ do(A = a'))$ instead of our
+counterfactual criterion. The reason is that the above equation is
+only a constraint on an average effect. Obeying this criterion
+provides no guarantees against, for example, having half of the
+individuals being strongly ``negatively'' discriminated and half of
+the individuals strongly ``positively'' discriminated.  We advocate
+that, for fairness, society should not be satisfied in pursuing only
+counterfactually-free guarantees. While one may be willing to claim
+posthoc that the equation above masks no balacing effect so that
+individuals receive approximately the same distribution of outcomes,
+{\it that itself is just a counterfactual claim in disguise.} Our
+approach is to make counterfactual assumptions explicit. When
+unfairness is judged to follow only some ``pathways'' in the causal
+graph (in a sense that can be made formal, see
+\cite{kilbertus:17,nabi:17}), nonparametric assumptions about the
+independence of counterfactuals may suffice, as discussed by
+\cite{nabi:17}. In general, nonparametric assumptions may not provide
+identifiable adjustments even in this case, as also discussed in our
+Supplementary Material.  If competing models with different untestable
+assumptions are available, there are ways of simultaneously enforcing a notion of
+approximate counterfactual fairness in all of them, as introduced by
+us in \cite{russell:17}. Other alternatives include exploiting
+bounds on the contribution of hidden variables \cite{pearl:16,silva:16}.
+
+Another issue is the interpretation of causal claims involving
+demographic variables such as race and sex. Our view is that such
+constructs are the result of translating complex events into random
+variables and, despite some controversy, we consider counterproductive
+to claim that e.g. race and sex cannot be causes. An idealized
+intervention on some $A$ at a particular time can be seen as a notational
+shortcut to express a conjunction of more specific interventions,
+which may be individually doable but jointly impossible in practice.
+It is the plausibility of complex, even if impossible to practically
+manipulate, causal chains from $A$ to $Y$ that allows us to
+claim that unfairness is real \cite{glymour:14}. Experiments for
+constructs exist, such as randomizing names in job applications to
+make them race-blind. They do not contradict the notion of race as a
+cause, and can be interpreted as an intervention on a particular
+aspect of the construct ``race,'' such as ``race perception'' (e.g. Section 4.4.4 of
+\cite{pearl:16}).
+
+%just a special case of the problem of defining what the measurement of
+%a construct is: when we define several measures of what takes for a
+%nation to be ``democratic'' we are effectively implying in which ways
+%we could intervene on democracy. The combination of such actions
+%may not be practical in the same sense that imagining  
+%having a democracy has an efffecwe can make it democratic
+%\cite{silva:16b}: it is from our choice of no way different from
+%making causal claims with other constructs and that in one way or
+%another we are dealing with idealizations: in the same way we use . As
+%discussed by \cite{glymour:14}, when dealing with variables which
+%correspond to a particular point in a sequential processes (``Sue
+%would not have her job application rejected today had she been male''
+%can be defined counterfactually by changing her biological sex at
+%conceptions and everything else in the world up to that point that is
+%necessary for her to be applying to that job in the same original
+%conditions).
 
 %%%%%%%%%%% ICML
 %\begin{itemize}
