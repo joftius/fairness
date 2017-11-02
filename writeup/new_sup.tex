@@ -142,7 +142,7 @@ notice that the definition of counterfactual fairness could be
 strengthened to
 \begin{align}
   \label{eq:stricter}
-  P(\{\hat Y_{A \leftarrow a}(U) = \hat Y_{A \leftarrow a'}(U)\} = 1\ |\ X = x, A = a).
+  P(\hat Y_{A \leftarrow a}(U) = \hat Y_{A \leftarrow a'}(U)\ |\ X = x, A = a) = 1.
 \end{align}
 
 \noindent This is different from the original definition in the case
@@ -648,6 +648,77 @@ Figure~\ref{figure.criminality}. Certain areas of town such as central
 Brooklyn, central Bronx, and southern Queens have very high
 criminality and almost all stops are by members of Group A (circled in
 yellow).
+
+
+\begin{figure}[t]
+\begin{center}
+\centerline{\includegraphics[width=3in]{stop_and_frisk_model6.pdf}}
+\caption{A causal model for the stop and frisk dataset.\label{figure.stop_and_frisk6}}
+\end{center}
+\end{figure}
+
+\section*{S6 Case Study: NYC Stop-and-Frisk Data}
+\label{sec:true-vs.-perceived}
+
+We use our approach to analyze the impact of race on arrest decisions in New York City stop-and-frisk data. To do so we learn a causal model that explains various actions by the police -- including the decisions to arrest, search, frisk, and apply force -- either by a suspect's latent \emph{criminality}, or by their race. After fitting this model we visualize on a map of New York City, how couterfactually changing an individual's race affects their arrest outcome according to the model. 
+
+
+Since 2002, the New York Police Department (NYPD) has recorded
+information about every time a police officer has stopped someone. The
+officer records information such as if the person was searched or
+frisked, % if a weapon was found, their appearance, whether an arrest
+was made or a summons issued, % if force was used, etc. We consider
+the data collected on males stopped during 2014 which constitutes
+38,609 records. % We limit our analysis to looking at just males
+stopped as this accounts for more than $90\%$ of the data.  We fit a
+model which decomposes these records into two latent factors, one
+which depends on the race and appearance of the individual being
+stopped, labeled \emph{Perceived Criminality}, and one which does not,
+labeled \emph{Criminality}, and which could be used as a basis for
+counterfactually fair decisions. We now describe a spatial analysis of
+the estimated latent factors.
+
+%\emph{Weapon} (an individual was found to be carrying a weapon),
+
+\paragraph{Model.}
+We model this stop-and-frisk data using the graph in
+Figure~\ref{figure.stop_and_frisk6}. Specifically, we posit main causes
+for the observations: \emph{Arrest} (if an individual was arrested),
+\emph{Force} (some sort of force was used during the stop),
+\emph{Frisked}, and \emph{Searched}. The first cause of these
+observations is some measure of an individual's latent
+\emph{Criminality}, which we do not observe. We believe that \emph{Criminality} also directly affects \emph{Weapon} (an individual was found to be carrying a weapon). For all of the features previously mentioned we believe there is an additional cause, an individual's \emph{Race} which we do observe. This factor is introduced
+as we believe that these observations may be biased based on an
+officer's perception of whether an individual is likely a criminal or
+not, affected by an individual's \emph{Race}. Thus note that, in this model, \emph{Criminality} is counterfactually fair.
+
+% \paragraph{Criminality and perception distributions.}
+% After fitting this model to the data we can look at the distribution
+% of \emph{Criminality} and \emph{Perception} across different races,
+% shown as box plots in Figure~\ref{figure.stop_and_frisk_output}. We see that
+% the median criminality for each race is nearly identical, while the
+% distributions are somewhat different, demonstrating that
+% \emph{Criminality} approaches demographic parity. The differences that
+% due exist may be due to unobserved confounding variables that are
+% affected by race or unmodeled noise in the data. On the right
+% \emph{Perception} varies considerably by race with white individuals
+% having the lowest perceived criminality while black and black Hispanic
+% individuals have the highest.
+
+\begin{figure*}[!t]
+\begin{center}
+\centerline{\includegraphics[width=\textwidth]{stopandfrisk_counterfactual_graphs_trim.png}}
+\caption{How race affects arrest. The above maps show how altering one's race affects whether or not they will be arrested, according to the model. The left-most plot shows the distribution of White and Black Hispanic populations in the stop-and-frisk dataset. The second plot shows the true arrests for all of the stops. Given our model we can compute whether or not every individual in the dataset would be arrest \emph{had they been white}. We show this counterfactual in the third plot. Similarly, we can compute this counterfactual if everyone had been Black Hispanic, as shown in the fourth plot.}
+\label{figure.criminality2}
+\end{center}
+\end{figure*}
+
+\paragraph{Visualization on a map of New York City.}
+Each of the stops can be mapped to longitude and latitude points for
+where the stop
+occurred\footnote{https://github.com/stablemarkets/StopAndFrisk}. This allows us to visualize the distribution of two distinct populations: the stops of White and Black Hispanic individuals, shown in Figure~\ref{figure.criminality2}. We note that there are more White individuals stopped ($4492$) than Black Hispanic individuals ($2414$). However, if we look at the arrest distribution (visualized geographically in the second plot) the rate of arrest for White individuals is lower ($12.1\%$) than for Black Hispanic individuals ($19.8\%$, the highest rate for any race in the dataset). Given our model we can ask: ``If every individual had been White, would they have been arrested?''. The answer to this is in the third plot. We see that the overall number of arrests decreases (from $5659$ to $3722$). What if every individual had been Black Hispanic? The fourth plot shows an increase in the number of arrests had individuals been Black Hispanic, according to the model (from $5659$ to $6439$). The yellow and purple circles show two regions where the difference in counterfactual arrest rates is particularly striking. Thus, the model indicates that, even when everything else in the model is held constant, race has a differential affect on arrest rate.
+
+
 
 %\subsection{Model criticism}
 %%% Local Variables:

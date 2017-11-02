@@ -58,19 +58,19 @@ highlighted in the work on individual fairness:
 %
 \begin{define}[Individual Fairness (IF)]
   An algorithm is fair if it gives similar predictions to similar
-  individuals. Formally, if individuals $i$ and $j$ are similar apart
-  from their protected attributes $A_i$, $A_j$ then
-  $\hat{Y}(X^{(i)}, A^{(i)}) \approx \hat{Y}(X^{(j)}, A^{(j)})$.
+  individuals. Formally, given a metric $d(\cdot,\cdot)$, if individuals $i$ and $j$ are similar under this metric (i.e., $d(i,j)$ is small) then their predictions should be similar: $\hat{Y}(X^{(i)}, A^{(i)}) \approx \hat{Y}(X^{(j)}, A^{(j)})$.
+   % with features $X^{(i)},X^{(j)}$ and protected attributes $A^{(i)},A^{(j)}$ are similar apart
+  % from their protected attributes $A_i$, $A_j$ then
+  % $\hat{Y}(X^{(i)}, A^{(i)}) \approx \hat{Y}(X^{(j)}, A^{(j)})$.
 %\begin{align}
 %  \hat{Y}(X^{(i)}, A^{(i)}) \approx \hat{Y}(X^{(j)}, A^{(j)}).\nonumber
 %\end{align}
 \end{define}
 %This approach can be understood loosely as a continuous analog of
 %FTU.
-As described in \cite{dwork2012fairness}, the notion of similarity
-must be carefully chosen, requiring an understanding of the domain at
+As described in \cite{dwork2012fairness}, the metric $d(\cdot,\cdot)$ must be carefully chosen, requiring an understanding of the domain at
 hand beyond black-box statistical modeling. This can also be
-contrasted again population level criteria such as
+contrasted against population level criteria such as
 %of fairness
 %will not correct for the historical biases described above.
 %
