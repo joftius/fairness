@@ -147,14 +147,14 @@ d <- ncol(data)
 library(rstan)
 # stan model data
 stop_stan_dat2 <- list(N = n, Ds = length(sens), se = data.matrix(data[,sens]), 
-                             Da = length(app),  ap = data.matrix(data[,app]),
+                             #Da = length(app),  ap = data.matrix(data[,app]),
                              ar = data[,arst],
                              sf1= data[,c("searched")], sf2 = data[,c("frisked")],
-                             we = data[,c("weapon")], fo = data[,c("force")], summ = data[,c("sumissue")])
+                             we = data[,c("weapon")], fo = data[,c("force")]) #, summ = data[,c("sumissue")])
                              #Do = length(fo),   fo = data[,fo]
                      #)
                 
-fit2 <- stan(file = 'stopandfrisk.stan', data = stop_stan_dat2, iter = 2000, chains = 1, verbose = TRUE)
+fit2 <- stan(file = 'stopandfrisk_related.stan', data = stop_stan_dat2, iter = 2000, chains = 1, verbose = TRUE)
 
 
 # Extract information
@@ -162,9 +162,9 @@ fit2 <- stan(file = 'stopandfrisk.stan', data = stop_stan_dat2, iter = 2000, cha
 # to arrest, search, frisk, weapon, force, and summons are all negative
 # I'm going to negate everything associated with criminality so higher criminality 
 # means more crimial
-la <- extract(fit2, permuted = TRUE)
-c <- -colMeans(la$c)
-p <- -colMeans(la$p)
+la2 <- extract(fit2, permuted = TRUE)
+c <- -colMeans(la2$c)
+p <- -colMeans(la2$p)
 # Predict Y
 
 # Here's how being each race helps/hurts perception
@@ -189,6 +189,7 @@ mean(la$w_p_summ)
 
 
 save(la,file='stopandfrisk_stan_fits_force.Rdata')
+save(la2,file='stopandfrisk_stan_final.Rdata')
 ######################################################################################################
 # Store data for prediction module
 
@@ -254,15 +255,180 @@ library(ggmap)
 
 
 
+########################################################################
+# NEW!!!!!!!!! COMPUTE COUNTERFACTUALS WITH DIFFERENT RACES FOR ARREST #
+########################################################################
+RACE = data.matrix(data[,sens])
+APP  = data.matrix(data[,app])
+
+dataWhite <- data
+dataBlack <- data
+
+dataWhite$white = 1
+dataWhite$black = 0
+dataWhite$blackhisp = 0
+dataWhite$hisp = 0
+dataWhite$aspi = 0
+dataWhite$naam = 0
+
+dataBlack$black = 1
+dataBlack$white = 0
+dataBlack$blackhisp = 0
+dataBlack$hisp = 0
+dataBlack$aspi = 0
+dataBlack$naam = 0
+
+RACEWHITE = data.matrix(dataWhite[,sens])
+RACEBLACK = data.matrix(dataBlack[,sens])
+
+
+##### // latent variable
+##### c ~ normal(0, 1);
+##### 
+##### // have data about these
+##### ar   ~ bernoulli_logit(ar0 + w_c_ar * c + w_p_ar * p); // ar = f(c,p) #
+##### sf1  ~ bernoulli_logit(sf01 + w_c_sf1 * c + w_p_sf1  * p);  // sf = f(c,p)
+##### sf2  ~ bernoulli_logit(sf02 + w_c_sf2 * c + w_p_sf2  * p);  // sf = f(c,p)
+##### we   ~ bernoulli_logit(we0 + w_c_we * c + w_p_we * p); // we = f(c,p) #
+##### fo   ~ bernoulli_logit(fo0 + w_c_fo * c + w_p_fo * p); // fo = f(c,p)
+##### summ ~ bernoulli_logit(summ0 + w_c_summ * c + w_p_summ * p); // summ = f(c,p) #
+##### 
+##### // latent variable
+##### sigma_p_Sq ~ inv_gamma(1, 1);
+##### p ~ normal(p0 + se * w_s_p + ap * w_ap_p, sigma_p);
+# sf1= data[,c("searched")], sf2 = data[,c("frisked")]
+
+# PARAMETERS #
+# ---------- #
+### perception
+##SIGMA_P <- mean(la2$sigma_p)
+##W_AP_P  <- colMeans(la2$w_ap_p) 
+##W_S_P   <- colMeans(la2$w_s_p)
+##P0      <- mean(la2$p0)
+##PERCEPTION_eps <- rnorm(n, mean=0, sd=SIGMA_P)
+
+# arrest
+AR0     <- mean(la2$ar0)
+W_C_AR  <- mean(la2$w_c_ar)
+W_S_AR  <- colMeans(la2$w_s_ar)
+ARREST_eps <- runif(n)
+
+# sf1=searched
+SF01    <- mean(la2$sf01)
+W_C_SF1 <- mean(la2$w_c_sf1)
+W_S_SF1 <- mean(la2$w_s_sf1)
+SEARCH_eps <- runif(n)
+
+# sf2=frisked
+SF02    <- mean(la2$sf02)
+W_C_SF2 <- mean(la2$w_c_sf2)
+W_S_SF2 <- mean(la2$w_s_sf2)
+FRISKED_eps <- runif(n)
+
+# weapon
+WE0     <- mean(la2$we0)
+W_C_WE  <- mean(la2$w_c_we)
+
+# force
+FO0     <- mean(la2$fo0)
+W_C_FO  <- mean(la2$w_c_fo)
+W_S_FO  <- mean(la2$w_s_fo)
+
+# summons
+#SUMM0   <- mean(la2$summ0)
+#W_C_SUMM<- mean(la2$w_c_summ)
+#W_P_SUMM<- mean(la2$w_p_summ)
+
+# CRIMINALITY
+CRIM <- colMeans(la2$c)
+#PERC <- colMeans(la2$p)
+
+##### we   ~ bernoulli_logit(we0 + w_c_we * c + w_p_we * p); // we = f(c,p) #
+##### fo   ~ bernoulli_logit(fo0 + w_c_fo * c + w_p_fo * p); // fo = f(c,p)
+##### summ ~ bernoulli_logit(summ0 + w_c_summ * c + w_p_summ * p); // summ = f(c,p) #
+
+
+# p ~ normal(p0 + se * w_s_p + ap * w_ap_p, sigma_p)
+#sample_PERCEPTION <- function(race, app, eps) {
+#  PERCEPTION_M <- P0 + race %*% W_S_P + app %*% W_AP_P
+#  return(PERCEPTION_M + eps)
+#}
+
+# ar   ~ bernoulli_logit(ar0  + w_c_ar  * c + se * w_s_ar);
+sample_ARREST <- function(c, race, eps) {
+  logit <- AR0 + W_C_AR * c + race %*% W_S_P
+  sample <- qbinom(eps, 1, 1.0/(1.0 + exp(-logit)))
+  return(sample)
+}
+
+## sf1  ~ bernoulli_logit(sf01 + w_c_sf1 * c + w_p_sf1  * p)
+#sample_SEARCH <- function(c, p, eps) {
+#  logit <- SF01 + W_C_SF1 * c + W_P_SF1 * p
+#  sample <- qbinom(eps, 1, 1.0/(1.0 + exp(-logit)))
+#  return(sample)
+#}
+
+
+## sf2  ~ bernoulli_logit(sf02 + w_c_sf2 * c + w_p_sf2  * p)
+#sample_LSAT <- function(u, a, eps) {
+#  #eps <- runif(1)
+#  #LSAT_m <- qpois( eps, exp( L0 + ETA_U_T * u + a %*% ETA_A_T ) )
+#  LSAT_m <- exp( lsat0 + eta_u_lsat * u + a %*% eta_a_lsat )
+#  sample <- qpois( eps, LSAT_m )
+#  return(sample)#list(LSAT_m,eps))
+#}
+#
+#sample_ZFYA <- function(u, a, eps) {
+#  ZFYA_m <- eta_u_zfya * u + a %*% eta_a_zfya
+#  #eps <- rnorm(1,mean=0,sd=1)
+#  return(ZFYA_m + eps)#list(ZFYA_m,eps))
+#}
+
+
+#dataPERC <- rep(1, length(data$arstmade)); 
+for (i in 1:n) {
+  
+  p_i = sample_PERCEPTION(RACEWHITE[i,], APP[i,], PERCEPTION_eps[i])
+  dataWhite$arstmade[i] = sample_ARREST(CRIM[i], p_i, ARREST_eps[i])
+  
+  p_i = sample_PERCEPTION(RACEBLACK[i,], APP[i,], PERCEPTION_eps[i])
+  dataBlack$arstmade[i] = sample_ARREST(CRIM[i], p_i, ARREST_eps[i])
+  #dataWhite$arstmade = sample_GPA 
+}
+
+
+# HERERERERERERERERERERE
 
 ny_plot<-ggmap(get_map("New York, NY",zoom=11,source='google',maptype='terrain'))
-c_data = data.frame(longitude=data$longitude,
-                    latitude =data$latitude,
-                    criminality = data$criminality)
-p_data = data.frame(longitude=data$longitude,
-                    latitude =data$latitude,
-                    perception = data$perception)
+#c_data = data.frame(longitude=data$longitude,
+#                    latitude =data$latitude,
+#                    criminality = data$criminality)
+#p_data = data.frame(longitude=data$longitude,
+#                    latitude =data$latitude,
+#                    perception = data$perception)
 
+data$arrest <- data$arstmade
+data$arrest[data$arrest == 1] = "Yes"
+data$arrest[data$arrest == 0] = "No"
+
+dataWhite$arrest <- dataWhite$arstmade
+dataWhite$arrest[dataWhite$arrest == 1] = "Yes"
+dataWhite$arrest[dataWhite$arrest == 0] = "No"
+
+dataBlack$arrest <- dataBlack$arstmade
+dataBlack$arrest[dataBlack$arrest == 1] = "Yes"
+dataBlack$arrest[dataBlack$arrest == 0] = "No"
+
+
+# PLOT TRUE
+qmplot(longitude, latitude, data=data, maptype = "toner-background", color=arrest, size=I(0.000001), zoom = 11, darken = .7, legend = "topleft") + 
+  scale_color_manual(values=c("#FFFFFF", "#FF0000"))
+
+
+# WHITE COUNTERFACTUAL
+qmplot(longitude, latitude, data=dataWhite, maptype = "toner-background", color=arrest, size=I(0.000001), zoom = 11, darken = .7, legend = "topleft") + 
+  scale_color_manual(values=c("#FFFFFF", "#FF0000"))
+# BLACK COUNTERFACTUAL
 
 
 
