@@ -425,7 +425,7 @@ here as a protected attribute for college admission. However, in the
 postulated model it turns out that $A$ and $Y$ are causally independent given
 $X$. More specifically, women tend to choose more competitive courses
 (those with higher rejection rate) than men when applying.  Our
-judgement is that the higher rejection among female than male
+judgment is that the higher rejection among female than male
 applicants is acceptable, if the mechanism $A \rightarrow X$ is
 interpreted as a choice which is under the control of the applicant.
 That is, free-will overrides whatever possible cultural background conditions
@@ -486,7 +486,7 @@ confounder for $X$ and $Y$. We are still not allowed to use $A$
 directly, bypassing the background variables.
 
 As discussed by \cite{nabi:17}, there are some counterfactual
-manipulations useable in a causal definition of fairness that can be
+manipulations usable in a causal definition of fairness that can be
 performed by exploiting only independence constraints among the
 counterfactuals: that is, without requiring the explicit description
 of structural equations or other models for latent variables. A
@@ -498,12 +498,12 @@ affected by the protected attribute, and independence constraints
 among counterfactuals alone are less likely to be useful in
 identifying constraints for the fitting of a fair predictor.
 
-\begin{figure}[th]
-\begin{center}
-\centerline{\includegraphics[width=3in]{stop_and_frisk_model3.pdf}}
-\caption{A causal model for the stop and frisk dataset.\label{figure.stop_and_frisk}}
-\end{center}
-\end{figure}
+%\begin{figure}[th]
+%\begin{center}
+%\centerline{\includegraphics[width=3in]{stop_and_frisk_model3.pdf}}
+%\caption{A causal model for the stop and frisk dataset.\label{figure.stop_and_frisk}}
+%\end{center}
+%\end{figure}
 
 \section*{S5 The Multifaceted Dynamics of Fairness}
 \label{sec:dynamics}
@@ -531,7 +531,7 @@ female businesses compared to the current baseline. This change can by
 itself have an indirect effect on the culture and behavior of a
 society, leading to diminishing continuing discrimination by a
 feedback mechanism, as in affirmative action. We believe that in the
-long run isolated acts of fairness are benefitial even if we do not
+long run isolated acts of fairness are beneficial even if we do not
 have direct control on all sources of unfairness in any specific
 problem.  Causal modeling can help on creating arguments about the
 long run impact of individual contributions as e.g. a type of
@@ -541,114 +541,114 @@ aim at educated quantitative assessments validating how a systemic
 improvement in society can emerge from localized ways of addressing
 fairness.
 
-\section*{S6 Case Study: Criminality vs. Perceived Criminality}
-\label{sec:true-vs.-perceived}
-
-We test our approach on a problem of \emph{separating actual and
-  perceived criminality in police stops}. For this problem, we
-construct a causal model, and make explicit how unfairness may affect
-observed and unobserved variables in the world. Given the model we
-derive counterfactually fair predictors, and predict latent variables
-such as a person's `criminality' (which may be useful for predicting
-crime) as well as their `perceived criminality' (which may be due to
-prejudices based on appearance). Finally we judge how well our
-counterfactually fair `criminality' score satisfies demographic
-parity.
-
-\begin{figure}[!th]
-\begin{center}
-%\vspace{-1ex}
-\centerline{\includegraphics[width=4in]{stopandfrisk_output.pdf}}
-\vspace{-2ex}
-\caption{Distributions of estimated latent perception and criminality
-  scores for the stop and frisk
-  dataset.
-\label{figure.stop_and_frisk_output}}
+%\section*{S6 Case Study: Criminality vs. Perceived Criminality}
+%\label{sec:true-vs.-perceived}
+%
+%We test our approach on a problem of \emph{separating actual and
+%  perceived criminality in police stops}. For this problem, we
+%construct a causal model, and make explicit how unfairness may affect
+%observed and unobserved variables in the world. Given the model we
+%derive counterfactually fair predictors, and predict latent variables
+%such as a person's `criminality' (which may be useful for predicting
+%crime) as well as their `perceived criminality' (which may be due to
+%prejudices based on appearance). Finally we judge how well our
+%counterfactually fair `criminality' score satisfies demographic
+%parity.
+%
+%\begin{figure}[!th]
+%\begin{center}
+%%\vspace{-1ex}
+%\centerline{\includegraphics[width=4in]{stopandfrisk_output.pdf}}
 %\vspace{-2ex}
-\end{center}
-\end{figure}
-
-Since 2002, the New York Police Department (NYPD) has recorded
-information about every time a police officer has stopped someone. The
-officer records information such as if the person was searched or
-frisked, % if a weapon was found, their appearance, whether an arrest
-was made or a summons issued, % if force was used, etc. We consider
-the data collected on males stopped during 2014 which constitutes
-38,609 records. % We limit our analysis to looking at just males
-stopped as this accounts for more than $90\%$ of the data.  We fit a
-model which decomposes these records into two latent factors, one
-which depends on the race and appearance of the individual being
-stopped, labeled \emph{Perceived Criminality}, and one which does not,
-labeled \emph{Criminality}, and which could be used as a basis for
-counterfactually fair decisions. We now describe a spatial analysis of
-the estimated latent factors.
-
-\paragraph{Model.}
-We model this stop-and-frisk data using the graph in
-Figure~\ref{figure.stop_and_frisk}. Specifically, we posit main causes
-for the observations: \emph{Arrest} (if an individual was arrested),
-\emph{Summons} (an individual was called to a court-summons),
-\emph{Weapon} (an individual was found to be carrying a weapon),
-\emph{Force} (some sort of force was used during the stop),
-\emph{Frisked}, and \emph{Searched}. The first cause of these
-observations is some measure of an individual's latent
-\emph{Criminality}, which we do not observe. We believe there is an
-additional cause, an individual's perceived criminality,
-\emph{Perception}, also unobserved. This second factor is introduced
-as we believe that these observations may be biased based on an
-officer's perception of whether an individual is likely a criminal or
-not. This perception is affected by an individual's \emph{Appearance}
-and their \emph{Race}. In this sense \emph{Criminality} is
-counterfactually fair, while \emph{Perception} models how race affects
-each of the other observed variables.
-
-\paragraph{Criminality and perception distributions.}
-After fitting this model to the data we can look at the distribution
-of \emph{Criminality} and \emph{Perception} across different races,
-shown as box plots in Figure~\ref{figure.stop_and_frisk_output}. We see that
-the median criminality for each race is nearly identical, while the
-distributions are somewhat different, demonstrating that
-\emph{Criminality} approaches demographic parity. The differences that
-due exist may be due to unobserved confounding variables that are
-affected by race or unmodeled noise in the data. On the right
-\emph{Perception} varies considerably by race with white individuals
-having the lowest perceived criminality while black and black Hispanic
-individuals have the highest.
-
-\begin{figure*}[!t]
-\begin{center}
-\centerline{\includegraphics[width=\textwidth]{stop_and_frisk_graphs.png}}
-\caption{Understanding criminality. The above maps show the
-  decomposition of stop and search data in New York into factors based
-  on perceived criminality (a race dependent variable) and latent
-  criminality (a race neutral measure). \label{figure.criminality}}
-\end{center}
-\end{figure*}
-
-\paragraph{Visualization on a map of New York City.}
-Each of the stops can be mapped to longitude and latitude points for
-where the stop
-occurred\footnote{https://github.com/stablemarkets/StopAndFrisk}. Thus
-we can visualize \emph{Criminality} and \emph{Perception} alongside
-\emph{Race} and the combination of \emph{Arrest} and \emph{Summons},
-shown in Figure~\ref{figure.criminality}.  Criminality seems to be a
-continuous approximation of arrest and summons as both plots show red
-in similar areas. However, the plots show that certain areas, while
-having a lot of arrests have low criminality scores such as south
-Bronx and west Queens (circled in orange). We can also compare the
-perceived criminality with a plot of race, where we have divided the
-races into Group A: black, black Hispanic, Hispanic, and Native
-American (shown in purple); and Group B: white and Asian/Pacific
-Islander (shown in green). Group A are all races that have positive
-weights on the connection from \emph{Race} to \emph{Perception} in the
-fitted model, while Group B all have negative weights. Thus being in
-Group A leads one to have a higher perceived criminality than being in
-Group B. This can be seen in the right-most plot of
-Figure~\ref{figure.criminality}. Certain areas of town such as central
-Brooklyn, central Bronx, and southern Queens have very high
-criminality and almost all stops are by members of Group A (circled in
-yellow).
-
+%\caption{Distributions of estimated latent perception and criminality
+%  scores for the stop and frisk
+%  dataset.
+%\label{figure.stop_and_frisk_output}}
+%%\vspace{-2ex}
+%\end{center}
+%\end{figure}
+%
+%Since 2002, the New York Police Department (NYPD) has recorded
+%information about every time a police officer has stopped someone. The
+%officer records information such as if the person was searched or
+%frisked, % if a weapon was found, their appearance, whether an arrest
+%was made or a summons issued, % if force was used, etc. We consider
+%the data collected on males stopped during 2014 which constitutes
+%38,609 records. % We limit our analysis to looking at just males
+%stopped as this accounts for more than $90\%$ of the data.  We fit a
+%model which decomposes these records into two latent factors, one
+%which depends on the race and appearance of the individual being
+%stopped, labeled \emph{Perceived Criminality}, and one which does not,
+%labeled \emph{Criminality}, and which could be used as a basis for
+%counterfactually fair decisions. We now describe a spatial analysis of
+%the estimated latent factors.
+%
+%\paragraph{Model.}
+%We model this stop-and-frisk data using the graph in
+%Figure~\ref{figure.stop_and_frisk}. Specifically, we posit main causes
+%for the observations: \emph{Arrest} (if an individual was arrested),
+%\emph{Summons} (an individual was called to a court-summons),
+%\emph{Weapon} (an individual was found to be carrying a weapon),
+%\emph{Force} (some sort of force was used during the stop),
+%\emph{Frisked}, and \emph{Searched}. The first cause of these
+%observations is some measure of an individual's latent
+%\emph{Criminality}, which we do not observe. We believe there is an
+%additional cause, an individual's perceived criminality,
+%\emph{Perception}, also unobserved. This second factor is introduced
+%as we believe that these observations may be biased based on an
+%officer's perception of whether an individual is likely a criminal or
+%not. This perception is affected by an individual's \emph{Appearance}
+%and their \emph{Race}. In this sense \emph{Criminality} is
+%counterfactually fair, while \emph{Perception} models how race affects
+%each of the other observed variables.
+%
+%\paragraph{Criminality and perception distributions.}
+%After fitting this model to the data we can look at the distribution
+%of \emph{Criminality} and \emph{Perception} across different races,
+%shown as box plots in Figure~\ref{figure.stop_and_frisk_output}. We see that
+%the median criminality for each race is nearly identical, while the
+%distributions are somewhat different, demonstrating that
+%\emph{Criminality} approaches demographic parity. The differences that
+%due exist may be due to unobserved confounding variables that are
+%affected by race or unmodeled noise in the data. On the right
+%\emph{Perception} varies considerably by race with white individuals
+%having the lowest perceived criminality while black and black Hispanic
+%individuals have the highest.
+%
+%\begin{figure*}[!t]
+%\begin{center}
+%\centerline{\includegraphics[width=\textwidth]{stop_and_frisk_graphs.png}}
+%\caption{Understanding criminality. The above maps show the
+%  decomposition of stop and search data in New York into factors based
+%  on perceived criminality (a race dependent variable) and latent
+%  criminality (a race neutral measure). \label{figure.criminality}}
+%\end{center}
+%\end{figure*}
+%
+%\paragraph{Visualization on a map of New York City.}
+%Each of the stops can be mapped to longitude and latitude points for
+%where the stop
+%occurred\footnote{https://github.com/stablemarkets/StopAndFrisk}. Thus
+%we can visualize \emph{Criminality} and \emph{Perception} alongside
+%\emph{Race} and the combination of \emph{Arrest} and \emph{Summons},
+%shown in Figure~\ref{figure.criminality}.  Criminality seems to be a
+%continuous approximation of arrest and summons as both plots show red
+%in similar areas. However, the plots show that certain areas, while
+%having a lot of arrests have low criminality scores such as south
+%Bronx and west Queens (circled in orange). We can also compare the
+%perceived criminality with a plot of race, where we have divided the
+%races into Group A: black, black Hispanic, Hispanic, and Native
+%American (shown in purple); and Group B: white and Asian/Pacific
+%Islander (shown in green). Group A are all races that have positive
+%weights on the connection from \emph{Race} to \emph{Perception} in the
+%fitted model, while Group B all have negative weights. Thus being in
+%Group A leads one to have a higher perceived criminality than being in
+%Group B. This can be seen in the right-most plot of
+%Figure~\ref{figure.criminality}. Certain areas of town such as central
+%Brooklyn, central Bronx, and southern Queens have very high
+%criminality and almost all stops are by members of Group A (circled in
+%yellow).
+%
 
 \begin{figure}[t]
 \begin{center}
@@ -660,22 +660,19 @@ yellow).
 \section*{S6 Case Study: NYC Stop-and-Frisk Data}
 \label{sec:true-vs.-perceived}
 
-We use our approach to analyze the impact of race on arrest decisions in New York City stop-and-frisk data. To do so we learn a causal model that explains various actions by the police -- including the decisions to arrest, search, frisk, and apply force -- either by a suspect's latent \emph{criminality}, or by their race. After fitting this model we visualize on a map of New York City, how couterfactually changing an individual's race affects their arrest outcome according to the model. 
-
-
 Since 2002, the New York Police Department (NYPD) has recorded
 information about every time a police officer has stopped someone. The
 officer records information such as if the person was searched or
-frisked, % if a weapon was found, their appearance, whether an arrest
-was made or a summons issued, % if force was used, etc. We consider
-the data collected on males stopped during 2014 which constitutes
-38,609 records. % We limit our analysis to looking at just males
+frisked, if a weapon was found, their appearance, whether an arrest
+was made or a summons issued,  if force was used, etc. 
+We consider the data collected on males stopped during 2014 which constitutes
+38,609 records. We limit our analysis to looking at just males
 stopped as this accounts for more than $90\%$ of the data.  We fit a
-model which decomposes these records into two latent factors, one
-which depends on the race and appearance of the individual being
-stopped, labeled \emph{Perceived Criminality}, and one which does not,
-labeled \emph{Criminality}, and which could be used as a basis for
-counterfactually fair decisions. We now describe a spatial analysis of
+model which postulates that police interactions is caused by race and a 
+single latent factor labeled \emph{Criminality} that is meant to index other aspects
+of the individual that have been used by the police and which are independent of race.
+We do not claim that this model has a solid theoretical basis, we use it below as an illustration
+on how to carry on an analysis of  counterfactually fair decisions. We also describe a spatial analysis of
 the estimated latent factors.
 
 %\emph{Weapon} (an individual was found to be carrying a weapon),
@@ -690,7 +687,8 @@ observations is some measure of an individual's latent
 \emph{Criminality}, which we do not observe. We believe that \emph{Criminality} also directly affects \emph{Weapon} (an individual was found to be carrying a weapon). For all of the features previously mentioned we believe there is an additional cause, an individual's \emph{Race} which we do observe. This factor is introduced
 as we believe that these observations may be biased based on an
 officer's perception of whether an individual is likely a criminal or
-not, affected by an individual's \emph{Race}. Thus note that, in this model, \emph{Criminality} is counterfactually fair.
+not, affected by an individual's \emph{Race}. Thus note that, in this model, \emph{Criminality} is counterfactually fair for the prediction of any characteristic
+of the individual for problems where \emph{Race} is a protected attribute.
 
 % \paragraph{Criminality and perception distributions.}
 % After fitting this model to the data we can look at the distribution
@@ -716,7 +714,7 @@ not, affected by an individual's \emph{Race}. Thus note that, in this model, \em
 \paragraph{Visualization on a map of New York City.}
 Each of the stops can be mapped to longitude and latitude points for
 where the stop
-occurred\footnote{https://github.com/stablemarkets/StopAndFrisk}. This allows us to visualize the distribution of two distinct populations: the stops of White and Black Hispanic individuals, shown in Figure~\ref{figure.criminality2}. We note that there are more White individuals stopped ($4492$) than Black Hispanic individuals ($2414$). However, if we look at the arrest distribution (visualized geographically in the second plot) the rate of arrest for White individuals is lower ($12.1\%$) than for Black Hispanic individuals ($19.8\%$, the highest rate for any race in the dataset). Given our model we can ask: ``If every individual had been White, would they have been arrested?''. The answer to this is in the third plot. We see that the overall number of arrests decreases (from $5659$ to $3722$). What if every individual had been Black Hispanic? The fourth plot shows an increase in the number of arrests had individuals been Black Hispanic, according to the model (from $5659$ to $6439$). The yellow and purple circles show two regions where the difference in counterfactual arrest rates is particularly striking. Thus, the model indicates that, even when everything else in the model is held constant, race has a differential affect on arrest rate.
+occurred\footnote{https://github.com/stablemarkets/StopAndFrisk}. This allows us to visualize the distribution of two distinct populations: the stops of White and Black Hispanic individuals, shown in Figure~\ref{figure.criminality2}. We note that there are more White individuals stopped ($4492$) than Black Hispanic individuals ($2414$). However, if we look at the arrest distribution (visualized geographically in the second plot) the rate of arrest for White individuals is lower ($12.1\%$) than for Black Hispanic individuals ($19.8\%$, the highest rate for any race in the dataset). Given our model we can ask: ``If every individual had been White, would they have been arrested?''. The answer to this is in the third plot. We see that the overall number of arrests decreases (from $5659$ to $3722$). What if every individual had been Black Hispanic? The fourth plot shows an increase in the number of arrests had individuals been Black Hispanic, according to the model (from $5659$ to $6439$). The yellow and purple circles show two regions where the difference in counterfactual arrest rates is particularly striking. Thus, the model indicates that, even when everything else in the model is held constant, race has a differential affect on arrest rate under the (strong) assumptions of the model.
 
 
 

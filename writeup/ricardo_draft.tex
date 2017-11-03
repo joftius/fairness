@@ -42,6 +42,7 @@
 \usepackage{color}
 
 \newcommand\independent{\protect\mathpalette{\protect\independenT}{\perp}}
+\newcommand*\samethanks[1][\value{footnote}]{\footnotemark[#1]}
 
 % Code blocks%
 \usepackage{listings}
@@ -69,17 +70,16 @@
 }
 
 \author{
-  Matt Kusner\\
+  Matt Kusner \thanks{Equal contribution. This work was done while JL was a Research Fellow at the Alan Turing Institute.}\\
   The Alan Turing Institute and \\
   University of Warwick \\
   \texttt{mkusner@turing.ac.uk} \\
   \And
-  Joshua Loftus\thanks{This work was done while JL
-     was a Research Fellow at the Alan Turing Institute.} \\
-  New York University\\
+  Joshua Loftus \samethanks\\
+  New York University \\
   \texttt{loftus@nyu.edu} \\
   \And
-  Chris Russell \\
+  Chris Russell \samethanks \\
   The Alan Turing Institute and \\
   University of Surrey\\
   \texttt{crussell@turing.ac.uk} \\
